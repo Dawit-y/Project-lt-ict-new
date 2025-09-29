@@ -18,12 +18,12 @@ import {
 	FaChevronRight,
 } from "react-icons/fa";
 import ExportToExcel from "../../components/Common/ExportToExcel";
+import { financialReportOneExportColumns } from "../../utils/exportColumnsForReport";
 
 const FinancialProjectsTable = ({
 	data = [],
 	t = (key) => key,
 	tableClass = "",
-	theadClass = "",
 }) => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [rowsPerPage, setRowsPerPage] = useState(50);
@@ -353,90 +353,6 @@ const FinancialProjectsTable = ({
 		return projectNames.size;
 	}, [groupedData]);
 
-	// Export data preparation
-	const exportData = useMemo(() => {
-		if (!groupedData || Object.keys(groupedData).length === 0) {
-			return [];
-		}
-
-		const exportRows = [];
-		let projectCounter = 1;
-
-		Object.entries(groupedData).forEach(([sectorName, projects]) => {
-			Object.entries(projects).forEach(([projectName, projectData]) => {
-				const projectList = Array.isArray(projectData.entries)
-					? projectData.entries
-					: [projectData];
-
-				projectList.forEach((proj, index) => {
-					// Calculate financial values
-					const governmentApproved =
-						Number(proj.bdr_source_government_approved) || 0;
-					const internalRequested =
-						Number(proj.bdr_source_internal_requested) || 0;
-					const otherApproved = Number(proj.bdr_source_other_approved) || 0;
-					const total = governmentApproved + internalRequested + otherApproved;
-
-					// Create export row with all required fields
-					const exportRow = {
-						"Project Name": projectName || t("Unnamed Project"),
-						Unit: proj.prj_measurement_unit || "",
-						"Measured Figure": proj.prj_measured_figure || "",
-						Status: proj.prj_status || "",
-						Sector: sectorName,
-						Category: proj.prj_category || "",
-						"Project Code": proj.prj_code || "",
-						"Specific Site": proj.prj_location_description || "",
-						Zone: proj.zone || "",
-						Woreda: proj.woreda || "",
-						"Start Year": proj.start_year || "",
-						"End Year": proj.end_year || "",
-						"Before Previous Year Physical":
-							proj.bdr_before_previous_year_physical || "",
-						"Previous Year Physical": proj.bdr_previous_year_physical || "",
-						"Physical Baseline": proj.bdr_physical_baseline || "",
-						"Physical Planned": proj.bdr_physical_planned || "",
-						"Physical Approved": proj.bdr_physical_approved || "",
-						"Total Budget": proj.prj_total_estimate_budget || "",
-						"Before Previous Year Financial":
-							proj.bdr_before_previous_year_financial || "",
-						"Previous Year Financial": proj.bdr_previous_year_financial || "",
-						"Financial Baseline": proj.bdr_financial_baseline || "",
-						"Requested Amount": proj.bdr_requested_amount || "",
-						"Released Amount": proj.bdr_released_amount || "",
-						"Government Approved": governmentApproved,
-						"Internal Requested": internalRequested,
-						"Other Approved": otherApproved,
-						Total: total,
-					};
-
-					// Format numeric values for display
-					const numericFields = [
-						"Government Approved",
-						"Internal Requested",
-						"Other Approved",
-						"Total",
-						"Total Budget",
-						"Requested Amount",
-						"Released Amount",
-					];
-
-					numericFields.forEach((field) => {
-						if (exportRow[field] && typeof exportRow[field] === "number") {
-							exportRow[field] = exportRow[field].toLocaleString();
-						}
-					});
-
-					exportRows.push(exportRow);
-				});
-
-				projectCounter++;
-			});
-		});
-
-		return exportRows;
-	}, [groupedData, t]);
-
 	// Event handlers
 	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -745,8 +661,9 @@ const FinancialProjectsTable = ({
 
 					<div className="d-flex align-items-center">
 						<ExportToExcel
-							tableData={exportData}
+							tableData={data}
 							tableName="FinancialProjectsTable"
+							exportColumns={financialReportOneExportColumns}
 						/>
 						<Dropdown
 							isOpen={dropdownOpen}

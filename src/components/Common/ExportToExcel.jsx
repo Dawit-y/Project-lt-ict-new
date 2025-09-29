@@ -1,7 +1,7 @@
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
-import { DropdownItem } from "reactstrap";
+import { DropdownItem, Button } from "reactstrap";
 import { FaFileExcel } from "react-icons/fa";
 
 const ExportToExcel = ({
@@ -13,323 +13,414 @@ const ExportToExcel = ({
 }) => {
 	const { t } = useTranslation();
 
+	/** =====================
+	 * Helpers
+	 ===================== */
+
+	const getLeafColumns = (columns) => {
+		const result = [];
+		const traverse = (cols) => {
+			cols.forEach((col) => {
+				if (col.columns) traverse(col.columns);
+				else result.push(col);
+			});
+		};
+		traverse(columns);
+		return result;
+	};
+
+	const countLeaves = (col) => {
+		if (!col.columns || col.columns.length === 0) return 1;
+		return col.columns.reduce((sum, child) => sum + countLeaves(child), 0);
+	};
+
+	const getDepth = (cols) => {
+		let max = 1;
+		cols.forEach((c) => {
+			if (c.columns && c.columns.length > 0) {
+				max = Math.max(max, 1 + getDepth(c.columns));
+			}
+		});
+		return max;
+	};
+
+	// --- CRITICAL FIX: REWRITING buildHeaderRows for absolute indexing ---
+	const buildHeaderRows = (columns) => {
+		const maxDepth = getDepth(columns);
+		const rows = Array.from({ length: maxDepth }, () => []);
+
+		// The key here is tracking column start/end points using a recursive data structure.
+
+		const processColumn = (col, depth, currentColStart) => {
+			const currentRow = rows[depth];
+			const isGroup = !!col.columns;
+			const leafSpan = isGroup ? countLeaves(col) : 1;
+			const rowSpan = isGroup ? 1 : maxDepth - depth;
+			const currentColEnd = currentColStart + leafSpan - 1;
+
+			currentRow.push({
+				label: t(col.label),
+				colStart: currentColStart,
+				colSpan: leafSpan,
+				rowSpan: rowSpan,
+				isGroup: isGroup,
+			});
+
+			if (isGroup) {
+				let nextChildColStart = currentColStart;
+				col.columns.forEach((childCol) => {
+					// Recursively call for children
+					const childLeafSpan = countLeaves(childCol);
+					processColumn(childCol, depth + 1, nextChildColStart);
+					nextChildColStart += childLeafSpan;
+				});
+			}
+
+			// Return the number of leaf columns processed by this node
+			return leafSpan;
+		};
+
+		// 1. Process SN column - Add to ALL rows with proper merging
+		const snHeader = {
+			label: t("SN"),
+			colStart: 1,
+			colSpan: 1,
+			rowSpan: maxDepth,
+			isSN: true,
+		};
+
+		// Add SN header only to the first row
+		rows[0].push(snHeader);
+
+		// For subsequent rows, add empty placeholder cells that will be covered by the merge
+		for (let i = 1; i < maxDepth; i++) {
+			rows[i].push({
+				label: "", // EMPTY label for placeholder
+				colStart: 1,
+				colSpan: 1,
+				rowSpan: 1,
+				isSN: true,
+				isPlaceholder: true, // Mark as placeholder
+			});
+		}
+
+		// 2. Process Data columns
+		let currentDataColStart = 2; // Data starts after SN (column 1)
+		columns.forEach((col) => {
+			const span = processColumn(col, 0, currentDataColStart);
+			currentDataColStart += span;
+		});
+
+		return rows;
+	};
+
+	/** =====================
+	 * Export Handler
+	 * ===================== */
 	const handleExportToExcel = async () => {
-		if (!tableData || tableData.length === 0 || exportColumns.length === 0) {
+		if (!tableData?.length || !exportColumns?.length) {
 			console.error("No data or exportColumns to export.");
 			return;
 		}
 
-		const workbook = new ExcelJS.Workbook();
-		const worksheet = workbook.addWorksheet("Table Data");
+		try {
+			const workbook = new ExcelJS.Workbook();
+			const worksheet = workbook.addWorksheet(tableName || "Table Data");
+			const leafColumns = getLeafColumns(exportColumns);
+			const dataColumnsCount = leafColumns.length + 1; // +1 for SN
+			const dateStr = new Date().toLocaleDateString().replace(/\//g, "-");
+			const currentDate = new Date().toLocaleString();
 
-		const dateStr = new Date().toLocaleDateString();
-		const currentDate = new Date().toLocaleString();
-		const dataColumnsCount = exportColumns.length + 1;
+			// Styling constants
+			const HEADER_BG = "4472C4";
+			const HEADER_FONT_COLOR = "FFFFFF";
+			const SEARCH_PARAM_BG = "D9E1F2";
+			const ROW_COLOR_1 = "D9E1F2";
+			const ROW_COLOR_2 = "FFFFFF";
+			const BORDER_COLOR = "B4C6E7";
 
-		const orgRow = worksheet.addRow([t("organization_name")]);
-		orgRow.font = { bold: true, size: 16, color: { argb: "1F4E78" } };
-		orgRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(1, 1, 1, dataColumnsCount);
-
-		const titleRow = worksheet.addRow([`${tableName} ${t("report")}`]);
-		titleRow.font = { bold: true, size: 14, color: { argb: "2F5496" } };
-		titleRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(2, 1, 2, dataColumnsCount);
-
-		const dateRow = worksheet.addRow([`${t("generated_on")}: ${currentDate}`]);
-		dateRow.font = { italic: true, size: 10 };
-		dateRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(3, 1, 3, dataColumnsCount);
-
-		worksheet.addRow([]);
-
-		let currentRow = 5;
-
-		if (Object.keys(exportSearchParams).length > 0) {
-			// --- Search Criteria Header ---
-			const criteriaHeader = worksheet.addRow([]);
-			criteriaHeader.getCell(2).value = t("search_criteria");
-			criteriaHeader.font = { bold: true, size: 12, color: { argb: "44546A" } };
-			criteriaHeader.alignment = { horizontal: "left" };
-			for (let i = 2; i <= dataColumnsCount; i++) {
-				criteriaHeader.getCell(i).fill = {
-					type: "pattern",
-					pattern: "solid",
-					fgColor: { argb: "D9E1F2" },
-				};
-			}
-			worksheet.mergeCells(currentRow, 2, currentRow, dataColumnsCount);
-			currentRow++;
-
-			// --- Search Criteria Values ---
-			Object.entries(exportSearchParams).forEach(([key, value]) => {
-				if (value !== undefined && value !== null && value !== "") {
-					const displayKey = t(key, { defaultValue: key });
-					const paramRow = worksheet.addRow([]);
-					paramRow.getCell(2).value = `${displayKey}: ${value}`;
-					paramRow.alignment = { horizontal: "left" };
-					for (let i = 2; i <= dataColumnsCount; i++) {
-						paramRow.getCell(i).fill = {
-							type: "pattern",
-							pattern: "solid",
-							fgColor: { argb: "FFFFFF" },
-						};
-					}
-					worksheet.mergeCells(currentRow, 2, currentRow, dataColumnsCount);
-					currentRow++;
-				}
+			/** ======= TITLE & META ======= */
+			worksheet.mergeCells(1, 1, 1, dataColumnsCount);
+			worksheet.getCell(1, 1).value = t("organization_name");
+			Object.assign(worksheet.getCell(1, 1), {
+				font: { bold: true, size: 16, color: { argb: "1F4E78" } },
+				alignment: { horizontal: "center" },
 			});
 
-			// --- Bullet Points ---
-			for (let i = 6; i < currentRow; i++) {
-				const row = worksheet.getRow(i);
-				row.font = { size: 11 };
-				const cell = row.getCell(2);
-				if (cell.value) {
-					cell.value = `• ${cell.value}`;
-				}
-			}
+			worksheet.mergeCells(2, 1, 2, dataColumnsCount);
+			worksheet.getCell(2, 1).value = `${tableName} ${t("report")}`;
+			Object.assign(worksheet.getCell(2, 1), {
+				font: { bold: true, size: 14, color: { argb: "2F5496" } },
+				alignment: { horizontal: "center" },
+			});
 
-			worksheet.addRow([]);
-			currentRow++;
+			worksheet.mergeCells(3, 1, 3, dataColumnsCount);
+			worksheet.getCell(3, 1).value = `${t("generated_on")}: ${currentDate}`;
+			Object.assign(worksheet.getCell(3, 1), {
+				font: { italic: true, size: 10 },
+				alignment: { horizontal: "center" },
+			});
+
+			worksheet.addRow([]); // Blank line
+
+			/** ======= SEARCH PARAMS ======= */
+			let currentRow = 5;
+			if (Object.keys(exportSearchParams).length > 0) {
+				const headerRow = worksheet.addRow([]);
+				headerRow.getCell(1).value = t("search_criteria");
+				worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
+				Object.assign(headerRow.getCell(1), {
+					font: { bold: true, size: 12, color: { argb: "44546A" } },
+					alignment: { horizontal: "left" },
+					fill: {
+						type: "pattern",
+						pattern: "solid",
+						fgColor: { argb: SEARCH_PARAM_BG },
+					},
+				});
+				currentRow++;
+
+				Object.entries(exportSearchParams).forEach(([k, v]) => {
+					if (v !== undefined && v !== null && v !== "") {
+						const row = worksheet.addRow([]);
+						row.getCell(1).value = `• ${t(k)}: ${v}`;
+						worksheet.mergeCells(row.number, 1, row.number, dataColumnsCount);
+						row.alignment = { horizontal: "left" };
+						currentRow++;
+					}
+				});
+				worksheet.addRow([]); // Blank line after search params
+				currentRow = worksheet.lastRow.number + 1;
+			}
 
 			// --- Data Summary Header ---
 			const dataHeader = worksheet.addRow([]);
-			dataHeader.getCell(2).value = t("data_summary");
+			dataHeader.getCell(1).value = t("data_summary"); // Fixed from 2 to 1
 			dataHeader.font = { bold: true, size: 12, color: { argb: "44546A" } };
 			dataHeader.alignment = { horizontal: "left" };
-			for (let i = 2; i <= dataColumnsCount; i++) {
+			for (let i = 1; i <= dataColumnsCount; i++) {
+				// Changed from i=2 to i=1
 				dataHeader.getCell(i).fill = {
 					type: "pattern",
 					pattern: "solid",
 					fgColor: { argb: "E2EFDA" },
 				};
 			}
-			worksheet.mergeCells(currentRow, 2, currentRow, dataColumnsCount);
+			worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount); // Fixed from 2 to 1
 			currentRow++;
 
 			// --- Total Records Row ---
 			const countRow = worksheet.addRow([]);
-			countRow.getCell(2).value = `${t("total_records")}: ${tableData.length}`;
+			countRow.getCell(1).value = `${t("total_records")}: ${tableData.length}`;
 			countRow.font = { bold: true };
 			countRow.alignment = { horizontal: "left" };
-			worksheet.mergeCells(currentRow, 2, currentRow, dataColumnsCount);
+			worksheet.mergeCells(currentRow, 1, currentRow, dataColumnsCount);
 			currentRow++;
 
 			worksheet.addRow([]);
 			currentRow++;
-		} else {
-			currentRow = 5;
-		}
 
-		const headerLabels = [t("SN"), ...exportColumns.map((col) => t(col.label))];
-		const headerRow = worksheet.addRow(headerLabels);
-		headerRow.font = { bold: true, size: 12, color: { argb: "FFFFFF" } };
+			/** ======= HEADER ROWS ======= */
+			const headerRows = buildHeaderRows(exportColumns);
+			const headerStartRow = currentRow;
 
-		for (let i = 1; i <= dataColumnsCount; i++) {
-			const cell = headerRow.getCell(i);
-			cell.fill = {
-				type: "pattern",
-				pattern: "solid",
-				fgColor: { argb: "4472C4" },
-			};
-			cell.alignment = { vertical: "middle", horizontal: "center" };
-			cell.border = {
-				top: { style: "thin", color: { argb: "000000" } },
-				left: { style: "thin", color: { argb: "000000" } },
-				bottom: { style: "thin", color: { argb: "000000" } },
-				right: { style: "thin", color: { argb: "000000" } },
-			};
-		}
+			// Pre-create rows to avoid "A Cell needs a Row" error during merge styling
+			for (let i = 0; i < headerRows.length; i++) {
+				worksheet.getRow(headerStartRow + i) || worksheet.addRow({});
+			}
 
-		tableData.forEach((row, index) => {
-			const rowData = [
-				index + 1,
-				...exportColumns.map((col) => {
-					const rawValue = row[col.key];
-
-					if (col.type === "number") {
-						const cleaned = rawValue?.toString().replace(/,/g, "");
-						const num = parseFloat(cleaned);
-						return !isNaN(num) ? num : null;
-					}
-
-					if (col.type === "percentage") {
-						const numericPart = rawValue?.toString().replace("%", "").trim();
-						const percent = parseFloat(numericPart);
-						return !isNaN(percent) ? percent / 100 : null;
-					}
-
-					return col.format ? col.format(rawValue, row) : (rawValue ?? "");
-				}),
-			];
-
-			const addedRow = worksheet.addRow(rowData);
-			const rowColor = index % 2 === 0 ? "D9E1F2" : "FFFFFF";
-
-			for (let i = 1; i <= dataColumnsCount; i++) {
-				const cell = addedRow.getCell(i);
+			// Utility function for applying header styles
+			const applyHeaderStyle = (cell) => {
+				cell.font = {
+					bold: true,
+					size: 12,
+					color: { argb: HEADER_FONT_COLOR },
+				};
 				cell.fill = {
 					type: "pattern",
 					pattern: "solid",
-					fgColor: { argb: rowColor },
+					fgColor: { argb: HEADER_BG },
 				};
-
+				cell.alignment = { vertical: "middle", horizontal: "center" };
 				cell.border = {
-					top: { style: "thin", color: { argb: "B4C6E7" } },
-					left: { style: "thin", color: { argb: "B4C6E7" } },
-					bottom: { style: "thin", color: { argb: "B4C6E7" } },
-					right: { style: "thin", color: { argb: "B4C6E7" } },
+					top: { style: "thin" },
+					left: { style: "thin" },
+					bottom: { style: "thin" },
+					right: { style: "thin" },
 				};
+			};
 
-				if (i === 1) {
-					cell.alignment = { horizontal: "center" };
-					continue;
-				}
+			// Create header cells and apply merging/styling
+			headerRows.forEach((row, rowIndex) => {
+				const excelRowNumber = headerStartRow + rowIndex;
 
-				const col = exportColumns[i - 2];
-				if (col && col.type === "number") {
-					cell.numFmt = "#,##0.00";
-					cell.alignment = { horizontal: "right" };
-				}
+				row.forEach((headerCell) => {
+					const startRow = excelRowNumber;
+					const startCol = headerCell.colStart;
+					const isMerged = headerCell.colSpan > 1 || headerCell.rowSpan > 1;
 
-				if (col && col.type === "percentage") {
-					cell.numFmt = "0.00%";
-					cell.alignment = { horizontal: "right" };
-				}
-			}
-		});
+					const cell = worksheet.getCell(startRow, startCol);
 
-		worksheet.addRow([]);
+					// Set value only if it's NOT a placeholder
+					if (!headerCell.isPlaceholder) {
+						cell.value = headerCell.label;
+					}
+					applyHeaderStyle(cell);
 
-		const numericColumns = exportColumns.filter((col) => col.type === "number");
-		if (numericColumns.length > 0) {
-			const totals = [
-				t("total"),
-				...exportColumns.map((col) => {
-					if (col.type === "number") {
-						let total = 0;
-						for (let i = 0; i < tableData.length; i++) {
-							const rawValue = tableData[i][col.key];
-							if (rawValue !== undefined && rawValue !== null) {
-								const cleaned = rawValue.toString().replace(/,/g, "");
-								const num = parseFloat(cleaned);
-								if (!isNaN(num)) {
-									total += num;
+					// Handle merging
+					if (isMerged) {
+						const endRow = startRow + headerCell.rowSpan - 1;
+						const endCol = startCol + headerCell.colSpan - 1;
+
+						worksheet.mergeCells(startRow, startCol, endRow, endCol);
+
+						// Style all merged cells
+						for (let r = startRow; r <= endRow; r++) {
+							for (let c = startCol; c <= endCol; c++) {
+								const mergedCell = worksheet.getCell(r, c);
+
+								// Only apply styling to non-anchor cells
+								if (r !== startRow || c !== startCol) {
+									applyHeaderStyle(mergedCell);
 								}
 							}
 						}
-						return total;
-					}
-					return "";
-				}),
-			];
-
-			const totalsRow = worksheet.addRow(totals);
-			totalsRow.font = { bold: true };
-
-			for (let i = 1; i <= dataColumnsCount; i++) {
-				totalsRow.getCell(i).fill = {
-					type: "pattern",
-					pattern: "solid",
-					fgColor: { argb: "FCE4D6" },
-				};
-			}
-
-			exportColumns.forEach((col, colIdx) => {
-				if (col.type === "number") {
-					const cell = totalsRow.getCell(colIdx + 2);
-					cell.numFmt = "#,##0.00";
-					cell.alignment = { horizontal: "right" };
-				}
-			});
-		}
-
-		worksheet.addRow([]);
-		const preparedByRow = worksheet.addRow([
-			`${t("prepared_by")}: ________________________`,
-			"",
-		]);
-		preparedByRow.font = { italic: true };
-		preparedByRow.alignment = { horizontal: "left" };
-		const preparedByEndCol = Math.floor(dataColumnsCount / 2);
-		if (preparedByEndCol > 1) {
-			worksheet.mergeCells(
-				preparedByRow.number,
-				1,
-				preparedByRow.number,
-				preparedByEndCol
-			);
-		}
-
-		const approvedByRow = worksheet.addRow([
-			`${t("approved_by")}: ________________________`,
-			"",
-		]);
-		approvedByRow.font = { italic: true };
-		approvedByRow.alignment = { horizontal: "left" };
-		const approvedByEndCol = Math.floor(dataColumnsCount / 2);
-		if (approvedByEndCol > 1) {
-			worksheet.mergeCells(
-				approvedByRow.number,
-				1,
-				approvedByRow.number,
-				approvedByEndCol
-			);
-		}
-
-		const confidentialRow = worksheet.addRow([t("confidential_notice")]);
-		confidentialRow.font = { italic: true, size: 9, color: { argb: "FF0000" } };
-		confidentialRow.alignment = { horizontal: "center" };
-		worksheet.mergeCells(
-			confidentialRow.number,
-			1,
-			confidentialRow.number,
-			dataColumnsCount
-		);
-
-		const snColumn = worksheet.getColumn(1);
-		snColumn.width = 8;
-		snColumn.alignment = { horizontal: "center" };
-
-		exportColumns.forEach((col, idx) => {
-			const column = worksheet.getColumn(idx + 2);
-
-			if (col.width) {
-				column.width = col.width;
-			} else {
-				const headerWidth = col.label.length * 1.5;
-				let maxDataWidth = 0;
-
-				tableData.forEach((row) => {
-					const value = row[col.key];
-					if (value !== null && value !== undefined) {
-						const strValue = String(value);
-						maxDataWidth = Math.max(maxDataWidth, strValue.length);
 					}
 				});
+			});
 
-				column.width = Math.min(
-					50,
-					Math.max(15, Math.max(headerWidth, maxDataWidth) + 2)
-				);
+			// Re-anchor currentRow after headers
+			currentRow = worksheet.lastRow.number + 1;
+
+			// Re-anchor currentRow after headers
+			currentRow = worksheet.lastRow.number + 1;
+
+			/** ======= DATA ROWS ======= */
+			tableData.forEach((row, idx) => {
+				const rowData = [
+					idx + 1,
+					...leafColumns.map((col) => {
+						const val = row[col.key];
+
+						// Handle numeric/percentage types
+						if (col.type === "number") {
+							const num = parseFloat(val?.toString().replace(/,/g, "") || 0);
+							return isNaN(num) ? null : num;
+						}
+						if (col.type === "percentage") {
+							const pct = parseFloat(val?.toString().replace(/%/g, "") || 0);
+							return isNaN(pct) ? null : pct / 100;
+						}
+
+						return col.format ? col.format(val, row) : (val ?? "");
+					}),
+				];
+
+				const excelRow = worksheet.addRow(rowData);
+				const rowColor = idx % 2 === 0 ? ROW_COLOR_1 : ROW_COLOR_2;
+
+				// Apply styling to ALL cells in the data row
+				excelRow.eachCell((cell, colNumber) => {
+					cell.fill = {
+						type: "pattern",
+						pattern: "solid",
+						fgColor: { argb: rowColor },
+					};
+					cell.border = {
+						top: { style: "thin", color: { argb: BORDER_COLOR } },
+						left: { style: "thin", color: { argb: BORDER_COLOR } },
+						bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+						right: { style: "thin", color: { argb: BORDER_COLOR } },
+					};
+
+					if (colNumber === 1) cell.alignment = { horizontal: "center" };
+
+					const col = leafColumns[colNumber - 2];
+					if (col?.type === "number") {
+						cell.numFmt = "#,##0.00";
+						cell.alignment = { horizontal: "right" };
+					} else if (col?.type === "percentage") {
+						cell.numFmt = "0.00%";
+						cell.alignment = { horizontal: "right" };
+					}
+				});
+			});
+
+			/** ======= TOTALS ======= */
+			const numericCols = leafColumns.filter((c) => c.type === "number");
+			if (numericCols.length) {
+				const totals = [
+					t("total"),
+					...leafColumns.map((col) => {
+						if (col.type === "number") {
+							return tableData.reduce((sum, r) => {
+								const num = parseFloat(
+									r[col.key]?.toString().replace(/,/g, "") || 0
+								);
+								return isNaN(num) ? sum : sum + num;
+							}, 0);
+						}
+						return "";
+					}),
+				];
+				const totalsRow = worksheet.addRow(totals);
+				totalsRow.font = { bold: true };
+				totalsRow.eachCell((cell, colNumber) => {
+					cell.fill = {
+						type: "pattern",
+						pattern: "solid",
+						fgColor: { argb: "FCE4D6" },
+					};
+					cell.border = {
+						top: { style: "thin", color: { argb: BORDER_COLOR } },
+						left: { style: "thin", color: { argb: BORDER_COLOR } },
+						bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+						right: { style: "thin", color: { argb: BORDER_COLOR } },
+					};
+
+					if (colNumber > 1 && leafColumns[colNumber - 2]?.type === "number") {
+						cell.numFmt = "#,##0.00";
+						cell.alignment = { horizontal: "right" };
+					}
+				});
 			}
-		});
 
-		const buffer = await workbook.xlsx.writeBuffer();
-		const blob = new Blob([buffer], {
-			type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-		});
-		const fileName = tableName || "Table";
-		saveAs(blob, `${tableName}_Report_${dateStr.replace(/\//g, "-")}.xlsx`);
+			/** ======= FOOTER ======= */
+			worksheet.addRow([]);
+			worksheet.addRow([`${t("prepared_by")}: ________________________`]);
+			worksheet.addRow([`${t("approved_by")}: ________________________`]);
+			const confRow = worksheet.addRow([t("confidential_notice")]);
+			worksheet.mergeCells(confRow.number, 1, confRow.number, dataColumnsCount);
+			Object.assign(confRow.getCell(1), {
+				alignment: { horizontal: "center" },
+				font: { italic: true, size: 9, color: { argb: "FF0000" } },
+			});
+
+			/** ======= COLUMN WIDTHS ======= */
+			worksheet.getColumn(1).width = 8;
+			leafColumns.forEach((col, i) => {
+				const column = worksheet.getColumn(i + 2);
+				column.width =
+					col.width || Math.max(15, (t(col.label).length || 15) * 1.5);
+			});
+
+			/** ======= SAVE FILE ======= */
+			const buffer = await workbook.xlsx.writeBuffer();
+			const blob = new Blob([buffer], {
+				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			});
+			saveAs(blob, `${tableName}_Report_${dateStr}.xlsx`);
+		} catch (error) {
+			console.error("Error during Excel export:", error);
+		}
 	};
 
+	/** =====================
+	 * Render
+	 * ===================== */
 	if (dropdownItem) {
 		return (
-			<DropdownItem
-				onClick={handleExportToExcel}
-				disabled={!tableData || tableData.length === 0}
-			>
+			<DropdownItem onClick={handleExportToExcel} disabled={!tableData?.length}>
 				<FaFileExcel className="me-1" />
 				{t("exportToExcel")}
 			</DropdownItem>
@@ -337,13 +428,17 @@ const ExportToExcel = ({
 	}
 
 	return (
-		<button
-			className="btn btn-soft-primary"
+		<Button
+			color="success"
+			className="btn btn-soft-success mb-2"
 			onClick={handleExportToExcel}
-			disabled={!tableData || tableData.length === 0}
+			disabled={
+				!tableData || !Array.isArray(tableData) || tableData.length === 0
+			}
 		>
+			<FaFileExcel className="me-1" />
 			{t("exportToExcel")}
-		</button>
+		</Button>
 	);
 };
 

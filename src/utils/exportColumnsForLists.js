@@ -58,7 +58,7 @@ export const useUserExportColumns = () => {
 };
 
 export const monitoringExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "mne_physical_region",
@@ -103,7 +103,7 @@ export const monitoringExportColumns = [
 
 export const ProjectPlanExportColumns = [
 	{ key: "pld_name", label: "pld_name" },
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "pld_start_date_gc", label: "pld_start_date_gc" },
 	{ key: "pld_end_date_gc", label: "pld_end_date_gc" },
@@ -113,10 +113,12 @@ export const citizenshipProjectExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
 		label: "prj_code",
+		width: 40
 	},
 	{
 		key: "zone_name",
@@ -143,10 +145,12 @@ export const projectExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
 		label: "prj_code",
+		width: 40
 	},
 	{
 		key: "zone_name",
@@ -172,8 +176,8 @@ export const projectExportColumns = [
 
 export const budgetRequestExportColumns = [
 	{ key: "bdy_name", label: "bdy_name" },
-	{ key: "prj_name", label: "prj_name" },
-	{ key: "prj_code", label: "prj_code" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
+	{ key: "prj_code", label: "prj_code", width: 40 },
 	{
 		key: "status_name",
 		label: "bdr_request_status",
@@ -202,7 +206,7 @@ export const budgetRequestExportColumns = [
 
 export const approverBdrExportColumns = [
 	{ key: "bdy_name", label: "bdy_name" },
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "status_name",
@@ -234,6 +238,7 @@ export const projectPaymentExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
@@ -263,7 +268,7 @@ export const projectPerformanceExportColumns = [
 		label: "prp_budget_year_id",
 		format: (val, row) => row.year_name || "-",
 	},
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "prp_record_date_gc", label: "prp_record_date_gc" },
 
@@ -399,7 +404,7 @@ function sumMonthlyValues(row, months, prefix) {
 }
 
 export const projectBudgetExpenditureExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "pbe_budget_code", label: "pbe_budget_code" },
 	{ key: "pbe_budget_year", label: "pbe_budget_year" },
@@ -419,7 +424,7 @@ export const projectBudgetExpenditureExportColumns = [
 ];
 
 export const projectEmployeeExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "emp_id_no", label: "emp_id_no" },
 	{ key: "emp_full_name", label: "emp_full_name" },
@@ -430,7 +435,7 @@ export const projectEmployeeExportColumns = [
 ];
 
 export const projectContractorExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	// prj_code is hidden in the original, so we exclude it from exports too
 	{ key: "cni_name", label: "cni_name" },
 	{ key: "cni_contractor_type", label: "cni_contractor_type" },
@@ -449,7 +454,7 @@ export const projectContractorExportColumns = [
 ];
 
 export const projectBudgetPlanExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "bpl_budget_year", label: "bpl_budget_year" },
 	{ key: "bpl_budget_code", label: "bpl_budget_code" },
@@ -462,7 +467,7 @@ export const projectBudgetPlanExportColumns = [
 ];
 
 export const projectStakeholderExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "psh_name", label: "psh_name" },
 	{ key: "psh_stakeholder_type", label: "psh_stakeholder_type" },
@@ -472,14 +477,14 @@ export const projectStakeholderExportColumns = [
 ];
 
 export const projectHandoverExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "prh_handover_date_gc", label: "prh_handover_date_gc" },
 	{ key: "prh_description", label: "prh_description" },
 ];
 
 export const procurementExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "pri_total_procurement_amount",
