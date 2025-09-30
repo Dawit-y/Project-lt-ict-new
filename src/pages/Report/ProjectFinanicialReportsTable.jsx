@@ -85,7 +85,6 @@ const FinancialProjectsTable = ({
 				label: t("Project Code"),
 				visible: true,
 				minWidth: 80,
-				sticky: true,
 			},
 			{
 				id: "prj_location_description",
@@ -620,7 +619,6 @@ const FinancialProjectsTable = ({
 				{!hiddenColumns.includes("prj_code") && row.showMergedCells && (
 					<td
 						rowSpan={row.commonValues.rowSpan}
-						className="sticky-column"
 						style={{ left: 150 }}
 						data-column="prj_code"
 					>
@@ -971,7 +969,6 @@ const FinancialProjectsTable = ({
 								<th
 									rowSpan={3}
 									data-column="prj_code"
-									className="sticky-header"
 								>
 									{t("Project Code")}
 								</th>
