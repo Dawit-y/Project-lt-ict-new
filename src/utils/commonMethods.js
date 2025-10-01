@@ -235,3 +235,14 @@ export function formatLargeNumber(num) {
 
   return number.toString();
 }
+
+export function transformTableName(name) {
+	if (!name || typeof name !== "string") return "report";
+
+	return name
+		.trim()
+		.replace(/\s+/g, "_")
+		.replace(/[^a-zA-Z0-9_]/g, "")
+		.replace(/_+/g, "_")
+		.toLowerCase();
+}

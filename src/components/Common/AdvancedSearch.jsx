@@ -38,6 +38,7 @@ const AdvancedSearch = forwardRef(
 			additionalParams,
 			setAdditionalParams,
 			onSearchResult,
+			onSearchLabels,
 			setIsSearchLoading,
 			setSearchResults,
 			setShowSearchResult,
@@ -51,7 +52,6 @@ const AdvancedSearch = forwardRef(
 		const [params, setParams] = useState({});
 		const [searchParams, setSearchParams] = useState({});
 		const [paramsWithLabels, setParamsWithLabels] = useState({});
-		const [searchParamsWithLabels, setSearchParamsWithLabels] = useState({});
 
 		const { userId } = useAuthUser();
 		const { regions, zones, woredas } = useFetchAddressStructures(userId);
@@ -198,7 +198,7 @@ const AdvancedSearch = forwardRef(
 
 			// Update states
 			setSearchParams(combinedParams);
-			setSearchParamsWithLabels(combinedParamsLabels);
+			onSearchLabels(combinedParamsLabels)
 		};
 
 		// Refetch whenever searchParams changes
@@ -238,7 +238,6 @@ const AdvancedSearch = forwardRef(
 			setParams({});
 			setSearchParams({});
 			setParamsWithLabels({});
-			setSearchParamsWithLabels({});
 			setSearchResults([]);
 			setShowSearchResult(false);
 			validation.resetForm();
@@ -273,9 +272,6 @@ const AdvancedSearch = forwardRef(
 
 		// Expose method to get search values
 		useImperativeHandle(ref, () => ({
-			getSearchLabels: () => {
-				return searchParamsWithLabels;
-			},
 			refreshSearch: async () => refetch(),
 		}));
 

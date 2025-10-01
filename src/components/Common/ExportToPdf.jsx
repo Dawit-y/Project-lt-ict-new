@@ -5,6 +5,7 @@ import "../../assets/fonts/NotoSansEthiopic-Bold-normal";
 import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
 import { FaFilePdf } from "react-icons/fa";
+import { transformTableName } from "../../utils/commonMethods";
 
 const COLORS = {
 	primary: [31, 78, 120], // Dark blue: #1F4E78
@@ -387,7 +388,8 @@ const ExportToPDF = ({
 
 		// Save the PDF
 		const dateStr = new Date().toLocaleDateString().replace(/\//g, "-");
-		doc.save(`${tableName}_Report_${dateStr}.pdf`);
+		const safeTableName = transformTableName(tableName);
+		doc.save(`${safeTableName}_report_${dateStr}.pdf`);
 	};
 
 	if (dropdownItem) {

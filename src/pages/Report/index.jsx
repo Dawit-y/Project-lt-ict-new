@@ -35,6 +35,7 @@ import { useTranslation } from "react-i18next";
 
 const Report = () => {
 	const { t } = useTranslation();
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	// Data hooks
 	const { data: budgetYearData } = useFetchBudgetYears();
@@ -323,164 +324,172 @@ const Report = () => {
 		setIsLoading(false);
 	};
 
-	const handleNodeSelect = (node) => {
-		if (node.level === "region") {
-			setLocationRegionId(node.id);
-			setLocationZoneId(null);
-			setLocationWoredaId(null);
-		} else if (node.level === "zone") {
-			setLocationZoneId(node.id);
-			setLocationWoredaId(null);
-		} else if (node.level === "woreda") {
-			setLocationWoredaId(node.id);
-		}
-		setShowSearchResult(false);
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
 	};
 
-	// Table components mapping
-	const tableComponents = {
-		1: Greenbook,
-		2: ProjectEmployeeReportsTable,
-		3: ProjectsBudgetPlanTable,
-		4: ProjectsBudgetExpenditureTable,
-		5: ProjectsBudgetSourceTable,
-		6: ProjectsContractorTable,
-		7: ProjectsPaymentTable,
-		8: FinancialProjectsTable,
-		9: FinancialProjectsTable2,
-		10: FinancialProjectsTable3,
-		11: ProjectPhysicalPerformanceReportsTable,
-		12: ProjectFinancialPerformanceReportsTable,
-		13: ProjectPlanTable,
-	};
-
-	// Render appropriate table based on report type
-	const renderTable = () => {
-		if (!currentConfig || !showSearchResult || searchResults.length === 0) {
-			return null;
-		}
-
-		const TableComponent = tableComponents[currentConfig.reportTypeIndex];
-		if (!TableComponent) return null;
-
-		const commonProps = {
-			data: searchResults,
-			isGlobalFilter: true,
-			SearchPlaceholder: t("filter_placeholder"),
-			buttonClass:
-				"btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal",
-			tableClass:
-				"align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
-			theadClass: "table-light",
-			t,
+		const handleNodeSelect = (node) => {
+			if (node.level === "region") {
+				setLocationRegionId(node.id);
+				setLocationZoneId(null);
+				setLocationWoredaId(null);
+			} else if (node.level === "zone") {
+				setLocationZoneId(node.id);
+				setLocationWoredaId(null);
+			} else if (node.level === "woreda") {
+				setLocationWoredaId(node.id);
+			}
+			setShowSearchResult(false);
 		};
 
-		return <TableComponent {...commonProps} />;
-	};
+		// Table components mapping
+		const tableComponents = {
+			1: Greenbook,
+			2: ProjectEmployeeReportsTable,
+			3: ProjectsBudgetPlanTable,
+			4: ProjectsBudgetExpenditureTable,
+			5: ProjectsBudgetSourceTable,
+			6: ProjectsContractorTable,
+			7: ProjectsPaymentTable,
+			8: FinancialProjectsTable,
+			9: FinancialProjectsTable2,
+			10: FinancialProjectsTable3,
+			11: ProjectPhysicalPerformanceReportsTable,
+			12: ProjectFinancialPerformanceReportsTable,
+			13: ProjectPlanTable,
+		};
 
-	// Endpoint options
-	const endpointOptions = Object.keys(endpointConfigs).map((key) => ({
-		name: key,
-	}));
+		// Render appropriate table based on report type
+		const renderTable = () => {
+			if (!currentConfig || !showSearchResult || searchResults.length === 0) {
+				return null;
+			}
 
-	return (
-		<div className="page-content">
-			<Breadcrumbs
-				title={t("Report")}
-				breadcrumbItem={t("Statistical Report")}
-			/>
-			<div className="w-100 d-flex gap-2">
-				<TreeForLists
-					onNodeSelect={handleNodeSelect}
-					isCollapsed={isCollapsed}
-					setIsCollapsed={setIsCollapsed}
-					widthInPercent={15}
+			const TableComponent = tableComponents[currentConfig.reportTypeIndex];
+			if (!TableComponent) return null;
+
+			const commonProps = {
+				data: searchResults,
+				exportSearchParams,
+				isGlobalFilter: true,
+				SearchPlaceholder: t("filter_placeholder"),
+				buttonClass:
+					"btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal",
+				tableClass:
+					"align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
+				theadClass: "table-light",
+				t,
+			};
+
+			return <TableComponent {...commonProps} />;
+		};
+
+		// Endpoint options
+		const endpointOptions = Object.keys(endpointConfigs).map((key) => ({
+			name: key,
+		}));
+
+		return (
+			<div className="page-content">
+				<Breadcrumbs
+					title={t("Report")}
+					breadcrumbItem={t("Statistical Report")}
 				/>
-				<div
-					style={{
-						flex: "1 1 0",
-						display: "flex",
-						flexDirection: "column",
-						overflow: "hidden",
-					}}
-				>
+				<div className="w-100 d-flex gap-2">
+					<TreeForLists
+						onNodeSelect={handleNodeSelect}
+						isCollapsed={isCollapsed}
+						setIsCollapsed={setIsCollapsed}
+						widthInPercent={15}
+					/>
 					<div
 						style={{
-							flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
-							transition: "all 0.3s ease",
+							flex: "1 1 0",
+							display: "flex",
+							flexDirection: "column",
+							overflow: "hidden",
 						}}
 					>
-						<Row className="">
-							<Col xs={2} sm={2} md={2} lg={2} xl={2}>
-								<Card className="p-0 m-0 mb-3 shadow-none">
-									<CardBody className="p-2">
-										<Input
-											type="select"
-											name="endpoint"
-											id="api-endpoints"
-											value={selectedEndpoint}
-											onChange={handleSelectionChange}
-											className="mb-2 mt-1"
-										>
-											<option value="">{t("select_stat")}</option>
-											{endpointOptions.map((endpoint, index) => (
-												<option key={index} value={endpoint.name}>
-													{t(endpoint.name)}
-												</option>
-											))}
-										</Input>
-									</CardBody>
-								</Card>
-							</Col>
-							<Col xs={10} sm={10} md={10} lg={10} xl={10}>
-								{selectedEndpoint && (
-									<AdvancedSearch
-										key={selectedEndpoint}
-										searchHook={useSearchReport}
-										textSearchKeys={currentConfig?.textKeys || []}
-										dateSearchKeys={currentConfig?.dateKeys || []}
-										dropdownSearchKeys={currentConfig?.dropdownSearchKeys || []}
-										checkboxSearchKeys={[]}
-										additionalParams={searchParams}
-										onSearchResult={handleSearchResults}
-										setIsSearchLoading={setIsLoading}
-										setSearchResults={setSearchResults}
-										setShowSearchResult={setShowSearchResult}
-									/>
+						<div
+							style={{
+								flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
+								transition: "all 0.3s ease",
+							}}
+						>
+							<Row className="">
+								<Col xs={2} sm={2} md={2} lg={2} xl={2}>
+									<Card className="p-0 m-0 mb-3 shadow-none">
+										<CardBody className="p-2">
+											<Input
+												type="select"
+												name="endpoint"
+												id="api-endpoints"
+												value={selectedEndpoint}
+												onChange={handleSelectionChange}
+												className="mb-2 mt-1"
+											>
+												<option value="">{t("select_stat")}</option>
+												{endpointOptions.map((endpoint, index) => (
+													<option key={index} value={endpoint.name}>
+														{t(endpoint.name)}
+													</option>
+												))}
+											</Input>
+										</CardBody>
+									</Card>
+								</Col>
+								<Col xs={10} sm={10} md={10} lg={10} xl={10}>
+									{selectedEndpoint && (
+										<AdvancedSearch
+											key={selectedEndpoint}
+											searchHook={useSearchReport}
+											textSearchKeys={currentConfig?.textKeys || []}
+											dateSearchKeys={currentConfig?.dateKeys || []}
+											dropdownSearchKeys={
+												currentConfig?.dropdownSearchKeys || []
+											}
+											checkboxSearchKeys={[]}
+											additionalParams={searchParams}
+											onSearchResult={handleSearchResults}
+											onSearchLabels={handleSearchLabels}
+											setIsSearchLoading={setIsLoading}
+											setSearchResults={setSearchResults}
+											setShowSearchResult={setShowSearchResult}
+										/>
+									)}
+								</Col>
+							</Row>
+							<Col xs="12">
+								{isLoading ? (
+									<div className="d-flex justify-content-center">
+										<Spinner color="primary" />
+									</div>
+								) : (
+									<>
+										{showSearchResult && searchResults.length > 0 && (
+											<Card>
+												<CardBody style={{ padding: "10px" }}>
+													{renderTable()}
+												</CardBody>
+											</Card>
+										)}
+										{showSearchResult && searchResults.length === 0 && (
+											<div className="w-100 text-center">
+												<p className="mt-5">
+													{t(
+														"No data available for the selected endpoint please select related Address Structure and click Search button."
+													)}
+												</p>
+											</div>
+										)}
+									</>
 								)}
 							</Col>
-						</Row>
-						<Col xs="12">
-							{isLoading ? (
-								<div className="d-flex justify-content-center">
-									<Spinner color="primary" />
-								</div>
-							) : (
-								<>
-									{showSearchResult && searchResults.length > 0 && (
-										<Card>
-											<CardBody style={{ padding: "10px" }}>
-												{renderTable()}
-											</CardBody>
-										</Card>
-									)}
-									{showSearchResult && searchResults.length === 0 && (
-										<div className="w-100 text-center">
-											<p className="mt-5">
-												{t(
-													"No data available for the selected endpoint please select related Address Structure and click Search button."
-												)}
-											</p>
-										</div>
-									)}
-								</>
-							)}
-						</Col>
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	);
+		);
 };
 
 export default Report;

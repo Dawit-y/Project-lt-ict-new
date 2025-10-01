@@ -136,29 +136,18 @@ const ProjectList = () => {
 		]
 	);
 
-	const handleSearch = useCallback(({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	}, []);
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setShowSearchResult(true);
+		},
+		[setSearchResults, setShowSearchResult]
+	);
 
-	// Function to get search parameters from AdvancedSearch
-	const getSearchParams = useCallback(() => {
-		if (advancedSearchRef.current) {
-			return advancedSearchRef.current.getSearchLabels
-				? advancedSearchRef.current.getSearchLabels()
-				: {};
-		}
-		return {};
-	}, []);
-
-	// Update export search params whenever search is performed
-	useEffect(() => {
-		if (showSearchResult) {
-			const searchValues = getSearchParams();
-			setExportSearchParams(searchValues);
-		}
-	}, [showSearchResult, getSearchParams]);
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
 
 	// Modal handlers
 	const toggleEditModal = () => {
@@ -420,8 +409,9 @@ const ProjectList = () => {
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
-								setSearchResults={handleSearch}
+								setSearchResults={setSearchResults}
 								onSearchResult={handleSearch}
+								onSearchLabels={handleSearchLabels}
 								setShowSearchResult={setShowSearchResult}
 								setIsSearchLoading={setIsSearchLoading}
 								params={params}

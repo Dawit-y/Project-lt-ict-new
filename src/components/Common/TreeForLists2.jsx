@@ -140,7 +140,7 @@ const TreeForLists = ({
 					<h5>{t("address_tree_Search")}</h5>
 				)}
 				<hr />
-				<p className="text-center">
+				<div className="text-center">
 					{isLoading ? (
 						<Spinner size={"sm"} color="primary" />
 					) : (
@@ -148,7 +148,7 @@ const TreeForLists = ({
 							<FetchErrorHandler error={error} refetch={refetch} onTree />
 						</div>
 					)}
-				</p>
+				</div>
 			</div>
 		);
 	}

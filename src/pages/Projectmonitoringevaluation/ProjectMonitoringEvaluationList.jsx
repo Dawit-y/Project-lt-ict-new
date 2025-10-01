@@ -49,21 +49,25 @@ const ProjectMonitoringEvaluationList = () => {
   const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
   const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
   const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const [selectedEvaluation, setSelectedEvaluation] = useState(null);
-  const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
-  const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
+	const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
+	const [selectedRequest, setSelectedRequest] = useState(null);
+	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
-  const handleSelectedData = (rowData) => {
-    setSelectedRequest(rowData);
-  };
+	const handleSelectedData = (rowData) => {
+		setSelectedRequest(rowData);
+	};
 
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
 
   useEffect(() => {
     setProjectParams({
@@ -240,129 +244,133 @@ const ProjectMonitoringEvaluationList = () => {
   ];
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <div>
-          <Breadcrumbs />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-            />
-            <SearchTableContainer isCollapsed={isCollapsed}>
-              <AdvancedSearch
-                searchHook={useSearchProjectMonitoringEvaluations}
-                textSearchKeys={["prj_name"]}
-                dropdownSearchKeys={[]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                setIsSearchLoading={setIsSearchLoading}
-                setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}
-              >
-                <TableWrapper
-                  columnDefs={columnDefs}
-                  showSearchResult={showSearchResult}
-                  selectedRequest={selectedRequest}
-                  singleAnalysisModal={singleAnalysisModal}
-                  totalAnalysisModal={totalAnalysisModal}
-                  toggleSingleAnalysisModal={toggleSingleAnalysisModal}
-                  toggleTotalAnalysisModal={toggleTotalAnalysisModal}
-                  handleSelectedData={handleSelectedData}
-                />
-              </AdvancedSearch>
-            </SearchTableContainer>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<div className="page-content">
+				<div>
+					<Breadcrumbs />
+					<div className="w-100 d-flex gap-2">
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
+						<SearchTableContainer isCollapsed={isCollapsed}>
+							<AdvancedSearch
+								searchHook={useSearchProjectMonitoringEvaluations}
+								textSearchKeys={["prj_name"]}
+								dropdownSearchKeys={[]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
+								setIsSearchLoading={setIsSearchLoading}
+								setSearchResults={setSearchResults}
+								setShowSearchResult={setShowSearchResult}
+							>
+								<TableWrapper
+									columnDefs={columnDefs}
+									showSearchResult={showSearchResult}
+									selectedRequest={selectedRequest}
+									singleAnalysisModal={singleAnalysisModal}
+									totalAnalysisModal={totalAnalysisModal}
+									toggleSingleAnalysisModal={toggleSingleAnalysisModal}
+									toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+									handleSelectedData={handleSelectedData}
+									exportSearchParams={exportSearchParams}
+								/>
+							</AdvancedSearch>
+						</SearchTableContainer>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 
 export default ProjectMonitoringEvaluationList;
 
 const TableWrapper = ({
-  data,
-  isLoading,
-  columnDefs,
-  showSearchResult,
-  selectedRequest,
-  singleAnalysisModal,
-  totalAnalysisModal,
-  toggleSingleAnalysisModal,
-  toggleTotalAnalysisModal,
+	data,
+	isLoading,
+	columnDefs,
+	showSearchResult,
+	selectedRequest,
+	singleAnalysisModal,
+	totalAnalysisModal,
+	toggleSingleAnalysisModal,
+	toggleTotalAnalysisModal,
+	exportSearchParams,
 }) => {
-  const { t } = useTranslation();
-  const { data: meTypes } = useFetchMonitoringEvaluationTypes();
+	const { t } = useTranslation();
+	const { data: meTypes } = useFetchMonitoringEvaluationTypes();
 
-  return (
-    <>
-      <SingleAnalysisModal
-        isOpen={singleAnalysisModal}
-        toggle={toggleSingleAnalysisModal}
-        selectedRequest={selectedRequest}
-        data={data?.data}
-        evaluationTypes={transactionTypes}
-        visitTypes={visitTypes}
-        periodTypes={meTypes?.data || []}
-      />
+	return (
+		<>
+			<SingleAnalysisModal
+				isOpen={singleAnalysisModal}
+				toggle={toggleSingleAnalysisModal}
+				selectedRequest={selectedRequest}
+				data={data?.data}
+				evaluationTypes={transactionTypes}
+				visitTypes={visitTypes}
+				periodTypes={meTypes?.data || []}
+			/>
 
-      <TotalAnalysisModal
-        isOpen={totalAnalysisModal}
-        toggle={toggleTotalAnalysisModal}
-        data={data?.data}
-        evaluationTypes={transactionTypes}
-        visitTypes={visitTypes}
-        periodTypes={meTypes?.data || []}
-      />
-      <div className="d-flex flex-column" style={{ gap: "20px" }}>
-        <AgGridContainer
-          rowData={showSearchResult ? data?.data : []}
-          columnDefs={columnDefs}
-          isLoading={isLoading}
-          isPagination={true}
-          paginationPageSize={10}
-          isGlobalFilter={true}
-          isAddButton={false}
-          rowHeight={36}
-          addButtonText="Add"
-          isExcelExport={true}
-          isPdfExport={true}
-          isPrint={true}
-          tableName="Project Monitoring and Evaluation"
-          exportColumns={[
-            ...monitoringExportColumns,
-            {
-              key: "mne_transaction_type_id",
-              label: "mne_transaction_type",
-              format: (val) => {
-                const labelKey = transactionTypes.find(
-                  (type) => type.value === val,
-                )?.label;
-                return labelKey ? t(labelKey) : "-";
-              },
-            },
-            {
-              key: "mne_visit_type",
-              label: "mne_visit_type",
-              format: (val) => {
-                const labelKey = visitTypes.find(
-                  (type) => type.value === val,
-                )?.label;
-                return labelKey ? t(labelKey) : "-";
-              },
-            },
-          ]}
-          // todo: refactor this to use a more generic button component
-          buttonChildren={<FaChartLine />}
-          onButtonClick={toggleTotalAnalysisModal}
-          disabled={!showSearchResult || isLoading}
-        />
-      </div>
-    </>
-  );
+			<TotalAnalysisModal
+				isOpen={totalAnalysisModal}
+				toggle={toggleTotalAnalysisModal}
+				data={data?.data}
+				evaluationTypes={transactionTypes}
+				visitTypes={visitTypes}
+				periodTypes={meTypes?.data || []}
+			/>
+			<div className="d-flex flex-column" style={{ gap: "20px" }}>
+				<AgGridContainer
+					rowData={showSearchResult ? data?.data : []}
+					columnDefs={columnDefs}
+					isLoading={isLoading}
+					isPagination={true}
+					paginationPageSize={10}
+					isGlobalFilter={true}
+					isAddButton={false}
+					rowHeight={36}
+					addButtonText="Add"
+					isExcelExport={true}
+					isPdfExport={true}
+					isPrint={true}
+					tableName="Monitoring and Evaluation"
+					exportColumns={[
+						...monitoringExportColumns,
+						{
+							key: "mne_transaction_type_id",
+							label: "mne_transaction_type",
+							format: (val) => {
+								const labelKey = transactionTypes.find(
+									(type) => type.value === val
+								)?.label;
+								return labelKey ? t(labelKey) : "-";
+							},
+						},
+						{
+							key: "mne_visit_type",
+							label: "mne_visit_type",
+							format: (val) => {
+								const labelKey = visitTypes.find(
+									(type) => type.value === val
+								)?.label;
+								return labelKey ? t(labelKey) : "-";
+							},
+						},
+					]}
+					exportSearchParams={exportSearchParams}
+					// todo: refactor this to use a more generic button component
+					buttonChildren={<FaChartLine />}
+					onButtonClick={toggleTotalAnalysisModal}
+					disabled={!showSearchResult || isLoading}
+				/>
+			</div>
+		</>
+	);
 };

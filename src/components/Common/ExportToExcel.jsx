@@ -3,6 +3,7 @@ import { saveAs } from "file-saver";
 import { useTranslation } from "react-i18next";
 import { DropdownItem, Button } from "reactstrap";
 import { FaFileExcel } from "react-icons/fa";
+import { transformTableName } from "../../utils/commonMethods";
 
 const ExportToExcel = ({
 	tableData,
@@ -409,7 +410,8 @@ const ExportToExcel = ({
 			const blob = new Blob([buffer], {
 				type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			});
-			saveAs(blob, `${tableName}_Report_${dateStr}.xlsx`);
+			const safeTableName = transformTableName(tableName);
+			saveAs(blob, `${safeTableName}_report_${dateStr}.xlsx`);
 		} catch (error) {
 			console.error("Error during Excel export:", error);
 		}

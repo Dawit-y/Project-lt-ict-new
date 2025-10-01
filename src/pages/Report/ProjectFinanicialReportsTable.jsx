@@ -19,10 +19,10 @@ import {
 } from "react-icons/fa";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 import { financialReportOneExportColumns } from "../../utils/exportColumnsForReport";
-import { filter } from "lodash";
 
 const FinancialProjectsTable = ({
 	data = [],
+	exportSearchParams,
 	t = (key) => key,
 	tableClass = "",
 }) => {
@@ -789,8 +789,9 @@ const FinancialProjectsTable = ({
 					<div className="d-flex align-items-center">
 						<ExportToExcel
 							tableData={exportData}
-							tableName="FinancialProjectsTable"
+							tableName="Financial Data"
 							exportColumns={visibleExportColumns}
+							exportSearchParams={exportSearchParams}
 						/>
 						<Dropdown
 							isOpen={dropdownOpen}
