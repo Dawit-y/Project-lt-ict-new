@@ -30,11 +30,15 @@ import { useFetchSectorInformations } from "../../queries/sectorinformation_quer
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import { useFetchContractorTypes } from "../../queries/contractortype_query";
-import { createSelectOptions } from "../../utils/commonMethods";
+import {
+	createSelectOptions,
+	createMultiSelectOptions,
+} from "../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
 
 const Report = () => {
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
 	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	// Data hooks
@@ -50,35 +54,35 @@ const Report = () => {
 		[budgetYearData]
 	);
 
-	const sectorInformationOptions = useMemo(
-		() =>
-			createSelectOptions(
-				sectorInformationData?.data || [],
-				"sci_id",
-				"sci_name_or"
-			),
-		[sectorInformationData]
-	);
+	const {
+		sci_name_en: sectorInformationOptionsEn,
+		sci_name_or: sectorInformationOptionsOr,
+		sci_name_am: sectorInformationOptionsAm,
+	} = createMultiSelectOptions(sectorInformationData?.data || [], "sci_id", [
+		"sci_name_en",
+		"sci_name_or",
+		"sci_name_am",
+	]);
 
-	const contractorTypeOptions = useMemo(
-		() =>
-			createSelectOptions(
-				contractorTypeData?.data || [],
-				"cnt_id",
-				"cnt_type_name_or"
-			),
-		[contractorTypeData]
-	);
+	const {
+		cnt_type_name_en: contractorTypeOptionsEn,
+		cnt_type_name_or: contractorTypeOptionsOr,
+		cnt_type_name_am: contractorTypeOptionsAm,
+	} = createMultiSelectOptions(contractorTypeData?.data || [], "cnt_id", [
+		"cnt_type_name_en",
+		"cnt_type_name_or",
+		"cnt_type_name_am",
+	]);
 
-	const projectCategoryOptions = useMemo(
-		() =>
-			createSelectOptions(
-				projectCategoryData?.data || [],
-				"pct_id",
-				"pct_name_or"
-			),
-		[projectCategoryData]
-	);
+	const {
+		pct_name_en: projectCategoryOptionsEn,
+		pct_name_or: projectCategoryOptionsOr,
+		pct_name_am: projectCategoryOptionsAm,
+	} = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+		"pct_name_en",
+		"pct_name_or",
+		"pct_name_am",
+	]);
 
 	const sectorCategoryOptions = useMemo(
 		() =>
@@ -118,7 +122,12 @@ const Report = () => {
 				dropdownSearchKeys: [
 					{
 						key: "prj_sector_id",
-						options: sectorInformationOptions,
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
 					},
 				],
 				reportTypeIndex: 2,
@@ -132,7 +141,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 3,
 			},
@@ -145,7 +162,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "pbe_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 4,
 			},
@@ -159,7 +184,12 @@ const Report = () => {
 				dropdownSearchKeys: [
 					{
 						key: "prj_sector_id",
-						options: sectorInformationOptions,
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
 					},
 				],
 				reportTypeIndex: 5,
@@ -174,7 +204,12 @@ const Report = () => {
 				dropdownSearchKeys: [
 					{
 						key: "cni_contractor_type_id",
-						options: contractorTypeOptions,
+						options:
+							lang === "en"
+								? contractorTypeOptionsEn
+								: lang === "am"
+									? contractorTypeOptionsAm
+									: contractorTypeOptionsOr,
 					},
 				],
 				reportTypeIndex: 6,
@@ -203,7 +238,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 8,
 			},
@@ -216,7 +259,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 9,
 			},
@@ -229,7 +280,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 10,
 			},
@@ -242,7 +301,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 11,
 			},
@@ -255,7 +322,15 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "prj_sector_id", options: sectorInformationOptions },
+					{
+						key: "prj_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
 				],
 				reportTypeIndex: 12,
 			},
@@ -266,7 +341,15 @@ const Report = () => {
 					woreda: "prj_location_woreda_id",
 				},
 				dropdownSearchKeys: [
-					{ key: "prj_project_category_id", options: projectCategoryOptions },
+					{
+						key: "prj_project_category_id",
+						options:
+							lang === "en"
+								? projectCategoryOptionsEn
+								: lang === "am"
+									? projectCategoryOptionsAm
+									: projectCategoryOptionsOr,
+					},
 					{ key: "sector_category", options: sectorCategoryOptions },
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
 				],
@@ -275,9 +358,15 @@ const Report = () => {
 		}),
 		[
 			budgetYearOptions,
-			sectorInformationOptions,
-			contractorTypeOptions,
-			projectCategoryOptions,
+			sectorInformationOptionsAm,
+			sectorInformationOptionsEn,
+			sectorInformationOptionsOr,
+			contractorTypeOptionsAm,
+			contractorTypeOptionsEn,
+			contractorTypeOptionsOr,
+			projectCategoryOptionsAm,
+			projectCategoryOptionsEn,
+			projectCategoryOptionsOr,
 			sectorCategoryOptions,
 		]
 	);
@@ -328,168 +417,166 @@ const Report = () => {
 		setExportSearchParams(labels);
 	};
 
-		const handleNodeSelect = (node) => {
-			if (node.level === "region") {
-				setLocationRegionId(node.id);
-				setLocationZoneId(null);
-				setLocationWoredaId(null);
-			} else if (node.level === "zone") {
-				setLocationZoneId(node.id);
-				setLocationWoredaId(null);
-			} else if (node.level === "woreda") {
-				setLocationWoredaId(node.id);
-			}
-			setShowSearchResult(false);
+	const handleNodeSelect = (node) => {
+		if (node.level === "region") {
+			setLocationRegionId(node.id);
+			setLocationZoneId(null);
+			setLocationWoredaId(null);
+		} else if (node.level === "zone") {
+			setLocationZoneId(node.id);
+			setLocationWoredaId(null);
+		} else if (node.level === "woreda") {
+			setLocationWoredaId(node.id);
+		}
+		setShowSearchResult(false);
+	};
+
+	// Table components mapping
+	const tableComponents = {
+		1: Greenbook,
+		2: ProjectEmployeeReportsTable,
+		3: ProjectsBudgetPlanTable,
+		4: ProjectsBudgetExpenditureTable,
+		5: ProjectsBudgetSourceTable,
+		6: ProjectsContractorTable,
+		7: ProjectsPaymentTable,
+		8: FinancialProjectsTable,
+		9: FinancialProjectsTable2,
+		10: FinancialProjectsTable3,
+		11: ProjectPhysicalPerformanceReportsTable,
+		12: ProjectFinancialPerformanceReportsTable,
+		13: ProjectPlanTable,
+	};
+
+	// Render appropriate table based on report type
+	const renderTable = () => {
+		if (!currentConfig || !showSearchResult || searchResults.length === 0) {
+			return null;
+		}
+
+		const TableComponent = tableComponents[currentConfig.reportTypeIndex];
+		if (!TableComponent) return null;
+
+		const commonProps = {
+			data: searchResults,
+			exportSearchParams,
+			isGlobalFilter: true,
+			SearchPlaceholder: t("filter_placeholder"),
+			buttonClass:
+				"btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal",
+			tableClass:
+				"align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
+			theadClass: "table-light",
+			t,
 		};
 
-		// Table components mapping
-		const tableComponents = {
-			1: Greenbook,
-			2: ProjectEmployeeReportsTable,
-			3: ProjectsBudgetPlanTable,
-			4: ProjectsBudgetExpenditureTable,
-			5: ProjectsBudgetSourceTable,
-			6: ProjectsContractorTable,
-			7: ProjectsPaymentTable,
-			8: FinancialProjectsTable,
-			9: FinancialProjectsTable2,
-			10: FinancialProjectsTable3,
-			11: ProjectPhysicalPerformanceReportsTable,
-			12: ProjectFinancialPerformanceReportsTable,
-			13: ProjectPlanTable,
-		};
+		return <TableComponent {...commonProps} />;
+	};
 
-		// Render appropriate table based on report type
-		const renderTable = () => {
-			if (!currentConfig || !showSearchResult || searchResults.length === 0) {
-				return null;
-			}
+	// Endpoint options
+	const endpointOptions = Object.keys(endpointConfigs).map((key) => ({
+		name: key,
+	}));
 
-			const TableComponent = tableComponents[currentConfig.reportTypeIndex];
-			if (!TableComponent) return null;
-
-			const commonProps = {
-				data: searchResults,
-				exportSearchParams,
-				isGlobalFilter: true,
-				SearchPlaceholder: t("filter_placeholder"),
-				buttonClass:
-					"btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal",
-				tableClass:
-					"align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
-				theadClass: "table-light",
-				t,
-			};
-
-			return <TableComponent {...commonProps} />;
-		};
-
-		// Endpoint options
-		const endpointOptions = Object.keys(endpointConfigs).map((key) => ({
-			name: key,
-		}));
-
-		return (
-			<div className="page-content">
-				<Breadcrumbs
-					title={t("Report")}
-					breadcrumbItem={t("Statistical Report")}
+	return (
+		<div className="page-content">
+			<Breadcrumbs
+				title={t("Report")}
+				breadcrumbItem={t("Statistical Report")}
+			/>
+			<div className="w-100 d-flex gap-2">
+				<TreeForLists
+					onNodeSelect={handleNodeSelect}
+					isCollapsed={isCollapsed}
+					setIsCollapsed={setIsCollapsed}
+					widthInPercent={15}
 				/>
-				<div className="w-100 d-flex gap-2">
-					<TreeForLists
-						onNodeSelect={handleNodeSelect}
-						isCollapsed={isCollapsed}
-						setIsCollapsed={setIsCollapsed}
-						widthInPercent={15}
-					/>
+				<div
+					style={{
+						flex: "1 1 0",
+						display: "flex",
+						flexDirection: "column",
+						overflow: "hidden",
+					}}
+				>
 					<div
 						style={{
-							flex: "1 1 0",
-							display: "flex",
-							flexDirection: "column",
-							overflow: "hidden",
+							flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
+							transition: "all 0.3s ease",
 						}}
 					>
-						<div
-							style={{
-								flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
-								transition: "all 0.3s ease",
-							}}
-						>
-							<Row className="">
-								<Col xs={2} sm={2} md={2} lg={2} xl={2}>
-									<Card className="p-0 m-0 mb-3 shadow-none">
-										<CardBody className="p-2">
-											<Input
-												type="select"
-												name="endpoint"
-												id="api-endpoints"
-												value={selectedEndpoint}
-												onChange={handleSelectionChange}
-												className="mb-2 mt-1"
-											>
-												<option value="">{t("select_stat")}</option>
-												{endpointOptions.map((endpoint, index) => (
-													<option key={index} value={endpoint.name}>
-														{t(endpoint.name)}
-													</option>
-												))}
-											</Input>
-										</CardBody>
-									</Card>
-								</Col>
-								<Col xs={10} sm={10} md={10} lg={10} xl={10}>
-									{selectedEndpoint && (
-										<AdvancedSearch
-											key={selectedEndpoint}
-											searchHook={useSearchReport}
-											textSearchKeys={currentConfig?.textKeys || []}
-											dateSearchKeys={currentConfig?.dateKeys || []}
-											dropdownSearchKeys={
-												currentConfig?.dropdownSearchKeys || []
-											}
-											checkboxSearchKeys={[]}
-											additionalParams={searchParams}
-											onSearchResult={handleSearchResults}
-											onSearchLabels={handleSearchLabels}
-											setIsSearchLoading={setIsLoading}
-											setSearchResults={setSearchResults}
-											setShowSearchResult={setShowSearchResult}
-										/>
-									)}
-								</Col>
-							</Row>
-							<Col xs="12">
-								{isLoading ? (
-									<div className="d-flex justify-content-center">
-										<Spinner color="primary" />
-									</div>
-								) : (
-									<>
-										{showSearchResult && searchResults.length > 0 && (
-											<Card>
-												<CardBody style={{ padding: "10px" }}>
-													{renderTable()}
-												</CardBody>
-											</Card>
-										)}
-										{showSearchResult && searchResults.length === 0 && (
-											<div className="w-100 text-center">
-												<p className="mt-5">
-													{t(
-														"No data available for the selected endpoint please select related Address Structure and click Search button."
-													)}
-												</p>
-											</div>
-										)}
-									</>
+						<Row className="">
+							<Col xs={2} sm={2} md={2} lg={2} xl={2}>
+								<Card className="p-0 m-0 mb-3 shadow-none">
+									<CardBody className="p-2">
+										<Input
+											type="select"
+											name="endpoint"
+											id="api-endpoints"
+											value={selectedEndpoint}
+											onChange={handleSelectionChange}
+											className="mb-2 mt-1"
+										>
+											<option value="">{t("select_stat")}</option>
+											{endpointOptions.map((endpoint, index) => (
+												<option key={index} value={endpoint.name}>
+													{t(endpoint.name)}
+												</option>
+											))}
+										</Input>
+									</CardBody>
+								</Card>
+							</Col>
+							<Col xs={10} sm={10} md={10} lg={10} xl={10}>
+								{selectedEndpoint && (
+									<AdvancedSearch
+										key={selectedEndpoint}
+										searchHook={useSearchReport}
+										textSearchKeys={currentConfig?.textKeys || []}
+										dateSearchKeys={currentConfig?.dateKeys || []}
+										dropdownSearchKeys={currentConfig?.dropdownSearchKeys || []}
+										checkboxSearchKeys={[]}
+										additionalParams={searchParams}
+										onSearchResult={handleSearchResults}
+										onSearchLabels={handleSearchLabels}
+										setIsSearchLoading={setIsLoading}
+										setSearchResults={setSearchResults}
+										setShowSearchResult={setShowSearchResult}
+									/>
 								)}
 							</Col>
-						</div>
+						</Row>
+						<Col xs="12">
+							{isLoading ? (
+								<div className="d-flex justify-content-center">
+									<Spinner color="primary" />
+								</div>
+							) : (
+								<>
+									{showSearchResult && searchResults.length > 0 && (
+										<Card>
+											<CardBody style={{ padding: "10px" }}>
+												{renderTable()}
+											</CardBody>
+										</Card>
+									)}
+									{showSearchResult && searchResults.length === 0 && (
+										<div className="w-100 text-center">
+											<p className="mt-5">
+												{t(
+													"No data available for the selected endpoint please select related Address Structure and click Search button."
+												)}
+											</p>
+										</div>
+									)}
+								</>
+							)}
+						</Col>
 					</div>
 				</div>
 			</div>
-		);
+		</div>
+	);
 };
 
 export default Report;
