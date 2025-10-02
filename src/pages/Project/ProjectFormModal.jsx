@@ -146,17 +146,13 @@ const ProjectFormModal = ({
 				1000000000000,
 				false
 			),
-			prj_location_region_id: Yup.string().required(
-				t("prj_location_region_id")
-			),
-			prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
+			prj_location_region_id: Yup.string(),
+			prj_location_zone_id: Yup.string(),
 			prj_start_date_plan_gc: Yup.string().required(
 				t("prj_start_date_plan_gc")
 			),
 			prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
-			prj_location_woreda_id: Yup.string().required(
-				t("prj_location_woreda_id")
-			),
+			prj_location_woreda_id: Yup.string(),
 			prj_urban_ben_number: numberValidation(0, 10000000, false),
 			prj_rural_ben_number: numberValidation(0, 10000000, false),
 			prj_measured_figure: formattedAmountValidation(1, 100000000000, false),
