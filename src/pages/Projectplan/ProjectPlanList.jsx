@@ -7,7 +7,6 @@ import { useSearchProjectPlans } from "../../queries/projectplan_query";
 import { useTranslation } from "react-i18next";
 import { Button } from "reactstrap";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import { ProjectPlanExportColumns } from "../../utils/exportColumnsForLists";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
@@ -39,11 +38,7 @@ const ProjectPlanList = () => {
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
 	const [include, setInclude] = useState(0);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-
-	const { data, isLoading, error, isError, refetch } = useState("");
-	const [quickFilterText, setQuickFilterText] = useState("");
-	const [selectedRows, setSelectedRows] = useState([]);
-	const gridRef = useRef(null);
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	const { data: budgetYearData } = useFetchBudgetYears();
 	const budgetYearMap = useMemo(() => {
@@ -57,28 +52,14 @@ const ProjectPlanList = () => {
 
 	const toggleViewModal = () => setModal1(!modal1);
 
-	// When selection changes, update selectedRows
-	const onSelectionChanged = () => {
-		const selectedNodes = gridRef.current.api.getSelectedNodes();
-		const selectedData = selectedNodes.map((node) => node.data);
-		setSelectedRows(selectedData);
-	};
-	// Filter by marked rows
-	const filterMarked = () => {
-		if (gridRef.current) {
-			gridRef.current.api.setRowData(selectedRows);
-		}
-	};
-	// Clear the filter and show all rows again
-	const clearFilter = () => {
-		gridRef.current.api.setRowData(showSearchResults ? results : data);
-	};
-	//START FOREIGN CALLS
-
 	const handleSearchResults = ({ data, error }) => {
 		setSearchResults(data);
 		setSearchError(error);
 		setShowSearchResult(true);
+	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
 	};
 
 	useEffect(() => {
@@ -115,26 +96,26 @@ const ProjectPlanList = () => {
 				valueGetter: (params) => params.node.rowIndex + 1,
 				sortable: false,
 				filter: false,
-				flex: 0.7,
-			},
-			{
-				headerName: t("pld_name"),
-				field: "pld_name",
-				sortable: true,
-				filter: false,
-				flex: 2,
-				cellRenderer: (params) => {
-					return truncateText(params.data.pld_name, 30) || "-";
-				},
+				width: 60,
 			},
 			{
 				headerName: t("prj_name"),
 				field: "prj_name",
 				sortable: true,
 				filter: false,
-				flex: 2,
+				minWidth: 300,
+				flex: 1,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_name, 100) || "-";
+				},
+			},
+			{
+				headerName: t("pld_name"),
+				field: "pld_name",
+				sortable: true,
+				filter: false,
+				cellRenderer: (params) => {
+					return truncateText(params.data.pld_name, 30) || "-";
 				},
 			},
 			{
@@ -142,7 +123,6 @@ const ProjectPlanList = () => {
 				field: "prj_code",
 				sortable: true,
 				filter: false,
-				flex: 2,
 				cellRenderer: (params) => {
 					return truncateText(params.data.prj_code, 30) || "-";
 				},
@@ -152,7 +132,6 @@ const ProjectPlanList = () => {
 				field: "pld_budget_year_id",
 				sortable: true,
 				filter: false,
-				flex: 1,
 				cellRenderer: (params) => {
 					return budgetYearMap[params.data.pld_budget_year_id] || "-";
 				},
@@ -162,7 +141,6 @@ const ProjectPlanList = () => {
 				field: "pld_start_date_gc",
 				sortable: true,
 				filter: false,
-				flex: 1,
 				cellRenderer: (params) => {
 					return truncateText(params.data.pld_start_date_gc, 30) || "-";
 				},
@@ -172,7 +150,6 @@ const ProjectPlanList = () => {
 				field: "pld_end_date_gc",
 				sortable: true,
 				filter: false,
-				flex: 1,
 				cellRenderer: (params) => {
 					return truncateText(params.data.pld_end_date_gc, 30) || "-";
 				},
@@ -182,7 +159,6 @@ const ProjectPlanList = () => {
 				field: t("view_gannt"),
 				sortable: true,
 				filter: false,
-				flex: 1,
 				cellRenderer: (params) => {
 					return (
 						<Button
@@ -204,71 +180,67 @@ const ProjectPlanList = () => {
 		return baseColumns;
 	}, [t]);
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
-
-	return (
-		<React.Fragment>
-			<GanttModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				projectPlan={projectPlan}
-			/>
-			<div className="page-content">
-				<div>
-					<Breadcrumbs />
-					<div className="d-flex gap-2 flex-nowrap">
-						<TreeForLists
-							onNodeSelect={handleNodeSelect}
-							setIsAddressLoading={setIsAddressLoading}
-							setInclude={setInclude}
-							setIsCollapsed={setIsCollapsed}
-							isCollapsed={isCollapsed}
-						/>
-						<SearchTableContainer isCollapsed={isCollapsed}>
-							<AdvancedSearch
-								searchHook={useSearchProjectPlans}
-								textSearchKeys={["pld_name"]}
-								dateSearchKeys={["pld_start_date_gc"]}
-								additionalParams={projectParams}
-								setAdditionalParams={setProjectParams}
-								onSearchResult={handleSearchResults}
-								setIsSearchLoading={setIsSearchLoading}
-								setSearchResults={setSearchResults}
-								setShowSearchResult={setShowSearchResult}
-							>
-								<AgGridContainer
-									rowData={
-										showSearchResult ? searchResults?.data : data?.data || []
-									}
-									columnDefs={columnDefs}
-									isLoading={isSearchLoading}
-									isPagination={true}
-									rowHeight={35}
-									paginationPageSize={10}
-									isGlobalFilter={true}
-									isExcelExport={true}
-									isPdfExport={true}
-									isPrint={true}
-									tableName="Project Plan"
-									exportColumns={[
-										...ProjectPlanExportColumns,
-										{
-											key: "pld_budget_year_id",
-											label: t("pld_budget_year_id"),
-											format: (val) => {
-												return budgetYearMap[val] || "-";
+		return (
+			<React.Fragment>
+				<GanttModal
+					isOpen={modal1}
+					toggle={toggleViewModal}
+					projectPlan={projectPlan}
+				/>
+				<div className="page-content">
+					<div>
+						<Breadcrumbs />
+						<div className="d-flex gap-2 flex-nowrap">
+							<TreeForLists
+								onNodeSelect={handleNodeSelect}
+								setIsAddressLoading={setIsAddressLoading}
+								setInclude={setInclude}
+								setIsCollapsed={setIsCollapsed}
+								isCollapsed={isCollapsed}
+							/>
+							<SearchTableContainer isCollapsed={isCollapsed}>
+								<AdvancedSearch
+									searchHook={useSearchProjectPlans}
+									textSearchKeys={["pld_name"]}
+									dateSearchKeys={["pld_start_date_gc"]}
+									additionalParams={projectParams}
+									setAdditionalParams={setProjectParams}
+									onSearchResult={handleSearchResults}
+									onSearchLabels={handleSearchLabels}
+									setIsSearchLoading={setIsSearchLoading}
+									setSearchResults={setSearchResults}
+									setShowSearchResult={setShowSearchResult}
+								>
+									<AgGridContainer
+										rowData={showSearchResult ? searchResults?.data : []}
+										columnDefs={columnDefs}
+										isLoading={isSearchLoading}
+										isPagination={true}
+										rowHeight={35}
+										paginationPageSize={10}
+										isGlobalFilter={true}
+										isExcelExport={true}
+										isPdfExport={true}
+										isPrint={true}
+										tableName="Project Plan"
+										exportSearchParams={exportSearchParams}
+										exportColumns={[
+											...ProjectPlanExportColumns,
+											{
+												key: "pld_budget_year_id",
+												label: t("pld_budget_year_id"),
+												format: (val) => {
+													return budgetYearMap[val] || "-";
+												},
 											},
-										},
-									]}
-								/>
-							</AdvancedSearch>
-						</SearchTableContainer>
+										]}
+									/>
+								</AdvancedSearch>
+							</SearchTableContainer>
+						</div>
 					</div>
 				</div>
-			</div>
-		</React.Fragment>
-	);
+			</React.Fragment>
+		);
 };
 export default ProjectPlanList;

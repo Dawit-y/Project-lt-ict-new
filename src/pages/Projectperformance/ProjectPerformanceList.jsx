@@ -16,7 +16,7 @@ import {
 	createMultiSelectOptions,
 	createSelectOptions,
 } from "../../utils/commonMethods";
-import { projectPerformanceExportColumns } from "../../utils/exportColumnsForLists";
+import { usePerformanceExportColumns } from "../../utils/exportColumnsForLists";
 const AgGridContainer = lazy(
 	() => import("../../components/Common/AgGridContainer")
 );
@@ -33,17 +33,10 @@ const truncateText = (text, maxLength) => {
 	}
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-const ProjectPerformanceList = (props) => {
+const ProjectPerformanceList = () => {
 	document.title = "Project Performance List";
-	const { passedId, isActive } = props;
-	const param = { prp_project_id: passedId };
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-
-	const [modal, setModal] = useState(false);
-	const [modal1, setModal1] = useState(false);
-	const [isEdit, setIsEdit] = useState(false);
-	const [projectPerformance, setProjectPerformance] = useState(null);
 
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -57,9 +50,7 @@ const ProjectPerformanceList = (props) => {
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 	const { data, error, isError, refetch } = useState({});
-	const toggleViewModal = () => setModal1(!modal1);
 	const { data: budgetYearData } = useFetchBudgetYears();
-	const { data: budgetMonthData } = useFetchBudgetMonths();
 	const { data: projectStatusData } = useFetchProjectStatuss();
 
 	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
@@ -67,16 +58,7 @@ const ProjectPerformanceList = (props) => {
 	const [selectedRequest, setSelectedRequest] = useState(null);
 
 	const [selectedRowData, setSelectedRowData] = useState(null);
-	const [chartType, setChartType] = useState("bar"); // Track chart type globally
-
-	// Handle row selection
-	const handleViewDetails = (rowData) => {
-		setSelectedRowData(rowData);
-	};
-
-	const handleSelectedData = (rowData) => {
-		setSelectedRequest(rowData);
-	};
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	const toggleSingleAnalysisModal = () =>
 		setSingleAnalysisModal(!singleAnalysisModal);
@@ -85,7 +67,6 @@ const ProjectPerformanceList = (props) => {
 
 	const {
 		prs_status_name_en: projectStatusOptionsEn,
-
 		prs_status_name_or: projectStatusOptionsOr,
 		prs_status_name_am: projectStatusOptionsAm,
 	} = createMultiSelectOptions(projectStatusData?.data || [], "prs_id", [
@@ -119,6 +100,11 @@ const ProjectPerformanceList = (props) => {
 		setSearchError(error);
 		setShowSearchResult(true);
 	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
 	useEffect(() => {
 		setProjectParams({
 			...(prjLocationRegionId && {
@@ -416,6 +402,7 @@ const ProjectPerformanceList = (props) => {
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
 								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
@@ -429,6 +416,7 @@ const ProjectPerformanceList = (props) => {
 									totalAnalysisModal={totalAnalysisModal}
 									toggleSingleAnalysisModal={toggleSingleAnalysisModal}
 									toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+									exportSearchParams={exportSearchParams}
 									// handleSelectedData={handleSelectedData}
 								/>
 							</AdvancedSearch>
@@ -452,27 +440,14 @@ const TableWrapper = ({
 	totalAnalysisModal,
 	toggleSingleAnalysisModal,
 	toggleTotalAnalysisModal,
+	exportSearchParams
 }) => {
 	let transformedData = [];
 	if (data) {
 		transformedData = Array.isArray(data.data) ? data.data : [];
 	}
-	const { t, i18n } = useTranslation();
-	const lang = i18n.language;
-	const { data: projectStatusData } = useFetchProjectStatuss();
-	const projectStatusMap = useMemo(() => {
-		return (
-			projectStatusData?.data?.reduce((acc, project_status) => {
-				acc[project_status.prs_id] =
-					lang === "en"
-						? project_status.prs_status_name_en
-						: lang === "am"
-							? project_status.prs_status_name_am
-							: project_status.prs_status_name_or;
-				return acc;
-			}, {}) || {}
-		);
-	}, [projectStatusData, lang]);
+	const projectPerformanceExportColumns = usePerformanceExportColumns();
+
 	return (
 		<>
 			<SinglePerformanceAnalysisModal
@@ -500,16 +475,8 @@ const TableWrapper = ({
 					isPdfExport={true}
 					isPrint={true}
 					tableName="Project Performance"
-					exportColumns={[
-						...projectPerformanceExportColumns,
-						{
-							key: "prp_project_status_id",
-							label: t("prp_project_status_id"),
-							format: (val) => {
-								return projectStatusMap[val] || "-";
-							},
-						},
-					]}
+					exportColumns={projectPerformanceExportColumns}
+					exportSearchParams={exportSearchParams}
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}
 					disabled={!showSearchResult || isLoading}

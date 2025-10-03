@@ -32,25 +32,18 @@ const ProjectContractorList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-
-  //START FOREIGN CALLS
+  const [exportSearchParams, setExportSearchParams] = useState({});
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -220,11 +213,6 @@ const ProjectContractorList = () => {
     return baseColumnDefs;
   });
 
-  //START UNCHANGED
-
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
   return (
     <React.Fragment>
       <div className="page-content">
@@ -251,13 +239,14 @@ const ProjectContractorList = () => {
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
+                onSearchLabels={handleSearchLabels}
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
                 <AgGridContainer
                   rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
+                    showSearchResult ? searchResults?.data : []
                   }
                   columnDefs={columnDefs}
                   isLoading={isSearchLoading}
@@ -270,6 +259,7 @@ const ProjectContractorList = () => {
                   isPrint={true}
                   tableName="Project Contract/Contractor"
                   exportColumns={projectContractorExportColumns}
+                  exportSearchParams={exportSearchParams}
                 />
               </AdvancedSearch>
             </SearchTableContainer>

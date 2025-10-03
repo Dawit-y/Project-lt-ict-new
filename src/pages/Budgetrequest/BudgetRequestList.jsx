@@ -66,6 +66,7 @@ const BudgetRequestListModel = () => {
 	const [include, setInclude] = useState(0);
 
 	const [transaction, setTransaction] = useState({});
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	const budgetYearOptions = useMemo(() => {
 		return (
@@ -124,6 +125,10 @@ const BudgetRequestListModel = () => {
 		setSearchResults(data);
 		setSearchError(error);
 		setShowSearchResult(true);
+	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
 	};
 
 	const handleClick = (data) => {
@@ -427,6 +432,7 @@ const BudgetRequestListModel = () => {
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
 								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
@@ -446,6 +452,7 @@ const BudgetRequestListModel = () => {
 									isPdfExport={true}
 									isPrint={true}
 									tableName="Budget Request"
+									exportSearchParams={exportSearchParams}
 									exportColumns={[
 										...budgetRequestExportColumns,
 										{

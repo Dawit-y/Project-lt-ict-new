@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useFetchSectorInformations } from "../queries/sectorinformation_query";
+import { useFetchProjectStatuss } from "../queries/projectstatus_query";
 import { createMultiLangKeyValueMap } from "./commonMethods";
 import { useTranslation } from "react-i18next";
 
@@ -118,7 +119,7 @@ export const citizenshipProjectExportColumns = [
 	{
 		key: "prj_code",
 		label: "prj_code",
-		width: 40
+		width: 40,
 	},
 	{
 		key: "zone_name",
@@ -150,7 +151,7 @@ export const projectExportColumns = [
 	{
 		key: "prj_code",
 		label: "prj_code",
-		width: 40
+		width: 40,
 	},
 	{
 		key: "zone_name",
@@ -262,137 +263,298 @@ export const projectPaymentExportColumns = [
 	},
 ];
 
-export const projectPerformanceExportColumns = [
-	{
-		key: "prp_budget_year_id",
-		label: "prp_budget_year_id",
-		format: (val, row) => row.year_name || "-",
-	},
-	{ key: "prj_name", label: "prj_name", width: 60 },
-	{ key: "prj_code", label: "prj_code" },
-	{ key: "prp_record_date_gc", label: "prp_record_date_gc" },
+export const usePerformanceExportColumns = () => {
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+	const { data: projectStatusData } = useFetchProjectStatuss();
+	const projectStatusMap = useMemo(() => {
+		return (
+			projectStatusData?.data?.reduce((acc, project_status) => {
+				acc[project_status.prs_id] =
+					lang === "en"
+						? project_status.prs_status_name_en
+						: lang === "am"
+							? project_status.prs_status_name_am
+							: project_status.prs_status_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [projectStatusData, lang]);
 
-	// Quarter 1 columns
-	{
-		key: "quarter_1_physical_planned",
-		label: "Q1 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_1_financial_planned",
-		label: "Q1 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_1_physical_actual",
-		label: "Q1 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_1_financial_actual",
-		label: "Q1 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_finan_actual_month_"),
-	},
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "prp_budget_year_id",
+				label: "prp_budget_year_id",
+				format: (val, row) => row.year_name || "-",
+			},
+			{ key: "prj_name", label: "prj_name", width: 60 },
+			{ key: "prj_code", label: "prj_code" },
+			{
+				key: "prp_project_status_id",
+				label: t("prp_project_status_id"),
+				format: (val) => {
+					return projectStatusMap[val] || "-";
+				},
+			},
+			{ key: "prp_record_date_gc", label: "prp_record_date_gc" },
 
-	// Quarter 2 columns
-	{
-		key: "quarter_2_physical_planned",
-		label: "Q2 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_2_financial_planned",
-		label: "Q2 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_2_physical_actual",
-		label: "Q2 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_2_financial_actual",
-		label: "Q2 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_finan_actual_month_"),
-	},
+			// Quarter 1
+			{
+				key: "quarter_1",
+				label: "Quarter 1",
+				columns: [
+					{
+						key: "quarter_1_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_1_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_1_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_finan_planned_month_"
+									),
+							},
+						],
+					},
+					{
+						key: "quarter_1_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_1_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_1_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [11, 12, 1], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	// Quarter 3 columns
-	{
-		key: "quarter_3_physical_planned",
-		label: "Q3 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_3_financial_planned",
-		label: "Q3 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_3_physical_actual",
-		label: "Q3 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_3_financial_actual",
-		label: "Q3 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_finan_actual_month_"),
-	},
+			// Quarter 2
+			{
+				key: "quarter_2",
+				label: "Quarter 2",
+				columns: [
+					{
+						key: "quarter_2_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_2_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[2, 3, 4],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_2_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [2, 3, 4], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_2_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_2_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[2, 3, 4],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_2_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [2, 3, 4], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	// Quarter 4 columns
-	{
-		key: "quarter_4_physical_planned",
-		label: "Q4 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_4_financial_planned",
-		label: "Q4 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_4_physical_actual",
-		label: "Q4 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_4_financial_actual",
-		label: "Q4 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_finan_actual_month_"),
-	},
+			// Quarter 3
+			{
+				key: "quarter_3",
+				label: "Quarter 3",
+				columns: [
+					{
+						key: "quarter_3_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_3_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[5, 6, 7],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_3_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [5, 6, 7], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_3_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_3_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[5, 6, 7],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_3_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [5, 6, 7], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	{
-		key: "prp_budget_baseline",
-		label: "prp_budget_baseline",
-		format: (val) => (val ? Number(val).toLocaleString() : "-"),
-	},
-	{
-		key: "prp_physical_baseline",
-		label: "prp_physical_baseline",
-		format: (val) => (val ? Number(val).toLocaleString() : "-"),
-	},
-	{
-		key: "prp_total_budget_used",
-		label: "prp_total_budget_used",
-		format: (val) => (val ? val.toFixed(2) : "0.00"),
-	},
-	{ key: "prp_physical_performance", label: "prp_physical_performance" },
-];
+			// Quarter 4
+			{
+				key: "quarter_4",
+				label: "Quarter 4",
+				columns: [
+					{
+						key: "quarter_4_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_4_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[8, 9, 10],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_4_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [8, 9, 10], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_4_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_4_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[8, 9, 10],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_4_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [8, 9, 10], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
+
+			// Baseline and Summary Information
+			{
+				key: "baseline_summary",
+				label: "Baseline & Summary",
+				columns: [
+					{
+						key: "baseline",
+						label: "Baseline",
+						columns: [
+							{
+								key: "prp_budget_baseline",
+								label: "Budget Baseline",
+								format: (val) => (val ? Number(val).toLocaleString() : "-"),
+							},
+							{
+								key: "prp_physical_baseline",
+								label: "Physical Baseline",
+								format: (val) => (val ? Number(val).toLocaleString() : "-"),
+							},
+						],
+					},
+					{
+						key: "performance_summary",
+						label: "Performance Summary",
+						columns: [
+							{
+								key: "prp_total_budget_used",
+								label: "Total Budget Used",
+								format: (val) => (val ? val.toFixed(2) : "0.00"),
+							},
+							{
+								key: "prp_physical_performance",
+								label: "Physical Performance",
+							},
+						],
+					},
+				],
+			},
+		],
+		[t, projectStatusMap]
+	);
+
+	return exportColumns;
+};
 
 // Helper function to sum monthly values for quarters
 function sumMonthlyValues(row, months, prefix) {
@@ -480,7 +642,6 @@ export const projectHandoverExportColumns = [
 	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "prh_handover_date_gc", label: "prh_handover_date_gc" },
-	{ key: "prh_description", label: "prh_description" },
 ];
 
 export const procurementExportColumns = [
