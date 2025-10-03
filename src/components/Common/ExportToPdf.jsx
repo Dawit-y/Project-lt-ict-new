@@ -30,22 +30,259 @@ const ExportToPDF = ({
 }) => {
 	const { t } = useTranslation();
 
-	// Helper function to chunk columns into groups
-	const chunkColumns = (columns, chunkSize) => {
-		const chunks = [];
-		for (let i = 0; i < columns.length; i += chunkSize) {
-			chunks.push(columns.slice(i, i + chunkSize));
+	/** =====================
+	 * Helper Functions
+	 * ===================== */
+
+	// Get all leaf columns from nested structure
+	const getLeafColumns = (columns) => {
+		const result = [];
+		const traverse = (cols) => {
+			cols.forEach((col) => {
+				if (col.columns) traverse(col.columns);
+				else result.push(col);
+			});
+		};
+		traverse(columns);
+		return result;
+	};
+
+	// Count leaf columns in a nested structure
+	const countLeaves = (col) => {
+		if (!col.columns || col.columns.length === 0) return 1;
+		return col.columns.reduce((sum, child) => sum + countLeaves(child), 0);
+	};
+
+	// Get maximum depth of nested columns
+	const getDepth = (cols) => {
+		let max = 1;
+		cols.forEach((c) => {
+			if (c.columns && c.columns.length > 0) {
+				max = Math.max(max, 1 + getDepth(c.columns));
+			}
+		});
+		return max;
+	};
+
+	// Build header rows for nested columns structure
+	const buildHeaderRows = (columns) => {
+		const maxDepth = getDepth(columns);
+		const rows = Array.from({ length: maxDepth }, () => []);
+
+		const processColumn = (col, depth, currentColStart) => {
+			const currentRow = rows[depth];
+			const isGroup = !!col.columns;
+			const leafSpan = isGroup ? countLeaves(col) : 1;
+			const rowSpan = isGroup ? 1 : maxDepth - depth;
+			const currentColEnd = currentColStart + leafSpan - 1;
+
+			currentRow.push({
+				label: t(col.label || col.key),
+				colStart: currentColStart,
+				colSpan: leafSpan,
+				rowSpan: rowSpan,
+				isGroup: isGroup,
+			});
+
+			if (isGroup) {
+				let nextChildColStart = currentColStart;
+				col.columns.forEach((childCol) => {
+					const childLeafSpan = countLeaves(childCol);
+					processColumn(childCol, depth + 1, nextChildColStart);
+					nextChildColStart += childLeafSpan;
+				});
+			}
+
+			return leafSpan;
+		};
+
+		// Add SN column to all rows
+		const snHeader = {
+			label: t("SN"),
+			colStart: 1,
+			colSpan: 1,
+			rowSpan: maxDepth,
+			isSN: true,
+		};
+
+		rows[0].push(snHeader);
+
+		// Add placeholder SN cells for remaining rows
+		for (let i = 1; i < maxDepth; i++) {
+			rows[i].push({
+				label: "",
+				colStart: 1,
+				colSpan: 1,
+				rowSpan: 1,
+				isSN: true,
+				isPlaceholder: true,
+			});
 		}
+
+		// Process data columns
+		let currentDataColStart = 2; // Data starts after SN column
+		columns.forEach((col) => {
+			const span = processColumn(col, 0, currentDataColStart);
+			currentDataColStart += span;
+		});
+
+		return rows;
+	};
+
+	// Convert header rows to autoTable format
+	const buildAutoTableHeaders = (headerRows) => {
+		const autoTableHeaders = [];
+
+		headerRows.forEach((row, rowIndex) => {
+			const autoTableRow = [];
+
+			row.forEach((headerCell) => {
+				if (headerCell.isPlaceholder) {
+					// Skip placeholder cells as they're covered by merged cells
+					return;
+				}
+
+				const cellConfig = {
+					content: headerCell.label,
+					styles: {
+						halign: "center",
+						valign: "middle",
+						fontStyle: "bold",
+						fillColor: COLORS.accent,
+						textColor: COLORS.white,
+						lineColor: COLORS.white, // White border for header separators
+						lineWidth: 0.5,
+					},
+				};
+
+				if (headerCell.colSpan > 1) {
+					cellConfig.colSpan = headerCell.colSpan;
+				}
+				if (headerCell.rowSpan > 1) {
+					cellConfig.rowSpan = headerCell.rowSpan;
+				}
+
+				autoTableRow.push(cellConfig);
+			});
+
+			if (autoTableRow.length > 0) {
+				autoTableHeaders.push(autoTableRow);
+			}
+		});
+
+		return autoTableHeaders;
+	};
+
+	// Get cell value with formatting
+	const getCellValue = (row, column, rowIndex) => {
+		if (column.key === "sn") {
+			return (rowIndex + 1).toString();
+		}
+
+		const rawValue = row[column.key];
+
+		if (column.type === "number") {
+			const cleaned = rawValue?.toString().replace(/,/g, "");
+			const num = parseFloat(cleaned);
+			return !isNaN(num)
+				? num.toLocaleString(undefined, {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					})
+				: "0.00";
+		}
+
+		if (column.type === "percentage") {
+			const numericPart = rawValue?.toString().replace("%", "").trim();
+			const percent = parseFloat(numericPart);
+			return !isNaN(percent) ? `${percent.toFixed(2)}%` : "0.00%";
+		}
+
+		return column.format ? column.format(rawValue, row) : (rawValue ?? "");
+	};
+
+	// Chunk columns for multi-page tables
+	const chunkColumns = (columns, chunkSize) => {
+		const leafColumns = getLeafColumns(columns);
+		const chunks = [];
+
+		for (let i = 0; i < leafColumns.length; i += chunkSize) {
+			const leafChunk = leafColumns.slice(i, i + chunkSize);
+			const chunk = reconstructNestedChunk(columns, leafChunk, i);
+			chunks.push(chunk);
+		}
+
 		return chunks;
 	};
 
+	// Reconstruct nested structure from leaf chunks
+	const reconstructNestedChunk = (columns, leafChunk, startIndex) => {
+		const leafIndices = new Set(
+			leafChunk.map((_, index) => startIndex + index)
+		);
+		let currentIndex = 0;
+
+		const reconstruct = (cols) => {
+			const result = [];
+
+			for (const col of cols) {
+				if (col.columns) {
+					const reconstructedChildren = reconstruct(col.columns);
+					if (reconstructedChildren.length > 0) {
+						result.push({
+							...col,
+							columns: reconstructedChildren,
+						});
+					}
+				} else {
+					if (leafIndices.has(currentIndex)) {
+						result.push({ ...col });
+					}
+					currentIndex++;
+				}
+			}
+
+			return result;
+		};
+
+		return reconstruct(columns);
+	};
+
+	// Calculate totals for numeric columns in a chunk
+	const calculateChunkTotals = (chunkLeafColumns) => {
+		const totals = chunkLeafColumns.map((col) => {
+			if (col.type === "number") {
+				let total = 0;
+				for (let i = 0; i < tableData.length; i++) {
+					const rawValue = tableData[i][col.key];
+					if (rawValue !== undefined && rawValue !== null) {
+						const cleaned = rawValue.toString().replace(/,/g, "");
+						const num = parseFloat(cleaned);
+						if (!isNaN(num)) {
+							total += num;
+						}
+					}
+				}
+				return total.toLocaleString(undefined, {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2,
+				});
+			}
+			return "";
+		});
+		return totals;
+	};
+
+	/** =====================
+	 * Main Export Handler
+	 * ===================== */
 	const handleExportToPDF = () => {
 		if (!tableData || tableData.length === 0 || exportColumns.length === 0) {
 			console.error("No data or exportColumns to export.");
 			return;
 		}
 
-		// Create PDF document with appropriate orientation
+		// Create PDF document
 		const doc = new jsPDF({
 			orientation: "landscape",
 		});
@@ -84,7 +321,7 @@ const ExportToPDF = ({
 
 		// Add search criteria if provided
 		if (Object.keys(exportSearchParams).length > 0) {
-			// Search Criteria Header with background color
+			// Search Criteria Header
 			doc.setFillColor(...COLORS.lightBlue);
 			doc.rect(margin, currentY, pageWidth - 2 * margin, 8, "F");
 			doc.setFontSize(12);
@@ -104,7 +341,6 @@ const ExportToPDF = ({
 					doc.text(`• ${displayKey}: ${value}`, margin + 5, currentY);
 					currentY += 6;
 
-					// Check if we need a new page
 					if (currentY > doc.internal.pageSize.getHeight() - 20) {
 						doc.addPage();
 						currentY = margin;
@@ -137,34 +373,13 @@ const ExportToPDF = ({
 		const columnChunks = chunkColumns(exportColumns, MAX_COLS_PER_TABLE);
 		const totalChunks = columnChunks.length;
 
-		// Calculate totals for numeric columns
-		const numericColumns = exportColumns.filter((col) => col.type === "number");
-		const totals = numericColumns.map((col) => {
-			let total = 0;
-			for (let i = 0; i < tableData.length; i++) {
-				const rawValue = tableData[i][col.key];
-				if (rawValue !== undefined && rawValue !== null) {
-					const cleaned = rawValue.toString().replace(/,/g, "");
-					const num = parseFloat(cleaned);
-					if (!isNaN(num)) {
-						total += num;
-					}
-				}
-			}
-			return total.toLocaleString(undefined, {
-				minimumFractionDigits: 2,
-				maximumFractionDigits: 2,
-			});
-		});
-
 		// Process each chunk of columns
 		columnChunks.forEach((chunk, chunkIndex) => {
-			// Add a continuation header for subsequent chunks
+			// Add continuation header for subsequent chunks
 			if (chunkIndex > 0) {
 				doc.addPage();
 				currentY = margin;
 
-				// Add continuation header
 				doc.setFillColor(...COLORS.lightBlue);
 				doc.rect(margin, currentY, pageWidth - 2 * margin, 8, "F");
 				doc.setFontSize(12);
@@ -178,82 +393,79 @@ const ExportToPDF = ({
 				currentY += 15;
 			}
 
-			// Prepare table data for this chunk
-			const headers = ["SN", ...chunk.map((col) => t(col.label))];
-			const dataRows = tableData.map((row, index) => {
+			// Get leaf columns for this chunk
+			const chunkLeafColumns = getLeafColumns(chunk);
+
+			// Build headers for this chunk
+			const headerRows = buildHeaderRows(chunk);
+			const autoTableHeaders = buildAutoTableHeaders(headerRows);
+
+			// Prepare table data
+			const dataRows = tableData.map((row, rowIndex) => {
 				const rowData = [
-					index + 1,
-					...chunk.map((col) => {
-						const rawValue = row[col.key];
-
-						if (col.type === "number") {
-							const cleaned = rawValue?.toString().replace(/,/g, "");
-							const num = parseFloat(cleaned);
-							return !isNaN(num)
-								? num.toLocaleString(undefined, {
-										minimumFractionDigits: 2,
-										maximumFractionDigits: 2,
-									})
-								: null;
-						}
-
-						if (col.type === "percentage") {
-							const numericPart = rawValue?.toString().replace("%", "").trim();
-							const percent = parseFloat(numericPart);
-							return !isNaN(percent) ? `${percent.toFixed(2)}%` : null;
-						}
-
-						return col.format ? col.format(rawValue, row) : (rawValue ?? "");
-					}),
+					(rowIndex + 1).toString(), // SN column
+					...chunkLeafColumns.map((col) => getCellValue(row, col, rowIndex)),
 				];
 				return rowData;
 			});
 
-			// Add column styles for this chunk
+			// Build column styles
 			const columnStyles = {
 				0: {
-					// Serial number column
-					cellWidth: 15,
+					// SN column
+					cellWidth: 20,
 					halign: "center",
+					fillColor: COLORS.lightBlue,
+					fontStyle: "bold",
+					lineColor: COLORS.lightGray,
 				},
 			};
 
-			chunk.forEach((col, idx) => {
-				if (col.width) {
-					columnStyles[idx + 1] = { cellWidth: col.width };
-				}
+			chunkLeafColumns.forEach((col, idx) => {
+				const columnIndex = idx + 1;
+				columnStyles[columnIndex] = {
+					halign:
+						col.type === "number" || col.type === "percentage"
+							? "right"
+							: "left",
+					lineColor: COLORS.lightGray,
+				};
 
-				if (col.type === "number" || col.type === "percentage") {
-					columnStyles[idx + 1] = {
-						...columnStyles[idx + 1],
-						halign: "right",
-					};
+				if (col.width) {
+					columnStyles[columnIndex].cellWidth = col.width;
 				}
 			});
 
 			// Add the table for this chunk
 			autoTable(doc, {
-				head: [headers],
+				head: autoTableHeaders,
 				body: dataRows,
 				startY: currentY,
 				margin: { left: margin, right: margin },
 				styles: {
 					font: "NotoSansEthiopic-Regular",
-					fontSize: 10,
-					cellPadding: 3,
+					fontSize: 9,
+					cellPadding: 4,
 					lineColor: COLORS.lightGray,
-					lineWidth: 0.5,
+					lineWidth: 0.3,
+					textColor: [0, 0, 0],
 				},
 				headStyles: {
-					font: "NotoSansEthiopic-Regular",
+					font: "NotoSansEthiopic-Bold",
 					fillColor: COLORS.accent,
 					textColor: COLORS.white,
 					fontStyle: "bold",
 					lineWidth: 0.5,
-					lineColor: COLORS.accent,
+					lineColor: COLORS.white,
+					minCellHeight: 8,
+					halign: "center",
 				},
 				bodyStyles: {
 					font: "NotoSansEthiopic-Regular",
+					fontSize: 9,
+					lineColor: COLORS.lightGray,
+					lineWidth: 0.3,
+					textColor: [0, 0, 0],
 				},
 				alternateRowStyles: {
 					fillColor: COLORS.lightBlue,
@@ -262,7 +474,6 @@ const ExportToPDF = ({
 				theme: "grid",
 				didDrawPage: function (data) {
 					const currentPage = data.pageNumber;
-					// Header
 					doc.setFontSize(10);
 					doc.setTextColor(100, 100, 100);
 					doc.setFont("NotoSansEthiopic-Regular", "normal");
@@ -275,46 +486,42 @@ const ExportToPDF = ({
 				},
 			});
 
-			// Update currentY position after drawing the table
 			currentY = doc.lastAutoTable.finalY + 10;
 
-			// Add totals row for this chunk if it contains numeric columns
-			const numericColumnsInChunk = chunk.filter(
+			// Add totals row for this chunk
+			const numericColumnsInChunk = chunkLeafColumns.filter(
 				(col) => col.type === "number"
 			);
 			if (numericColumnsInChunk.length > 0) {
-				// Create totals row data for this chunk
-				const totalsRow = ["Total"];
-				chunk.forEach((col) => {
-					const colIndex = numericColumns.findIndex((nc) => nc.key === col.key);
-					if (colIndex !== -1) {
-						totalsRow.push(totals[colIndex]);
-					} else {
-						totalsRow.push("");
-					}
-				});
+				// Calculate totals for this specific chunk
+				const chunkTotals = calculateChunkTotals(chunkLeafColumns);
 
+				// Create totals row with "Total" label and calculated totals
+				const totalsRow = [t("total"), ...chunkTotals];
+
+				// Add totals row with light orange background
 				autoTable(doc, {
 					body: [totalsRow],
 					startY: currentY,
 					margin: { left: margin, right: margin },
 					styles: {
-						fontSize: 10,
-						cellPadding: 3,
-						fillColor: COLORS.orange,
+						font: "NotoSansEthiopic-Bold",
+						fontSize: 9,
+						cellPadding: 4,
+						fillColor: COLORS.orange, // Light orange background
 						fontStyle: "bold",
 						lineColor: COLORS.lightGray,
-						lineWidth: 0.5,
+						lineWidth: 0.3,
+						textColor: [0, 0, 0],
 					},
 					columnStyles: columnStyles,
 					theme: "grid",
 				});
 
-				// Update currentY position after drawing the totals row
 				currentY = doc.lastAutoTable.finalY + 10;
 			}
 
-			// Add continuation notice if there are more chunks
+			// Add continuation notice
 			if (chunkIndex < totalChunks - 1) {
 				doc.setFontSize(10);
 				doc.setTextColor(...COLORS.gray);
@@ -323,48 +530,38 @@ const ExportToPDF = ({
 			}
 		});
 
+		// Handle signatures and page numbers
 		let totalPageCount = doc.internal.getNumberOfPages();
-		// Go to the last page
 		doc.setPage(totalPageCount);
 
-		// Get the current Y position on the last page
-		currentY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 10 : margin;
-
-		// Check if there's enough space for signatures (need about 50 units)
+		let currentYFinal = doc.lastAutoTable
+			? doc.lastAutoTable.finalY + 10
+			: margin;
 		const lastPageHeight = doc.internal.pageSize.getHeight();
 		let addedSignaturePage = false;
 
-		if (currentY > lastPageHeight - 50) {
-			// Not enough space, add a new page
+		if (currentYFinal > lastPageHeight - 50) {
 			doc.addPage();
 			totalPageCount += 1;
 			addedSignaturePage = true;
-
-			// Set to the new page for signatures
 			doc.setPage(totalPageCount);
-			currentY = margin; // Reset Y position for the new page
+			currentYFinal = margin;
 		}
 
-		// Update page numbers for ALL pages (only once, after all content)
+		// Add page numbers
 		for (let i = 1; i <= totalPageCount; i++) {
 			doc.setPage(i);
 			doc.setFontSize(10);
 			doc.setTextColor(100, 100, 100);
 			doc.setFont("NotoSansEthiopic-Regular", "normal");
-
-			// Footer - add page number to bottom
 			const pageHeight = doc.internal.pageSize.getHeight();
 			drawCenteredText(`Page ${i} of ${totalPageCount}`, pageHeight - 10);
 		}
 
-		// Set back to the last page for signatures
+		// Add signatures
 		doc.setPage(totalPageCount);
+		const signatureY = addedSignaturePage ? margin + 20 : currentYFinal + 20;
 
-		// Calculate Y position for signatures
-		// If we added a signature page, start from the top
-		const signatureY = addedSignaturePage ? margin + 20 : currentY + 20;
-
-		// Prepared by section
 		doc.setFontSize(11);
 		doc.setFont("NotoSansEthiopic-Bold", "normal");
 		doc.text(
@@ -372,21 +569,17 @@ const ExportToPDF = ({
 			margin,
 			signatureY
 		);
-
-		// Approved by section
-		doc.setFont("NotoSansEthiopic-Bold", "normal");
 		doc.text(
 			`${t("approved_by")}: ________________________`,
 			pageWidth / 2,
 			signatureY
 		);
 
-		// Confidential notice
 		doc.setFontSize(9);
 		doc.setTextColor(255, 0, 0);
 		drawCenteredText(t("confidential_notice"), signatureY + 20);
 
-		// Save the PDF
+		// Save PDF
 		const dateStr = new Date().toLocaleDateString().replace(/\//g, "-");
 		const safeTableName = transformTableName(tableName);
 		doc.save(`${safeTableName}_report_${dateStr}.pdf`);
