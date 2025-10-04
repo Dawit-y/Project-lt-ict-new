@@ -198,7 +198,9 @@ const AdvancedSearch = forwardRef(
 
 			// Update states
 			setSearchParams(combinedParams);
-			onSearchLabels(combinedParamsLabels)
+			if (onSearchLabels) {
+				onSearchLabels(combinedParamsLabels);
+			}
 		};
 
 		// Refetch whenever searchParams changes
