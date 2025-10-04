@@ -155,7 +155,8 @@ const ProjectFormModal = ({
 			prj_location_woreda_id: Yup.string(),
 			prj_urban_ben_number: numberValidation(0, 10000000, false),
 			prj_rural_ben_number: numberValidation(0, 10000000, false),
-			prj_measured_figure: formattedAmountValidation(1, 100000000000, false),
+			prj_measured_figure: formattedAmountValidation(1, 100000000000, true),
+			prj_measurement_unit: Yup.string().required(t("prj_measurement_unit")),
 			prj_location_description: alphanumericValidation(3, 425, false),
 			prj_remark: alphanumericValidation(3, 425, false),
 		}),
@@ -188,7 +189,7 @@ const ProjectFormModal = ({
 								dropdown1name="prj_location_region_id"
 								dropdown2name="prj_location_zone_id"
 								dropdown3name="prj_location_woreda_id"
-								required={true}
+								required={false}
 								layout="horizontal"
 								colSizes={{ md: 6, sm: 12, lg: 4 }}
 							/>
@@ -302,14 +303,14 @@ const ProjectFormModal = ({
 							type="text"
 							validation={validation}
 							fieldId={"prj_measurement_unit"}
-							isRequired={false}
+							isRequired={true}
 							className="col-md-3 mb-3"
 							maxLength={200}
 						/>
 						<FormattedAmountField
 							validation={validation}
 							fieldId={"prj_measured_figure"}
-							isRequired={false}
+							isRequired={true}
 							allowDecimal={true}
 						/>
 						<InputField

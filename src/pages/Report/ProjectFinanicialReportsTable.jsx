@@ -44,6 +44,12 @@ const FinancialProjectsTable = ({
 	const columnsConfig = useMemo(
 		() => [
 			{
+				id: "sector",
+				label: t("Sector"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
 				id: "prj_name",
 				label: t("Project Name"),
 				visible: true,
@@ -67,12 +73,6 @@ const FinancialProjectsTable = ({
 				label: t("Status"),
 				visible: true,
 				minWidth: 80,
-			},
-			{
-				id: "sector",
-				label: t("Sector"),
-				visible: true,
-				minWidth: 100,
 			},
 			{
 				id: "project_category",
@@ -554,6 +554,12 @@ const FinancialProjectsTable = ({
 				className={hasNoProjectName ? "no-project-name" : ""}
 				style={{ textAlign: "center" }}
 			>
+				{/* Sector */}
+				{!hiddenColumns.includes("sector") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="sector">
+						{row.commonValues.sector}
+					</td>
+				)}
 				{/* Project Name */}
 				{!hiddenColumns.includes("prj_name") && row.showMergedCells && (
 					<td
@@ -598,13 +604,6 @@ const FinancialProjectsTable = ({
 				{!hiddenColumns.includes("prj_status") && row.showMergedCells && (
 					<td rowSpan={row.commonValues.rowSpan} data-column="prj_status">
 						{row.commonValues.prj_status}
-					</td>
-				)}
-
-				{/* Sector */}
-				{!hiddenColumns.includes("sector") && row.showMergedCells && (
-					<td rowSpan={row.commonValues.rowSpan} data-column="sector">
-						{row.commonValues.sector}
 					</td>
 				)}
 
@@ -932,6 +931,11 @@ const FinancialProjectsTable = ({
 					<thead ref={headerRowRef}>
 						{/* Row 1: Main Groups */}
 						<tr>
+							{!hiddenColumns.includes("sector") && (
+								<th rowSpan={3} data-column="sector">
+									{t("Sector")}
+								</th>
+							)}
 							{!hiddenColumns.includes("prj_name") && (
 								<th
 									rowSpan={3}
@@ -956,21 +960,13 @@ const FinancialProjectsTable = ({
 									{t("Status")}
 								</th>
 							)}
-							{!hiddenColumns.includes("sector") && (
-								<th rowSpan={3} data-column="sector">
-									{t("Sector")}
-								</th>
-							)}
 							{!hiddenColumns.includes("project_category") && (
 								<th rowSpan={3} data-column="project_category">
 									{t("Category")}
 								</th>
 							)}
 							{!hiddenColumns.includes("prj_code") && (
-								<th
-									rowSpan={3}
-									data-column="prj_code"
-								>
+								<th rowSpan={3} data-column="prj_code">
 									{t("Project Code")}
 								</th>
 							)}
@@ -1059,7 +1055,6 @@ const FinancialProjectsTable = ({
 									{t("Woreda")}
 								</th>
 							)}
-
 
 							{/* Physical Performance subgroups */}
 							{!hiddenColumns.includes("bdr_before_previous_year_physical") && (

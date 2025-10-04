@@ -74,6 +74,7 @@ const UsersModel = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
+	const [exportSearchParams, setExportSearchParams] = useState(null);
 
 	const exportColumns = useUserExportColumns();
 	const { data, isLoading, error, isError, refetch } = useFetchUserss(null);
@@ -174,6 +175,11 @@ const UsersModel = () => {
 		setSearchError(error);
 		setShowSearchResult(true);
 	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
 	// validation
 	const validation = useFormik({
 		enableReinitialize: true,
@@ -653,6 +659,7 @@ const UsersModel = () => {
 							dropdown3name: "usr_woreda_id",
 						}}
 						onSearchResult={handleSearchResults}
+						onSearchLabels={handleSearchLabels}
 						setIsSearchLoading={setIsSearchLoading}
 						setSearchResults={setSearchResults}
 						setShowSearchResult={setShowSearchResult}
@@ -677,6 +684,7 @@ const UsersModel = () => {
 								isPrint={true}
 								tableName="Users"
 								exportColumns={exportColumns}
+								exportSearchParams={exportSearchParams}
 							/>
 						</div>
 					)}
