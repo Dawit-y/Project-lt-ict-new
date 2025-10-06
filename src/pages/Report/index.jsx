@@ -238,6 +238,7 @@ const Report = () => {
 				},
 				dropdownSearchKeys: [
 					{ key: "prp_budget_year_id", options: budgetYearOptions },
+					{ key: "sector_category", options: sectorCategoryOptions },
 					{
 						key: "prj_sector_id",
 						options:
