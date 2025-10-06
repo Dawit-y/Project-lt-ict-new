@@ -2027,5 +2027,6 @@
 	"no_date": "No Date",
 	"baseline_upto_now": "Baseline upto Now",
 	"bdr_previous_year": "Previous Year Baseline",
-	"bdr_before_previous_year": "Before Previous Year Baseline"
+	"bdr_before_previous_year": "Before Previous Year Baseline",
+	"ownership_information": "Ownership Information"
 }
