@@ -2028,5 +2028,11 @@
 	"baseline_upto_now": "Baseline upto Now",
 	"bdr_previous_year": "Previous Year Baseline",
 	"bdr_before_previous_year": "Before Previous Year Baseline",
-	"ownership_information": "Ownership Information"
+	"ownership_information": "Ownership Information",
+	"select_cluster": "Select Cluster",
+	"select_sector_category": "Select Sector Category",
+	"select_sector": "Select Sector",
+	"select_owner_zone": "Select Owner Zone",
+	"select_owner_woreda": "Select Owner Woreda",
+	"select_owner_type": "Select Owner Type"
 }
