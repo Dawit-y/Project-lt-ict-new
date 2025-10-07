@@ -173,8 +173,6 @@ const ProjectFormModal = ({
 		);
 	}, [programs, project?.prj_parent_id]);
 
-	console.log("Derived IDs:", { clusterId, programId, subProgramId });
-
 	const projectCategoryMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
 			projectCategoryData?.data || [],

@@ -2033,6 +2033,14 @@
 	"select_sector_category": "Select Sector Category",
 	"select_sector": "Select Sector",
 	"select_owner_zone": "Select Owner Zone",
+	"select_owner_region": "Select Owner Region",
 	"select_owner_woreda": "Select Owner Woreda",
-	"select_owner_type": "Select Owner Type"
+	"select_owner_type": "Select Owner Type",
+	"select_program": "Select Program",
+	"select_sub_program": "Select Sub Program",
+	"select_output": "Select Output",
+	"owner_region": "Owner Region",
+	"owner_zone": "Owner Zone",
+	"owner_woreda": "Owner Woreda",
+	"sub_program": "Sub Program"
 }

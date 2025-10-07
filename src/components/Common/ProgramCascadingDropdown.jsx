@@ -408,7 +408,7 @@ const ProgramCascadingDropdowns = ({
 			{/* Region */}
 			<Dropdown
 				name={regionField}
-				label={regionField}
+				label={"owner_region"}
 				value={validation?.values?.[regionField]}
 				onChange={handleRegionChange}
 				onBlur={validation?.handleBlur}
@@ -421,7 +421,7 @@ const ProgramCascadingDropdowns = ({
 			{/* Zone */}
 			<Dropdown
 				name={zoneField}
-				label={zoneField}
+				label={"owner_zone"}
 				value={validation?.values?.[zoneField]}
 				onChange={handleZoneChange}
 				onBlur={validation?.handleBlur}
@@ -434,7 +434,7 @@ const ProgramCascadingDropdowns = ({
 			{/* Woreda */}
 			<Dropdown
 				name={woredaField}
-				label={woredaField}
+				label={"owner_woreda"}
 				value={validation?.values?.[woredaField]}
 				onChange={handleWoredaChange}
 				onBlur={validation?.handleBlur}
@@ -471,7 +471,7 @@ const ProgramCascadingDropdowns = ({
 			{/* Sector */}
 			<Dropdown
 				name={sectorField}
-				label={sectorField}
+				label={"Sector"}
 				value={validation?.values?.[sectorField]}
 				onChange={handleSectorChange}
 				onBlur={validation?.handleBlur}
@@ -518,7 +518,7 @@ const ProgramCascadingDropdowns = ({
 			{/* Sub Program */}
 			<Dropdown
 				name={subProgramField}
-				label="Sub Program"
+				label="sub_program"
 				value={validation?.values?.[subProgramField]}
 				onChange={handleSubProgramChange}
 				onBlur={validation?.handleBlur}
@@ -689,7 +689,7 @@ const ProgramCascadingDropdowns = ({
 				<Col {...colSizes}>
 					<Dropdown
 						name={subProgramField}
-						label="Sub Program"
+						label="sub_program"
 						value={validation?.values?.[subProgramField]}
 						onChange={handleSubProgramChange}
 						onBlur={validation?.handleBlur}
