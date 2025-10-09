@@ -1752,5 +1752,11 @@
 	"data_summary": "ማጠቃለያ",
 	"total_records": "ጠቅላላ መዝገቦች",
 	"prepared_by": "ዝግጅቱ የተደረገው",
-	"approved_by": "የጸደቀው"
+	"approved_by": "የጸደቀው",
+	"prj_direct_ben_male": "ቀጥተኛ ተጠቃሚዎች (ወንድ)",
+	"prj_direct_ben_female": "ቀጥተኛ ተጠቃሚዎች (ሴት)",
+	"prj_indirect_ben_male": "ቀጥተኛ ያልሆኑ ተጠቃሚዎች (ወንድ)",
+	"prj_indirect_ben_female": "ቀጥተኛ ያልሆኑ ተጠቃሚዎች (ሴት)",
+	"prj_date_agreement_signed": "ስምምነት የተፈረመበት ቀን",
+	"prj_agreement_signed_level": "ስምምነት የተፈረመበት ደረጃ"
 }
