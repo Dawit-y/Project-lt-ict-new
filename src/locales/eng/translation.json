@@ -2042,5 +2042,21 @@
 	"owner_region": "Owner Region",
 	"owner_zone": "Owner Zone",
 	"owner_woreda": "Owner Woreda",
-	"sub_program": "Sub Program"
+	"sub_program": "Sub Program",
+	"prj_direct_ben_male": "Direct Beneficiaries (Male)",
+	"prj_direct_ben_female": "Direct Beneficiaries (Female)",
+	"prj_indirect_ben_male": "Indirect Beneficiaries (Male)",
+	"prj_indirect_ben_female": "Indirect Beneficiaries (Female)",
+	"prj_date_agreement_signed": "Agreement Signed Date",
+	"prj_agreement_signed_level": "Agreement Signed Level",
+	"project_location": "Project Location",
+	"budget_timeline": "Budget Timeline",
+	"geographic_distribution": "Geographic Distribution",
+	"gender_distribution": "Gender Distribution",
+	"direct_beneficiaries": "Direct Beneficiaries",
+	"indirect_beneficiaries": "Indirect Beneficiaries",
+	"agreement_details": "Agreement Details",
+	"beneficiary_information": "Beneficiary Information",
+	"federal": "Federal",
+	"regional": "Regional"
 }

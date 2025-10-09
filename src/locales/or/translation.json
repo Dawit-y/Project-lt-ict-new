@@ -1425,5 +1425,11 @@
 	"data_summary": "Gabaasa Xumuraa Daataa",
 	"total_records": "Wanta Galmee Guutuu",
 	"prepared_by": "Kan qopheesse",
-	"approved_by": "Kan eeyyame"
+	"approved_by": "Kan eeyyame",
+	"prj_direct_ben_male": "Namoota Fayyadamoo Tooraa (Dhiira)",
+	"prj_direct_ben_female": "Namoota Fayyadamoo Tooraa (Dubartii)",
+	"prj_indirect_ben_male": "Namoota Fayyadamoo Al-Tooraa (Dhiira)",
+	"prj_indirect_ben_female": "Namoota Fayyadamoo Al-Tooraa (Dubartii)",
+	"prj_date_agreement_signed": "Guyyaa Waliigalteen Mallattaa'e",
+	"prj_agreement_signed_level": "Sadarkaa Waliigalteen Mallattaa'e"
 }
