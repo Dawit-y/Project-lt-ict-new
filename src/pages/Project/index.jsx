@@ -232,47 +232,7 @@ const ProjectModel = () => {
 
 	const handleProjectClick = (arg) => {
 		const project = arg;
-		setProject({
-			prj_id: project.prj_id,
-			prj_name: project.prj_name,
-			prj_name_am: project.prj_name_am,
-			prj_name_en: project.prj_name_en,
-			prj_code: project.prj_code,
-			prj_project_status_id: project.prj_project_status_id,
-			prj_project_category_id: project.prj_project_category_id,
-			prj_project_budget_source_id: project.prj_project_budget_source_id,
-			prj_total_estimate_budget: project.prj_total_estimate_budget,
-			prj_total_actual_budget: project.prj_total_actual_budget,
-			prj_geo_location: project.prj_geo_location,
-			prj_sector_id: project.prj_sector_id,
-			prj_location_region_id: project.prj_location_region_id,
-			prj_location_zone_id: project.prj_location_zone_id,
-			prj_location_woreda_id: project.prj_location_woreda_id,
-			prj_location_kebele_id: project.prj_location_kebele_id,
-			prj_location_description: project.prj_location_description,
-			prj_owner_region_id: project.prj_owner_region_id,
-			prj_owner_zone_id: project.prj_owner_zone_id,
-			prj_owner_woreda_id: project.prj_owner_woreda_id,
-			prj_owner_kebele_id: project.prj_owner_kebele_id,
-			prj_owner_description: project.prj_owner_description,
-			prj_start_date_et: project.prj_start_date_et,
-			prj_start_date_gc: project.prj_start_date_gc,
-			prj_start_date_plan_et: project.prj_start_date_plan_et,
-			prj_start_date_plan_gc: project.prj_start_date_plan_gc,
-			prj_end_date_actual_et: project.prj_end_date_actual_et,
-			prj_end_date_actual_gc: project.prj_end_date_actual_gc,
-			prj_end_date_plan_gc: project.prj_end_date_plan_gc,
-			prj_end_date_plan_et: project.prj_end_date_plan_et,
-			prj_outcome: project.prj_outcome,
-			prj_deleted: project.prj_deleted,
-			prj_remark: project.prj_remark,
-			prj_created_date: project.prj_created_date,
-			prj_owner_id: project.prj_owner_id,
-			prj_urban_ben_number: project.prj_urban_ben_number,
-			prj_rural_ben_number: project.prj_rural_ben_number,
-			prj_measurement_unit: project.prj_measurement_unit,
-			prj_measured_figure: project.prj_measured_figure,
-		});
+		setProject(project);
 		setIsEdit(true);
 		toggle();
 	};

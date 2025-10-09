@@ -136,42 +136,42 @@ const ProjectFormModal = ({
 		isError: prCategoryIsError,
 	} = useFetchProjectCategorys();
 
-	const { userId } = useAuthUser();
-	const {
-		data: clustersWithSectors = [],
-		isLoading: loadingClustersSectors,
-		isError: isClusterError,
-		error: clusterError,
-	} = getUserSectorListTree(userId);
+	// const { userId } = useAuthUser();
+	// const {
+	// 	data: clustersWithSectors = [],
+	// 	isLoading: loadingClustersSectors,
+	// 	isError: isClusterError,
+	// 	error: clusterError,
+	// } = getUserSectorListTree(userId);
 
-	const clusterId = useMemo(() => {
-		if (!project || !project.prj_sector_id) return null;
-		return getParentClusterIdFromSectorId(
-			clustersWithSectors,
-			project.prj_sector_id
-		);
-	}, [project, clustersWithSectors, project?.prj_sector_id]);
+	// const clusterId = useMemo(() => {
+	// 	if (!project || !project.prj_sector_id) return null;
+	// 	return getParentClusterIdFromSectorId(
+	// 		clustersWithSectors,
+	// 		project.prj_sector_id
+	// 	);
+	// }, [project, clustersWithSectors, project?.prj_sector_id]);
 
-	const {
-		data: programs,
-		isLoading: isProgramsLoading,
-		isError: isProgramsError,
-		refetch: refetchPrograms,
-		error: ProgramsError,
-	} = useFetchProgramTree(
-		{ pri_sector_id: project?.prj_sector_id },
-		!!project?.prj_sector_id
-	);
+	// const {
+	// 	data: programs,
+	// 	isLoading: isProgramsLoading,
+	// 	isError: isProgramsError,
+	// 	refetch: refetchPrograms,
+	// 	error: ProgramsError,
+	// } = useFetchProgramTree(
+	// 	{ pri_sector_id: project?.prj_sector_id },
+	// 	!!project?.prj_sector_id
+	// );
 
-	const { programId, subProgramId } = useMemo(() => {
-		if (!programs || !project?.prj_parent_id) {
-			return { programId: null, subProgramId: null };
-		}
-		return getProgramHierarchyForOutput(
-			programs?.data ?? [],
-			project.prj_parent_id
-		);
-	}, [programs, project?.prj_parent_id]);
+	// const { programId, subProgramId } = useMemo(() => {
+	// 	if (!programs || !project?.prj_parent_id) {
+	// 		return { programId: null, subProgramId: null };
+	// 	}
+	// 	return getProgramHierarchyForOutput(
+	// 		programs?.data ?? [],
+	// 		project.prj_parent_id
+	// 	);
+	// }, [programs, project?.prj_parent_id]);
 
 	const projectCategoryMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
@@ -241,9 +241,9 @@ const ProjectFormModal = ({
 			prj_parent_id: (project && project.prj_parent_id) || "",
 			prj_object_type_id: (project && project.prj_object_type_id) || "",
 			// Program cascading dropdown fields
-			prj_cluster_id: clusterId ?? "",
-			prj_program_id: programId || "",
-			prj_sub_program_id: subProgramId || "",
+			// prj_cluster_id: clusterId ?? "",
+			// prj_program_id: programId || "",
+			// prj_sub_program_id: subProgramId || "",
 		},
 
 		validationSchema: Yup.object({
@@ -279,13 +279,10 @@ const ProjectFormModal = ({
 				1000000000000,
 				false
 			),
-			prj_location_region_id: Yup.string(),
-			prj_location_zone_id: Yup.string(),
 			prj_start_date_plan_gc: Yup.string().required(
 				t("prj_start_date_plan_gc")
 			),
 			prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
-			prj_location_woreda_id: Yup.string(),
 			prj_urban_ben_number: numberValidation(0, 10000000, false),
 			prj_rural_ben_number: numberValidation(0, 10000000, false),
 			prj_measured_figure: formattedAmountValidation(1, 100000000000, true),
@@ -293,14 +290,14 @@ const ProjectFormModal = ({
 			prj_location_description: alphanumericValidation(3, 425, false),
 			prj_remark: alphanumericValidation(3, 425, false),
 
-			prj_owner_region_id: Yup.string().required(t("val_required")),
-			prj_owner_zone_id: Yup.string().required(t("val_required")),
-			prj_owner_woreda_id: Yup.string().required(t("val_required")),
-			prj_cluster_id: Yup.string().required(t("val_required")),
+			// prj_owner_region_id: Yup.string().required(t("val_required")),
+			// prj_owner_zone_id: Yup.string().required(t("val_required")),
+			// prj_owner_woreda_id: Yup.string().required(t("val_required")),
+			// prj_cluster_id: Yup.string().required(t("val_required")),
 			prj_sector_id: Yup.string().required(t("val_required")),
-			prj_program_id: Yup.string().required(t("val_required")),
-			prj_sub_program_id: Yup.string().required(t("val_required")),
-			prj_parent_id: Yup.string().required(t("val_required")),
+			// prj_program_id: Yup.string().required(t("val_required")),
+			// prj_sub_program_id: Yup.string().required(t("val_required")),
+			// prj_parent_id: Yup.string().required(t("val_required")),
 		}),
 		validateOnBlur: true,
 		validateOnChange: true,
@@ -532,7 +529,7 @@ const ProjectFormModal = ({
 						return false;
 					}}
 				>
-					{isEdit ? renderFormWithTabs() : renderFormWithoutTabs()}
+					{isEdit ? renderFormWithoutTabs() : renderFormWithoutTabs()}
 
 					<Row className="mt-3">
 						<Col>
