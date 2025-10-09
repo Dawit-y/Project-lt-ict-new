@@ -4,7 +4,6 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../pages/Dashboard/index";
 import Login from "../pages/Authentication/CsoLogin.jsx";
 import CsoRegister from "../pages/Authentication/CsoRegister.jsx";
-import { components } from "react-select";
 import ResetPassword from "../pages/Authentication/ResetPassword.jsx";
 import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
 import LandingPage from "../pages/Landing/index";
