@@ -79,30 +79,30 @@ const ProjectStakeholderModel = (props) => {
 		try {
 			await addProjectStakeholder.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateProjectStakeholder = async (data) => {
 		try {
 			await updateProjectStakeholder.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteProjectStakeholder = async () => {
 		if (projectStakeholder && projectStakeholder.emp_id) {
@@ -110,11 +110,11 @@ const ProjectStakeholderModel = (props) => {
 				const id = projectStakeholder.emp_id;
 				await deleteProjectStakeholder.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -356,10 +356,10 @@ const ProjectStakeholderModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable && (
 								<Button
 									size="sm"
@@ -377,8 +377,9 @@ const ProjectStakeholderModel = (props) => {
 								</Button>
 							)}
 							{cellProps.row.original.is_deletable && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -392,7 +393,7 @@ const ProjectStakeholderModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -401,7 +402,7 @@ const ProjectStakeholderModel = (props) => {
 		}
 
 		return baseColumns;
-	}, [handleProjectStakeholderClick, toggleViewModal, onClickDelete]);
+	}, [handleProjectStakeholderClick, toggleViewModal, onClickDelete, data, t]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

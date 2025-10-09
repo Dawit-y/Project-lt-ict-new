@@ -9,7 +9,7 @@ const API_URL = "https://pms.awashsol.com/api";
 
 const fetchTasks = async (projectPlanId) => {
   const { data } = await axios.get(
-    `${API_URL}/data?project_plan_id=${projectPlanId}`
+    `${API_URL}/data?project_plan_id=${projectPlanId}`,
   );
   return data;
 };
@@ -32,7 +32,7 @@ const updateTask = async (updatedTask) => {
   };
   const { data } = await axios.put(
     `${API_URL}/task/${updatedTask.id}`,
-    payload
+    payload,
   );
   return data;
 };
@@ -50,7 +50,7 @@ const createLink = async (newLink) => {
 const updateLink = async (updatedLink) => {
   const { data } = await axios.put(
     `${API_URL}/link/${updatedLink.id}`,
-    updatedLink
+    updatedLink,
   );
   return data;
 };
@@ -72,7 +72,14 @@ const isTaskReadonly = (projectStatusId) => {
   return projectStatusId !== 5 && projectStatusId !== 6;
 };
 
-const GanttChart = ({ pld_id, name, startDate, endDate, projectStatusId, readOnly = false }) => {
+const GanttChart = ({
+  pld_id,
+  name,
+  startDate,
+  endDate,
+  projectStatusId,
+  readOnly = false,
+}) => {
   const { t } = useTranslation();
   const ganttInitialized = useRef(false);
   const processorInitialized = useRef(false);
@@ -108,7 +115,7 @@ const GanttChart = ({ pld_id, name, startDate, endDate, projectStatusId, readOnl
             export_api: true,
           });
 
-          gantt.config.readonly = isTaskReadonly(projectStatusId) || readOnly
+          gantt.config.readonly = isTaskReadonly(projectStatusId) || readOnly;
           gantt.config.row_height = 40;
           gantt.config.scale_height = 50;
           gantt.config.start_date = newStartDate.toISOString();

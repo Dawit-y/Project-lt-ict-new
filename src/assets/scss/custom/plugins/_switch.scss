@@ -39,7 +39,7 @@ input.switch {
     }
 
     &:after {
-      content: '';
+      content: "";
       position: absolute;
       left: 3px;
       background-color: $gray-200;
@@ -75,8 +75,9 @@ input.switch:checked + label {
 input.switch-bool + label {
   background-color: $danger;
 }
-input.switch-bool + label:before,input.switch-bool:checked + label:before,
-input[switch="default"]:checked + label:before{
+input.switch-bool + label:before,
+input.switch-bool:checked + label:before,
+input[switch="default"]:checked + label:before {
   color: $white;
 }
 
@@ -115,9 +116,10 @@ input.switch-dark:checked + label {
   }
 }
 
-.square-switch{
+.square-switch {
   margin-right: 7px;
-  input.switch+label, input.switch+label:after{
+  input.switch + label,
+  input.switch + label:after {
     border-radius: 4px;
   }
 }

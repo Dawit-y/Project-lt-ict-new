@@ -17,7 +17,7 @@ import {
   Input,
   Spinner,
   CardTitle,
-  Badge
+  Badge,
 } from "reactstrap";
 import Select from "react-select";
 import * as Yup from "yup";
@@ -33,19 +33,24 @@ import DatePicker from "../../components/Common/DatePicker";
 
 const AssignCsoRequests = lazy(() => import("./AssignCsoRequests"));
 
-const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYearMap = {} }) => {
+const ApproverBudgetRequestListModal = ({
+  isOpen,
+  toggle,
+  transaction,
+  budgetYearMap = {},
+}) => {
   const { t } = useTranslation();
   const { mutateAsync, isPending } = useUpdateBudgetRequestApproval();
   const { data: statusData } = useFetchRequestStatuss();
 
   const statusOptions = useMemo(
     () => createSelectOptions(statusData?.data || [], "rqs_id", "rqs_name_en"),
-    [statusData]
+    [statusData],
   );
 
   const getStatusOption = useCallback(
     (value) => statusOptions.find((option) => option.value === value) || null,
-    [statusOptions]
+    [statusOptions],
   );
 
   const projectId = transaction?.bdr_project_id;
@@ -56,9 +61,9 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
   const handleUpdateBudgetRequest = async (data) => {
     try {
       await mutateAsync(data);
-      toast.success(t("update_success"), { autoClose: 2000 });
+      toast.success(t("update_success"), { autoClose: 3000 });
     } catch (error) {
-      toast.error(t("update_failure"), { autoClose: 2000 });
+      toast.error(t("update_failure"), { autoClose: 3000 });
     }
     toggle();
   };
@@ -67,7 +72,10 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
     bdr_request_status: Yup.string().required("Status is required"),
     bdr_released_amount: Yup.number()
       .min(0, "Released amount must be greater or equal to 0")
-      .max(transaction.bdr_requested_amount, "Cannot release more than requested")
+      .max(
+        transaction.bdr_requested_amount,
+        "Cannot release more than requested",
+      )
       .when("bdr_request_status", {
         is: "Accepted",
         then: (schema) => schema.required("Released amount is required"),
@@ -81,7 +89,9 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
       bdr_id: transaction.bdr_id || "",
       bdr_request_status: transaction.bdr_request_status || "",
       bdr_released_amount:
-        transaction.bdr_request_status == 2 ? transaction.bdr_released_amount || "" : "",
+        transaction.bdr_request_status == 2
+          ? transaction.bdr_released_amount || ""
+          : "",
       bdr_released_date_gc: transaction.bdr_released_date_gc || "",
       bdr_action_remark: transaction.bdr_action_remark || "",
     },
@@ -98,7 +108,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
     (selectedOption) => {
       formik.setFieldValue("bdr_request_status", selectedOption.value);
     },
-    [formik]
+    [formik],
   );
 
   const tabs = useMemo(
@@ -107,7 +117,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
       {
         id: "Assign",
         label: "Assign",
-        content:
+        content: (
           <Suspense fallback={<Spinner />}>
             <AssignCsoRequests
               request={transaction}
@@ -115,6 +125,7 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
               budgetYearMap={budgetYearMap}
             />
           </Suspense>
+        ),
       },
       {
         id: "take_action",
@@ -127,16 +138,28 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                   <CardTitle>Overview</CardTitle>
                   <Row>
                     <Col>
-                      <Badge color={transaction.color_code} pill className='py-1 px-2 mb-2'>
+                      <Badge
+                        color={transaction.color_code}
+                        pill
+                        className="py-1 px-2 mb-2"
+                      >
                         {transaction?.status_name}
                       </Badge>
                     </Col>
                   </Row>
                   <Table size="sm" className="mb-3">
                     <tbody>
-                      {[[t("Year"), budgetYearMap[transaction.bdr_budget_year_id]],
-                      [t("bdr_requested_date_gc"), transaction.bdr_requested_date_gc],
-                      [t("bdr_description"), transaction.bdr_description]].map(([label, value]) => (
+                      {[
+                        [
+                          t("Year"),
+                          budgetYearMap[transaction.bdr_budget_year_id],
+                        ],
+                        [
+                          t("bdr_requested_date_gc"),
+                          transaction.bdr_requested_date_gc,
+                        ],
+                        [t("bdr_description"), transaction.bdr_description],
+                      ].map(([label, value]) => (
                         <tr key={label}>
                           <th>{label}</th>
                           <td>{value}</td>
@@ -150,14 +173,32 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                       {[
                         [t("prj_name"), project?.data?.prj_name],
                         [t("prj_code"), project?.data?.prj_code],
-                        [t("prj_project_category_id"), project?.data?.prj_project_category_id],
-                        [t("prj_total_estimate_budget"), project?.data?.prj_total_estimate_budget],
-                        [t("prj_total_actual_budget"), project?.data?.prj_total_actual_budget],
-                        [t("prj_start_date_plan_gc"), project?.data?.prj_start_date_plan_gc],
+                        [
+                          t("prj_project_category_id"),
+                          project?.data?.prj_project_category_id,
+                        ],
+                        [
+                          t("prj_total_estimate_budget"),
+                          project?.data?.prj_total_estimate_budget,
+                        ],
+                        [
+                          t("prj_total_actual_budget"),
+                          project?.data?.prj_total_actual_budget,
+                        ],
+                        [
+                          t("prj_start_date_plan_gc"),
+                          project?.data?.prj_start_date_plan_gc,
+                        ],
                         [t("prj_outcome"), project?.data?.prj_outcome],
                         [t("prj_remark"), project?.data?.prj_remark],
-                        [t("prj_urban_ben_number"), project?.data?.prj_urban_ben_number],
-                        [t("prj_rural_ben_number"), project?.data?.prj_rural_ben_number],
+                        [
+                          t("prj_urban_ben_number"),
+                          project?.data?.prj_urban_ben_number,
+                        ],
+                        [
+                          t("prj_rural_ben_number"),
+                          project?.data?.prj_rural_ben_number,
+                        ],
                       ].map(([label, value]) => (
                         <tr key={label}>
                           <th>{label}</th>
@@ -179,7 +220,9 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                       <Select
                         name="bdr_request_status"
                         options={statusOptions}
-                        value={getStatusOption(formik.values.bdr_request_status)}
+                        value={getStatusOption(
+                          formik.values.bdr_request_status,
+                        )}
                         onChange={handleStatusChange}
                         isDisabled={isDisabled}
                       />
@@ -189,7 +232,8 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                         isRequired
                         componentId="bdr_released_date_gc"
                         validation={formik}
-                        disabled={isDisabled} />
+                        disabled={isDisabled}
+                      />
                     </FormGroup>
                     <FormGroup>
                       <Label>Action Remark</Label>
@@ -202,8 +246,16 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
                         disabled={isDisabled}
                       />
                     </FormGroup>
-                    <Button type="submit" color="primary" className="w-md" disabled={(isPending || !formik.dirty) && isDisabled}>
-                      {isPending ? <Spinner size="sm" className="me-2" /> : null} Submit
+                    <Button
+                      type="submit"
+                      color="primary"
+                      className="w-md"
+                      disabled={(isPending || !formik.dirty) && isDisabled}
+                    >
+                      {isPending ? (
+                        <Spinner size="sm" className="me-2" />
+                      ) : null}{" "}
+                      Submit
                     </Button>
                   </form>
                 </CardBody>
@@ -212,17 +264,20 @@ const ApproverBudgetRequestListModal = ({ isOpen, toggle, transaction, budgetYea
           </Row>
         ),
       },
-
     ],
-    [transaction, budgetYearMap, project, statusOptions, handleStatusChange]
+    [transaction, budgetYearMap, project, statusOptions, handleStatusChange],
   );
 
   return (
     <Modal isOpen={isOpen} centered className="modal-xl" toggle={toggle}>
       <ModalHeader toggle={toggle}>{t("take_action")}</ModalHeader>
-      <ModalBody><TabWrapper tabs={tabs} /></ModalBody>
+      <ModalBody>
+        <TabWrapper tabs={tabs} />
+      </ModalBody>
       <ModalFooter>
-        <Button color="secondary" onClick={toggle}>{t("Close")}</Button>
+        <Button color="secondary" onClick={toggle}>
+          {t("Close")}
+        </Button>
       </ModalFooter>
     </Modal>
   );

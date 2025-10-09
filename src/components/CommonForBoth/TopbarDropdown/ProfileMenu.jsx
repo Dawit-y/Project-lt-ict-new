@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
-	Dropdown,
-	DropdownToggle,
-	DropdownMenu,
-	DropdownItem,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
 } from "reactstrap";
 import { withTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
@@ -13,8 +13,8 @@ import defaultAvatar from "../../../assets/images/default-avatar.jpg";
 import { useAuthUser } from "../../../hooks/useAuthUser";
 
 const ProfileMenu = (props) => {
-	const [menu, setMenu] = useState(false);
-	const { user: authUser } = useAuthUser();
+  const [menu, setMenu] = useState(false);
+  const { user: authUser } = useAuthUser();
 
 	return (
 		<React.Fragment>
@@ -59,8 +59,8 @@ const ProfileMenu = (props) => {
 };
 
 ProfileMenu.propTypes = {
-	success: PropTypes.any,
-	t: PropTypes.any,
+  success: PropTypes.any,
+  t: PropTypes.any,
 };
 
 export default withRouter(withTranslation()(ProfileMenu));

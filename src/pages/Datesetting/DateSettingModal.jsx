@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+	width: "100%",
 };
 
 const DateSettingModal = (props) => {
@@ -33,31 +32,46 @@ const DateSettingModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('dts_parameter_name')}: <span className="text-primary">{transaction.dts_parameter_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dts_parameter_code')}: <span className="text-primary">{transaction.dts_parameter_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dts_start_date')}: <span className="text-primary">{transaction.dts_start_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dts_end_date')}: <span className="text-primary">{transaction.dts_end_date}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dts_description')}: <span className="text-primary">{transaction.dts_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("dts_parameter_name")}:{" "}
+              <span className="text-primary">
+                {transaction.dts_parameter_name}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dts_parameter_code")}:{" "}
+              <span className="text-primary">
+                {transaction.dts_parameter_code}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dts_start_date")}:{" "}
+              <span className="text-primary">{transaction.dts_start_date}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dts_end_date")}:{" "}
+              <span className="text-primary">{transaction.dts_end_date}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dts_description")}:{" "}
+              <span className="text-primary">
+                {transaction.dts_description}
+              </span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

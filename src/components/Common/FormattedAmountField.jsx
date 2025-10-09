@@ -11,7 +11,7 @@ const FormattedAmountField = ({
   isRequired = false,
   allowDecimal = false,
   className,
-  infoText
+  infoText,
 }) => {
   const { t } = useTranslation();
   const rawValue = validation.values[fieldId];
@@ -26,8 +26,11 @@ const FormattedAmountField = ({
         if (!isNaN(number)) {
           setDisplayValue(
             allowDecimal
-              ? number.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-              : number.toLocaleString()
+              ? number.toLocaleString(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 2,
+                })
+              : number.toLocaleString(),
           );
         } else {
           setDisplayValue("");
@@ -50,12 +53,13 @@ const FormattedAmountField = ({
 
       if (input !== "") {
         if (!isNaN(numeric)) {
-          newDisplayValue = allowDecimal && input.includes(".")
-            ? numeric.toLocaleString(undefined, {
-              minimumFractionDigits: input.endsWith(".") ? 0 : 1,
-              maximumFractionDigits: 2,
-            }) + (input.endsWith(".") ? "." : "")
-            : numeric.toLocaleString();
+          newDisplayValue =
+            allowDecimal && input.includes(".")
+              ? numeric.toLocaleString(undefined, {
+                  minimumFractionDigits: input.endsWith(".") ? 0 : 1,
+                  maximumFractionDigits: 2,
+                }) + (input.endsWith(".") ? "." : "")
+              : numeric.toLocaleString();
         }
       }
 
@@ -70,8 +74,11 @@ const FormattedAmountField = ({
     if (!isNaN(numeric)) {
       setDisplayValue(
         allowDecimal
-          ? numeric.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })
-          : numeric.toLocaleString()
+          ? numeric.toLocaleString(undefined, {
+              minimumFractionDigits: 0,
+              maximumFractionDigits: 2,
+            })
+          : numeric.toLocaleString(),
       );
     } else {
       setDisplayValue("");
@@ -116,7 +123,7 @@ FormattedAmountField.propTypes = {
   fieldId: PropTypes.string.isRequired,
   allowDecimal: PropTypes.bool,
   className: PropTypes.string,
-  infoText: PropTypes.string
+  infoText: PropTypes.string,
 };
 
 export default FormattedAmountField;

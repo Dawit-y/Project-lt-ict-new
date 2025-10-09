@@ -1,5 +1,13 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
-import { Col, Nav, NavItem, NavLink, TabContent, TabPane, Spinner } from "reactstrap";
+import {
+  Col,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
+  Spinner,
+} from "reactstrap";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
 
@@ -10,7 +18,7 @@ const ProjectDetailTabDynamic = ({
   totalActualBudget,
   status = null,
   startDate = null,
-  components
+  components,
 }) => {
   const location = useLocation();
   const [activeTab1, setActiveTab1] = useState("");
@@ -32,7 +40,9 @@ const ProjectDetailTabDynamic = ({
   }, [location.hash, navItems, components]);
 
   const renderTabComponent = () => {
-    const matchedItem = Object.values(components).find(item => item.path === activeTab1);
+    const matchedItem = Object.values(components).find(
+      (item) => item.path === activeTab1,
+    );
     if (!matchedItem?.component) return null;
 
     const { component: Component } = matchedItem;
@@ -56,19 +66,22 @@ const ProjectDetailTabDynamic = ({
       {navItems.length > 0 && (
         <Nav className="navtab-bg nav-justified">
           {navItems.map((navItem) => (
-            <NavItem key={navItem} className="me-3 mb-3" style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}>
+            <NavItem
+              key={navItem}
+              className="me-3 mb-3"
+              style={{ whiteSpace: "nowrap", textOverflow: "ellipsis" }}
+            >
               <NavLink
                 href={`#${components[navItem].path}`}
                 onClick={() => toggleTab(components[navItem].path)}
                 style={{ cursor: "pointer" }}
-                className={classnames(
-                  "text-nowrap rounded",
-                  {
-                    "active bg-primary text-light border-primary": activeTab1 === components[navItem].path,
-                    "bg-light text-dark border-secondary": activeTab1 !== components[navItem].path,
-                    "w-25": navItems.length === 1,
-                  }
-                )}
+                className={classnames("text-nowrap rounded", {
+                  "active bg-primary text-light border-primary":
+                    activeTab1 === components[navItem].path,
+                  "bg-light text-dark border-secondary":
+                    activeTab1 !== components[navItem].path,
+                  "w-25": navItems.length === 1,
+                })}
               >
                 <span className="d-none d-sm-block">{navItem}</span>
               </NavLink>

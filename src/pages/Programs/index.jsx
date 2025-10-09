@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import TreeTableContainer from "./TreeTable";
 import {
 	FaChevronRight,
@@ -256,6 +256,13 @@ const Programs = () => {
 				size: 200,
 			},
 			{
+				accessorKey: "pri_program_code",
+				header: "Code",
+				footer: (props) => props.column.id,
+				size: 200,
+				enableColumnFilter: false,
+			},
+			{
 				accessorKey: "level",
 				header: () => <>Level</>,
 				cell: ({ getValue }) => {
@@ -296,7 +303,6 @@ const Programs = () => {
 	);
 
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
-
 	return (
 		<>
 			<FormModal
@@ -385,6 +391,31 @@ function RowActions({ row, toggleForm, toggleDelete, setSelectedRow }) {
 					</UncontrolledTooltip>
 				</>
 			)}
+
+			{/* {row.original.level !== "sector" && (
+				<>
+					<Button
+						id={`${safeId}-delete`}
+						onClick={() => {
+							setSelectedRow(row.original);
+							toggleDelete();
+						}}
+						className="text-danger"
+						style={{
+							background: "none",
+							border: "none",
+							padding: 2,
+							marginRight: "0.5rem",
+							cursor: "pointer",
+						}}
+					>
+						<FaTrash />
+					</Button>
+					<UncontrolledTooltip placement="top" target={`${safeId}-delete`}>
+						Delete
+					</UncontrolledTooltip>
+				</>
+			)} */}
 		</div>
 	);
 }

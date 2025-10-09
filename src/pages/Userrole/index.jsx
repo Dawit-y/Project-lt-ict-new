@@ -59,13 +59,13 @@ const UserRoleModel = (props) => {
 
   const { data, isLoading, error, isError, refetch } = useFetchUserRoles(
     param,
-    isActive
+    isActive,
   );
   const { data: rolesData } = useFetchRoles();
   const rolesOptions = createSelectOptions(
     rolesData?.data || [],
     "rol_id",
-    "rol_name"
+    "rol_name",
   );
 
   const addUserRole = useAddUserRoles();
@@ -73,45 +73,45 @@ const UserRoleModel = (props) => {
   const deleteUserRole = useDeleteUserRoles();
   //START CRUD
   const handleAddUserRole = async (data) => {
-    try {
-      await addUserRole.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateUserRole = async (data) => {
-    try {
-      await updateUserRole.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
+		try {
+			await addUserRole.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateUserRole = async (data) => {
+		try {
+			await updateUserRole.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteUserRole = async () => {
     if (userRole && userRole.url_id) {
       try {
         const id = userRole.url_id;
         await deleteUserRole.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }
@@ -133,7 +133,7 @@ const UserRoleModel = (props) => {
         .test("unique-role-id", t("Already exists"), (value) => {
           return !data?.data.some(
             (item) =>
-              item.url_role_id == value && item.url_id !== userRole?.url_id
+              item.url_role_id == value && item.url_id !== userRole?.url_id,
           );
         }),
       url_description: alphanumericValidation(3, 425, false),
@@ -279,46 +279,48 @@ const UserRoleModel = (props) => {
         header: t("Action"),
         accessorKey: t("Action"),
         enableColumnFilter: false,
-        enableSorting: true,
+        enableSorting: false,
         cell: (cellProps) => {
           return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleUserRoleClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable && (
+                <Button
+                  size="sm"
+									color="Link"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleUserRoleClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
+							{cellProps.row.original.is_deletable && (
+                <Button
+                  size="sm"
+									color="Link"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
         },
       });
     }
@@ -388,7 +390,7 @@ const UserRoleModel = (props) => {
                   onChange={(e) => {
                     validation.setFieldValue(
                       "url_role_id",
-                      Number(e.target.value)
+                      Number(e.target.value),
                     );
                   }}
                   onBlur={validation.handleBlur}
@@ -446,7 +448,7 @@ const UserRoleModel = (props) => {
                   onChange={(e) => {
                     validation.setFieldValue(
                       "url_status",
-                      Number(e.target.value)
+                      Number(e.target.value),
                     );
                   }}
                   onBlur={validation.handleBlur}

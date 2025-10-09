@@ -1,23 +1,20 @@
 import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
 } from "react";
-import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty } from "lodash";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import { useSearchOnlyProjects } from "../../queries/project_query";
-import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
-import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Badge
-} from "reactstrap";
-import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
+	useSearchOnlyProjects,
+	useUpdateProject,
+} from "../../queries/project_query";
+import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
+import { useTranslation } from "react-i18next";
+import { Button, Badge } from "reactstrap";
+import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
@@ -25,29 +22,38 @@ import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { getUserSectorList } from "../../queries/usersector_query";
 import { projectExportColumns } from "../../utils/exportColumnsForLists";
+import ProjectFormModal from "./ProjectFormModal";
+import { toast } from "react-toastify";
 
-const ProjectModel = () => {
+const ProjectList = () => {
 	document.title = "Projects List";
-	const [projectMetaData, setProjectMetaData] = useState([]);
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-	const [isEdit, setIsEdit] = useState(false);
-	const [project, setProject] = useState(null);
-	const { data: projectStatusData } = useFetchProjectStatuss();
+
+	// State variables
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
-
 	const [projectParams, setProjectParams] = useState({});
 	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
 	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [include, setInclude] = useState(0);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-
 	const [params, setParams] = useState({});
 	const [searchParams, setSearchParams] = useState({});
+	const [exportSearchParams, setExportSearchParams] = useState({});
+
+	// Modal state variables
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [selectedProject, setSelectedProject] = useState(null);
+	const [selectedNode, setSelectedNode] = useState(null);
+
+	const advancedSearchRef = useRef(null);
+
+	// Mutation hook for updating project
+	const updateProject = useUpdateProject();
 
 	useEffect(() => {
 		setProjectParams({
@@ -62,47 +68,47 @@ const ProjectModel = () => {
 		});
 	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
-	const [isAddressLoading, setIsAddressLoading] = useState(false);
-
+	// sector information
 	const { data: sectorInformationData } = getUserSectorList();
-	const sectorInformationOptions = createSelectOptions(
-		sectorInformationData?.data || [],
-		"sci_id",
-		"sci_name_en"
-	);
+	const {
+		sci_name_en: sectorInformationOptionsEn,
+		sci_name_or: sectorInformationOptionsOr,
+		sci_name_am: sectorInformationOptionsAm,
+	} = createMultiSelectOptions(sectorInformationData?.data || [], "sci_id", [
+		"sci_name_en",
+		"sci_name_or",
+		"sci_name_am",
+	]);
+
+	// project category options
 	const { data: projectCategoryData } = useFetchProjectCategorys();
+	const filteredCategoryData = useMemo(() => {
+		return projectCategoryData?.data?.filter(
+			(category) => category.pct_owner_type_id === 1
+		);
+	}, [projectCategoryData?.data]);
+
 	const {
 		pct_name_en: projectCategoryOptionsEn,
 		pct_name_or: projectCategoryOptionsOr,
 		pct_name_am: projectCategoryOptionsAm,
-	} = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+	} = createMultiSelectOptions(filteredCategoryData || [], "pct_id", [
 		"pct_name_en",
 		"pct_name_or",
 		"pct_name_am",
 	]);
-	const [allowedTabs, setAllowedTabs] = useState(
-		searchResults?.allowedTabs || []
+
+	// project status options
+	const { data: projectStatusData } = useFetchProjectStatuss();
+	const {
+		prs_status_name_en: projectStatusOptionsEn,
+		prs_status_name_or: projectStatusOptionsOr,
+		prs_status_name_am: projectStatusOptionsAm,
+	} = createMultiSelectOptions(
+		projectStatusData?.data?.filter((type) => type.prs_id >= 1) || [],
+		"prs_id",
+		["prs_status_name_en", "prs_status_name_or", "prs_status_name_am"]
 	);
-	const allowedLinks = searchResults?.allowedLinks || [];
-
-	useEffect(() => {
-		if (projectMetaData?.prj_project_status_id <= 4) {
-			setAllowedTabs([54, 37]);
-		} else {
-			setAllowedTabs(searchResults?.allowedTabs || []);
-		}
-	}, [projectMetaData?.prj_project_status_id, searchResults]);
-
-	useEffect(() => {
-		setProject(searchResults?.data);
-	}, [searchResults?.data]);
-
-	useEffect(() => {
-		if (!isEmpty(searchResults?.data) && !!isEdit) {
-			setProject(searchResults?.data);
-			setIsEdit(false);
-		}
-	}, [searchResults?.data]);
 
 	const handleNodeSelect = useCallback(
 		(node) => {
@@ -130,28 +136,111 @@ const ProjectModel = () => {
 		]
 	);
 
-	//delete projects
-	const [deleteModal, setDeleteModal] = useState(false);
-	const onClickDelete = (project) => {
-		setProject(project);
-		setDeleteModal(true);
-	};
-	const projectStatusOptions = useMemo(() => {
-		return (
-			projectStatusData?.data
-				?.filter((type) => type.prs_id >= 1)
-				.map((type) => ({
-					label: type.prs_status_name_or,
-					value: type.prs_id,
-				})) || []
-		);
-	}, [projectStatusData]);
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setShowSearchResult(true);
+		},
+		[setSearchResults, setShowSearchResult]
+	);
 
-	const handleSearch = useCallback(({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	}, []);
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
+	// Modal handlers
+	const toggleEditModal = () => {
+		setIsEditModalOpen(!isEditModalOpen);
+		if (isEditModalOpen) {
+			setSelectedProject(null);
+		}
+	};
+
+	const handleEditClick = (projectData) => {
+		setSelectedProject(projectData);
+
+		// Create a mock selectedNode based on the project data
+		const mockNode = {
+			data: {
+				pri_id: projectData.parent_id || 0,
+				woreda_id: projectData.prj_location_woreda_id,
+				region_id: projectData.prj_location_region_id,
+				zone_id: projectData.prj_location_zone_id,
+				sector_id: projectData.prj_sector_id,
+				level: "output",
+			},
+		};
+		setSelectedNode(mockNode);
+
+		setIsEditModalOpen(true);
+	};
+
+	const handleSubmit = async (values, isEdit, project, selectedNode) => {
+		if (isEdit) {
+			try {
+				const updateProjectData = {
+					prj_id: project.prj_id,
+					prj_name: values.prj_name,
+					prj_name_am: values.prj_name_am,
+					prj_name_en: values.prj_name_en,
+					prj_code: values.prj_code,
+					prj_project_status_id: values.prj_project_status_id,
+					prj_project_category_id: values.prj_project_category_id,
+					prj_project_budget_source_id: values.prj_project_budget_source_id,
+					prj_total_estimate_budget: parseFloat(
+						values.prj_total_estimate_budget
+					),
+					prj_total_actual_budget: parseFloat(values.prj_total_actual_budget),
+					prj_geo_location: values.prj_geo_location,
+					prj_sector_id: Number(values.prj_sector_id),
+					prj_location_region_id: Number(values.prj_location_region_id),
+					prj_location_zone_id: Number(values.prj_location_zone_id),
+					prj_location_woreda_id: Number(values.prj_location_woreda_id),
+					prj_location_kebele_id: values.prj_location_kebele_id,
+					prj_location_description: values.prj_location_description,
+					prj_owner_region_id: Number(values.prj_owner_region_id),
+					prj_owner_zone_id: Number(values.prj_owner_region_id),
+					prj_owner_woreda_id: Number(values.prj_owner_region_id),
+					prj_owner_kebele_id: values.prj_owner_kebele_id,
+					prj_owner_description: values.prj_owner_description,
+					prj_start_date_et: values.prj_start_date_et,
+					prj_start_date_gc: values.prj_start_date_gc,
+					prj_start_date_plan_et: values.prj_start_date_plan_et,
+					prj_start_date_plan_gc: values.prj_start_date_plan_gc,
+					prj_end_date_actual_et: values.prj_end_date_actual_et,
+					prj_end_date_actual_gc: values.prj_end_date_actual_gc,
+					prj_end_date_plan_gc: values.prj_end_date_plan_gc,
+					prj_end_date_plan_et: values.prj_end_date_plan_et,
+					prj_outcome: values.prj_outcome,
+					prj_deleted: values.prj_deleted,
+					prj_remark: values.prj_remark,
+					prj_created_date: values.prj_created_date,
+					prj_owner_id: values.prj_owner_id,
+					prj_urban_ben_number: values.prj_urban_ben_number,
+					prj_rural_ben_number: values.prj_rural_ben_number,
+					prj_program_id: 1,
+					parent_id: Number(values.prj_parent_id),
+					object_type_id: 5,
+					prj_measurement_unit: values.prj_measurement_unit,
+					prj_measured_figure: values.prj_measured_figure,
+				};
+
+				await updateProject.mutateAsync(updateProjectData);
+				toast.success(t("update_success"), {
+					autoClose: 3000,
+				});
+				toggleEditModal();
+				if (showSearchResult && advancedSearchRef.current) {
+					await advancedSearchRef.current.refreshSearch();
+				}
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("update_failure"), { autoClose: 3000 });
+				}
+			}
+		}
+	};
 
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
@@ -162,6 +251,7 @@ const ProjectModel = () => {
 				sortable: false,
 				filter: false,
 				width: 60,
+				pinned: "left",
 			},
 			{
 				field: "prj_name",
@@ -170,6 +260,7 @@ const ProjectModel = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 200,
+				pinned: "left",
 			},
 			{
 				field: "prj_code",
@@ -225,38 +316,57 @@ const ProjectModel = () => {
 				},
 			},
 			{
-				headerName: t("view_details"),
+				headerName: t("Action"),
 				sortable: false,
 				filter: false,
 				width: 120,
+				pinned: "right",
 				cellRenderer: (params) => {
 					if (params.node.footer) {
 						return ""; // Suppress button for footer
 					}
-					const { prj_id } = params.data || {};
 					return (
-						<Link to={`/projectdetail/${prj_id}`} target="_blank">
-							<Button type="button" className="btn-sm mb-1 default" outline>
-								<i className="fa fa-eye"></i>
+						<div className="d-flex gap-1">
+							<Button
+								color="None"
+								size="sm"
+								className="text-success"
+								onClick={() => handleEditClick(params.data)}
+							>
+								<i className="mdi mdi-pencil font-size-18" />
 							</Button>
-						</Link>
+							<Link to={`/projectdetail/${params.data.prj_id}`}>
+								<Button type="button" className="btn-sm mb-1 default" outline>
+									<i className="fa fa-eye"></i>
+								</Button>
+							</Link>
+						</div>
 					);
 				},
 			},
 		];
 		return baseColumnDefs;
-	}, [onClickDelete, t]);
+	}, [t]);
 
 	return (
 		<React.Fragment>
 			<div className="page-content">
 				<div className="w-100">
 					<Breadcrumbs />
+					<ProjectFormModal
+						isOpen={isEditModalOpen}
+						toggle={toggleEditModal}
+						isEdit={true}
+						project={selectedProject}
+						selectedNode={selectedNode}
+						onSubmit={handleSubmit}
+						projectsData={searchResults}
+						isLoading={updateProject.isPending}
+					/>
 					<div className="d-flex gap-2 flex-nowrap">
 						{/* Sidebar - Tree */}
 						<TreeForLists
 							onNodeSelect={handleNodeSelect}
-							setIsAddressLoading={setIsAddressLoading}
 							setInclude={setInclude}
 							setIsCollapsed={setIsCollapsed}
 							isCollapsed={isCollapsed}
@@ -264,6 +374,7 @@ const ProjectModel = () => {
 						{/* Main Content */}
 						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
+								ref={advancedSearchRef}
 								searchHook={useSearchOnlyProjects}
 								textSearchKeys={["prj_name", "prj_code"]}
 								dropdownSearchKeys={[
@@ -273,23 +384,34 @@ const ProjectModel = () => {
 											lang === "en"
 												? projectCategoryOptionsEn
 												: lang === "am"
-												? projectCategoryOptionsAm
-												: projectCategoryOptionsOr,
+													? projectCategoryOptionsAm
+													: projectCategoryOptionsOr,
 									},
 									{
 										key: "prj_project_status_id",
-										options: projectStatusOptions,
+										options:
+											lang === "en"
+												? projectStatusOptionsEn
+												: lang === "am"
+													? projectStatusOptionsAm
+													: projectStatusOptionsOr,
 									},
 									{
 										key: "prj_sector_id",
-										options: sectorInformationOptions,
+										options:
+											lang === "en"
+												? sectorInformationOptionsEn
+												: lang === "am"
+													? sectorInformationOptionsAm
+													: sectorInformationOptionsOr,
 									},
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
-								setSearchResults={handleSearch}
+								setSearchResults={setSearchResults}
 								onSearchResult={handleSearch}
+								onSearchLabels={handleSearchLabels}
 								setShowSearchResult={setShowSearchResult}
 								setIsSearchLoading={setIsSearchLoading}
 								params={params}
@@ -297,19 +419,10 @@ const ProjectModel = () => {
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
 							>
-								<AgGridContainer
-									rowData={showSearchResult ? searchResults?.data : []}
+								<TableWrapper
 									columnDefs={columnDefs}
-									isPagination={true}
-									paginationPageSize={20}
-									isGlobalFilter={true}
-									isAddButton={false}
-									addButtonText="Add"
-									isExcelExport={true}
-									isPdfExport={true}
-									isPrint={true}
-									tableName="Projects"
-									exportColumns={projectExportColumns}
+									showSearchResult={showSearchResult}
+									exportSearchParams={exportSearchParams}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -319,7 +432,35 @@ const ProjectModel = () => {
 		</React.Fragment>
 	);
 };
-ProjectModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+
+export default ProjectList;
+
+const TableWrapper = ({
+	data,
+	isLoading,
+	columnDefs,
+	showSearchResult,
+	exportSearchParams,
+}) => {
+	return (
+		<>
+			<AgGridContainer
+				rowData={showSearchResult ? data?.data || [] : []}
+				columnDefs={columnDefs}
+				isLoading={isLoading}
+				isPagination={true}
+				paginationPageSize={10}
+				isGlobalFilter={true}
+				isAddButton={false}
+				rowHeight={36}
+				addButtonText="Add"
+				isExcelExport={true}
+				isPdfExport={true}
+				isPrint={true}
+				tableName="Projects"
+				exportColumns={projectExportColumns}
+				exportSearchParams={exportSearchParams}
+			/>
+		</>
+	);
 };
-export default ProjectModel;

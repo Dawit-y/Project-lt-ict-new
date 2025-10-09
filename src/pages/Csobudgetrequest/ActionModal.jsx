@@ -124,7 +124,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_expenditure_code_id,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -140,7 +140,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_current_year_expense,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -184,7 +184,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_government_requested,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -200,7 +200,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_government_approved,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -216,7 +216,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_internal_requested,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -232,7 +232,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_internal_approved,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -248,7 +248,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_support_requested,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -264,7 +264,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_support_approved,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -280,7 +280,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_support_code,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -296,7 +296,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_credit_requested,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -312,7 +312,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_credit_approved,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -328,7 +328,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.bra_source_credit_code,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -437,7 +437,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_previous_year_physical,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -453,7 +453,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_previous_year_financial,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -469,7 +469,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_current_year_physical,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -485,7 +485,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_current_year_financial,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -501,7 +501,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_next_year_physical,
-                30
+                30,
               ) || "-"}
             </span>
           );
@@ -517,7 +517,7 @@ const ActionModal = (props) => {
             <span>
               {truncateText(
                 cellProps.row.original.brt_next_year_financial,
-                30
+                30,
               ) || "-"}
             </span>
           );

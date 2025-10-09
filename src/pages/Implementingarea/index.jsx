@@ -1,9 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,19 +7,14 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import DeleteModal from "../../components/Common/DeleteModal";
-import { useQuery } from "@tanstack/react-query";
-import { post } from "../../helpers/api_Lists";
 import {
 	useFetchImplementingAreas,
-	useSearchImplementingAreas,
 	useAddImplementingArea,
 	useDeleteImplementingArea,
 	useUpdateImplementingArea,
 } from "../../queries/implementingarea_query";
 import ImplementingAreaModal from "./ImplementingAreaModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
 	Button,
 	Col,
@@ -33,39 +24,63 @@ import {
 	ModalHeader,
 	ModalBody,
 	Form,
-	Input,
-	FormFeedback,
-	Label,
 	Card,
 	CardBody,
+	FormFeedback,
+	Label,
+	Input,
 	FormGroup,
-	Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns1";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
-import { createMultiSelectOptions } from "../../utils/commonMethods";
 import InputField from "../../components/Common/InputField";
 import { implementingAreaExportColumns } from "../../utils/exportColumnsForDetails";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
+import { useAuthUser } from "../../hooks/useAuthUser";
+import { useFetchAddressStructures } from "../../queries/address_structure_query";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 
-const truncateText = (text, maxLength) => {
-	if (typeof text !== "string") {
-		return text;
-	}
-	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+const ETHIOPIA_BOUNDS = {
+	minLat: 3.397,
+	maxLat: 14.894,
+	minLng: 32.997,
+	maxLng: 47.989,
+};
+
+// Helper function to validate Ethiopia bounds
+const validateEthiopiaBounds = (latitude, longitude) => {
+	const lat = parseFloat(latitude);
+	const lng = parseFloat(longitude);
+
+	if (isNaN(lat) || isNaN(lng)) return false;
+
+	return (
+		lat >= ETHIOPIA_BOUNDS.minLat &&
+		lat <= ETHIOPIA_BOUNDS.maxLat &&
+		lng >= ETHIOPIA_BOUNDS.minLng &&
+		lng <= ETHIOPIA_BOUNDS.maxLng
+	);
+};
+
+// Helper function to parse geo location string
+const parseGeoLocation = (geoLocation) => {
+	if (!geoLocation) return { latitude: "", longitude: "" };
+	const stringLocation = String(geoLocation);
+	const [latitude, longitude] = stringLocation.split(",");
+	return {
+		latitude: latitude ? latitude.trim() : "",
+		longitude: longitude ? longitude.trim() : "",
+	};
 };
 
 const ImplementingAreaModel = (props) => {
-	//meta title
-	document.title = " ImplementingArea";
+	document.title = "Implementing Area";
 	const { passedId, isActive, totalActualBudget } = props;
 	const param = {
 		pia_project_id: passedId,
 		request_type: "single",
-		prj_total_actual_budget: totalActualBudget,
 	};
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
@@ -73,13 +88,9 @@ const ImplementingAreaModel = (props) => {
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [implementingArea, setImplementingArea] = useState(null);
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-	const [addressMaps, setAddressMaps] = useState({
-		zones: {},
-		woredas: {},
+	const [geoLocation, setGeoLocation] = useState({
+		latitude: "",
+		longitude: "",
 	});
 
 	const { data, isLoading, isFetching, error, isError, refetch } =
@@ -89,50 +100,101 @@ const ImplementingAreaModel = (props) => {
 	const deleteImplementingArea = useDeleteImplementingArea();
 
 	// Fetch sector data
-	const { data: sectorData } = useFetchSectorInformations();
-	const sectorOptions = createMultiSelectOptions(
-		sectorData?.data || [],
-		"sci_id",
-		["sci_name_en", "sci_name_or", "sci_name_am"]
-	);
+	const {
+		data: sectorInformationData,
+		isLoading: isSectorLoading,
+		isError: isSectorError,
+	} = useFetchSectorInformations();
 
-	const sectorsMap = useMemo(() => {
-		const map = {};
-		sectorData?.data?.forEach((sector) => {
-			map[sector.sci_id] = sector[`sci_name_${lang}`];
-		});
-		return map;
-	}, [sectorData, lang]);
+	const sectorInformationMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			sectorInformationData?.data || [],
+			"sci_id",
+			{
+				en: "sci_name_en",
+				am: "sci_name_am",
+				or: "sci_name_or",
+			},
+			lang
+		);
+	}, [sectorInformationData, lang]);
 
-	// START CRUD operations
+	const { userId } = useAuthUser();
+	const {
+		regions,
+		zones,
+		woredas,
+		isLoading: isAddressLoading,
+	} = useFetchAddressStructures(userId);
+
+	const regionMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			regions ?? [],
+			"id",
+			{
+				en: "name",
+				am: "name",
+				or: "name",
+			},
+			lang
+		);
+	}, [regions, lang]);
+
+	const zoneMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			zones ?? [],
+			"id",
+			{
+				en: "name",
+				am: "name",
+				or: "name",
+			},
+			lang
+		);
+	}, [zones, lang]);
+
+	const woredaMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			woredas ?? [],
+			"id",
+			{
+				en: "name",
+				am: "name",
+				or: "name",
+			},
+			lang
+		);
+	}, [woredas, lang]);
+
 	const handleAddImplementingArea = async (data) => {
 		try {
 			await addImplementingArea.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
+			setGeoLocation({ latitude: "", longitude: "" });
 		} catch (error) {
-			toast.success(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateImplementingArea = async (data) => {
 		try {
 			await updateImplementingArea.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.success(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleDeleteImplementingArea = async () => {
@@ -141,17 +203,16 @@ const ImplementingAreaModel = (props) => {
 				const id = implementingArea.pia_id;
 				await deleteImplementingArea.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.success(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
 		}
 	};
-	// END CRUD operations
 
 	const calculateCurrentTotal = (
 		currentData,
@@ -186,18 +247,74 @@ const ImplementingAreaModel = (props) => {
 				(implementingArea && implementingArea.pia_geo_location) || "",
 			pia_description:
 				(implementingArea && implementingArea.pia_description) || "",
-			pia_status: (implementingArea && implementingArea.pia_status) || "",
-			is_deletable: (implementingArea && implementingArea.is_deletable) || 1,
-			is_editable: (implementingArea && implementingArea.is_editable) || 1,
+			pia_is_other_region:
+				(implementingArea && implementingArea.pia_is_other_region) || 0,
 		},
 		validationSchema: Yup.object({
-			pia_region_id: Yup.string().required(t("pia_region_id")),
-			pia_zone_id_id: Yup.string().required(t("pia_zone_id_id")),
-			pia_woreda_id: Yup.string().required(t("pia_woreda_id")),
+			pia_region_id: Yup.string().test(
+				"region-required",
+				t("pia_region_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
+			pia_zone_id_id: Yup.string().test(
+				"zone-required",
+				t("pia_zone_id_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
+			pia_woreda_id: Yup.string().test(
+				"woreda-required",
+				t("pia_woreda_id"),
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 0 || pia_is_other_region === "0") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
 			pia_sector_id: Yup.string().required(t("pia_sector_id")),
 			pia_site: Yup.string().required(t("pia_site")),
-			pia_geo_location: Yup.string().required(t("pia_geo_location")),
+			pia_geo_location: Yup.string()
+				.required(t("pia_geo_location"))
+				.test(
+					"ethiopia-bounds",
+					"Location must be within Ethiopia boundaries",
+					function (value) {
+						if (!value) return true;
 
+						const [latitude, longitude] = value.split(",");
+						if (!latitude || !longitude) return false;
+
+						return validateEthiopiaBounds(latitude.trim(), longitude.trim());
+					}
+				)
+				.test(
+					"valid-coordinates",
+					"Invalid coordinates format",
+					function (value) {
+						if (!value) return true;
+
+						const [latitude, longitude] = value.split(",");
+						if (!latitude || !longitude) return false;
+
+						const lat = parseFloat(latitude.trim());
+						const lng = parseFloat(longitude.trim());
+
+						return !isNaN(lat) && !isNaN(lng);
+					}
+				),
 			pia_budget_amount: Yup.number()
 				.required(t("pia_budget_amount"))
 				.positive("Amount must be positive")
@@ -207,7 +324,7 @@ const ImplementingAreaModel = (props) => {
 					function (value) {
 						if (!value || isNaN(value)) return true;
 
-						const currentData = showSearchResult ? searchResults : data;
+						const currentData = data;
 						const editingId = isEdit ? implementingArea?.pia_id : null;
 
 						// Calculate total without the current edited item
@@ -223,39 +340,61 @@ const ImplementingAreaModel = (props) => {
 						return newTotal <= totalActualBudget;
 					}
 				),
+			pia_is_other_region: Yup.number().required(),
+			pia_description: Yup.string().test(
+				"description-required",
+				"Please specify the region name in the description when project is outside Oromia",
+				function (value) {
+					const { pia_is_other_region } = this.parent;
+					if (pia_is_other_region === 1 || pia_is_other_region === "1") {
+						return !!value && value.trim() !== "";
+					}
+					return true;
+				}
+			),
 		}),
 		validateOnBlur: true,
-		validateOnChange: false,
+		validateOnChange: true,
 		onSubmit: (values) => {
 			if (isEdit) {
 				const updateImplementingArea = {
 					pia_id: implementingArea?.pia_id,
 					pia_project_id: passedId,
-					pia_region_id: values.pia_region_id,
-					pia_zone_id_id: values.pia_zone_id_id,
-					pia_woreda_id: values.pia_woreda_id,
+					pia_region_id: values.pia_is_other_region
+						? null
+						: values.pia_region_id,
+					pia_zone_id_id: values.pia_is_other_region
+						? null
+						: values.pia_zone_id_id,
+					pia_woreda_id: values.pia_is_other_region
+						? null
+						: values.pia_woreda_id,
 					pia_sector_id: values.pia_sector_id,
 					pia_budget_amount: values.pia_budget_amount,
 					pia_site: values.pia_site,
 					pia_geo_location: values.pia_geo_location,
 					pia_description: values.pia_description,
-					pia_status: values.pia_status,
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
+					pia_is_other_region: values.pia_is_other_region,
 				};
 				handleUpdateImplementingArea(updateImplementingArea);
 			} else {
 				const newImplementingArea = {
 					pia_project_id: passedId,
-					pia_region_id: values.pia_region_id,
-					pia_zone_id_id: values.pia_zone_id_id,
-					pia_woreda_id: values.pia_woreda_id,
+					pia_region_id: values.pia_is_other_region
+						? null
+						: values.pia_region_id,
+					pia_zone_id_id: values.pia_is_other_region
+						? null
+						: values.pia_zone_id_id,
+					pia_woreda_id: values.pia_is_other_region
+						? null
+						: values.pia_woreda_id,
 					pia_sector_id: values.pia_sector_id,
 					pia_budget_amount: values.pia_budget_amount,
 					pia_site: values.pia_site,
 					pia_geo_location: values.pia_geo_location,
 					pia_description: values.pia_description,
-					pia_status: values.pia_status,
+					pia_is_other_region: values.pia_is_other_region,
 				};
 				handleAddImplementingArea(newImplementingArea);
 			}
@@ -266,20 +405,17 @@ const ImplementingAreaModel = (props) => {
 	const toggleViewModal = () => setModal1(!modal1);
 
 	useEffect(() => {
-		setImplementingArea(data);
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setImplementingArea(data);
-			setIsEdit(false);
+		if (implementingArea && implementingArea.pia_geo_location) {
+			const parsed = parseGeoLocation(implementingArea.pia_geo_location);
+			setGeoLocation(parsed);
 		}
-	}, [data]);
+	}, [implementingArea]);
 
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
 			setImplementingArea(null);
+			setGeoLocation({ latitude: "", longitude: "" });
 		} else {
 			setModal(true);
 		}
@@ -298,9 +434,7 @@ const ImplementingAreaModel = (props) => {
 			pia_site: implementingArea.pia_site,
 			pia_geo_location: implementingArea.pia_geo_location,
 			pia_description: implementingArea.pia_description,
-			pia_status: implementingArea.pia_status,
-			is_deletable: implementingArea.is_deletable,
-			is_editable: implementingArea.is_editable,
+			pia_is_other_region: implementingArea.pia_is_other_region,
 		});
 		setIsEdit(true);
 		toggle();
@@ -315,56 +449,37 @@ const ImplementingAreaModel = (props) => {
 	const handleImplementingAreaClicks = () => {
 		setIsEdit(false);
 		setImplementingArea("");
+		setGeoLocation({ latitude: "", longitude: "" });
 		toggle();
 	};
 
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
+	// Handle geo location input changes
+	const handleGeoLocationChange = (field, value) => {
+		const updatedGeoLocation = {
+			...geoLocation,
+			[field]: value,
+		};
+
+		setGeoLocation(updatedGeoLocation);
+
+		// Combine latitude and longitude with comma and update formik value
+		const combinedValue = `${updatedGeoLocation.latitude},${updatedGeoLocation.longitude}`;
+		validation.setFieldValue("pia_geo_location", combinedValue);
+		validation.setFieldTouched("pia_geo_location", true);
 	};
 
-	// 2. Fetch all zones and woredas when component mounts
-	const { data: allZones = [] } = useQuery({
-		queryKey: ["allZones"],
-		queryFn: async () => {
-			const response = await post("addressbyparent?parent_id=1"); // Oromia's ID
-			return response?.data || [];
-		},
-	});
+	// Handle checkbox change
+	const handleCheckboxChange = (e) => {
+		const isChecked = e.target.checked ? 1 : 0;
+		validation.setFieldValue("pia_is_other_region", isChecked);
 
-	// 3. Fetch all woredas when zones are loaded
-	const { data: allWoredas = [] } = useQuery({
-		queryKey: ["allWoredas"],
-		queryFn: async () => {
-			if (!allZones.length) return [];
-
-			const woredaPromises = allZones.map((zone) =>
-				post(`addressbyparent?parent_id=${zone.id}`)
-			);
-
-			const woredaResponses = await Promise.all(woredaPromises);
-			return woredaResponses.flatMap((res) => res?.data || []);
-		},
-		enabled: !!allZones.length,
-	});
-
-	// 4. Update address maps when data loads
-	useEffect(() => {
-		const newMaps = { zones: {}, woredas: {} };
-
-		// Build zones map
-		allZones.forEach((zone) => {
-			newMaps.zones[zone.id] = zone.name;
-		});
-
-		// Build woredas map
-		allWoredas.forEach((woreda) => {
-			newMaps.woredas[woreda.id] = woreda.name;
-		});
-
-		setAddressMaps(newMaps);
-	}, [allZones, allWoredas]);
+		// Clear region fields when checked
+		if (isChecked) {
+			validation.setFieldValue("pia_region_id", "");
+			validation.setFieldValue("pia_zone_id_id", "");
+			validation.setFieldValue("pia_woreda_id", "");
+		}
+	};
 
 	const columns = useMemo(() => {
 		const baseColumns = [
@@ -373,15 +488,12 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_region_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pia_region_id == 1 && "Oromia",
-								30
-							) || "-"}
-						</span>
-					);
+				cell: ({ getValue, row }) => {
+					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "Outside Oromia";
+					}
+					return regionMap[value] || value || "-";
 				},
 			},
 			{
@@ -389,15 +501,12 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_zone_id_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								addressMaps.zones[cellProps.row.original.pia_zone_id_id],
-								30
-							) || `Zone ID: ${cellProps.row.original.pia_zone_id_id}`}
-						</span>
-					);
+				cell: ({ getValue, row }) => {
+					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "-";
+					}
+					return zoneMap[value] || value || "-";
 				},
 			},
 			{
@@ -405,16 +514,12 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_woreda_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					const woredaId = cellProps.row.original.pia_woreda_id;
-					return (
-						<span>
-							{truncateText(
-								addressMaps.woredas[woredaId] || `Woreda ID: ${woredaId}`,
-								30
-							)}{" "}
-						</span>
-					);
+				cell: ({ getValue, row }) => {
+					const value = getValue();
+					if (row.original.pia_is_other_region === 1) {
+						return "-";
+					}
+					return woredaMap[value] || value || "-";
 				},
 			},
 			{
@@ -422,15 +527,9 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_sector_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								sectorsMap[cellProps.row.original.pia_sector_id],
-								30
-							) || "-"}
-						</span>
-					);
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return sectorInformationMap[value] || value || "-";
 				},
 			},
 			{
@@ -438,55 +537,28 @@ const ImplementingAreaModel = (props) => {
 				accessorKey: "pia_budget_amount",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pia_budget_amount.toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
 			},
 			{
 				header: t("site"),
 				accessorKey: "pia_site",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pia_site, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => getValue() ?? "-",
 			},
 			{
 				header: t("pia_geo_location"),
 				accessorKey: "pia_geo_location",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pia_geo_location, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => getValue() ?? "-",
 			},
 			{
-				header: t("description"),
-				accessorKey: "pia_description",
+				header: t("Outside Oromia"),
+				accessorKey: "pia_is_other_region",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pia_description, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => (getValue() === 1 ? "Yes" : "No"),
 			},
 			{
 				header: t("view_detail"),
@@ -499,8 +571,7 @@ const ImplementingAreaModel = (props) => {
 							color="primary"
 							className="btn-sm"
 							onClick={() => {
-								const data = cellProps.row.original;
-								toggleViewModal(data);
+								toggleViewModal();
 								setTransaction(cellProps.row.original);
 							}}
 						>
@@ -519,12 +590,14 @@ const ImplementingAreaModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
-								<Link
+								<Button
+									size="sm"
+									color="None"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -535,10 +608,12 @@ const ImplementingAreaModel = (props) => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 1 && (
-								<Link
+								<Button
+									size="sm"
+									color="None"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -552,7 +627,7 @@ const ImplementingAreaModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -560,7 +635,17 @@ const ImplementingAreaModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleImplementingAreaClick, toggleViewModal, onClickDelete, t]);
+	}, [
+		handleImplementingAreaClick,
+		toggleViewModal,
+		onClickDelete,
+		t,
+		regionMap,
+		zoneMap,
+		woredaMap,
+		sectorInformationMap,
+		data,
+	]);
 
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
@@ -570,6 +655,10 @@ const ImplementingAreaModel = (props) => {
 				isOpen={modal1}
 				toggle={toggleViewModal}
 				transaction={transaction}
+				regionMap={regionMap}
+				zoneMap={zoneMap}
+				woredaMap={woredaMap}
+				sectorInformationMap={sectorInformationMap}
 			/>
 			<DeleteModal
 				show={deleteModal}
@@ -577,15 +666,14 @@ const ImplementingAreaModel = (props) => {
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteImplementingArea.isPending}
 			/>
-
-			{isLoading || isSearchLoading ? (
+			{isLoading || isSectorLoading || isAddressLoading ? (
 				<Spinners />
 			) : (
 				<Row>
 					<Col xs="12">
 						<TableContainer
 							columns={columns}
-							data={showSearchResult ? searchResults?.data : data?.data || []}
+							data={data?.data || []}
 							isGlobalFilter={true}
 							isAddButton={data?.previledge?.is_role_can_add == 1}
 							isCustomPageSize={true}
@@ -604,22 +692,38 @@ const ImplementingAreaModel = (props) => {
 								{
 									key: "pia_region_id",
 									label: "region",
-									format: (val) => (val === 1 ? "Oromia" : `Region ID: ${val}`),
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "Outside Oromia"
+											: val === 1
+												? "Oromia"
+												: `Region ID: ${val}`,
 								},
 								{
 									key: "pia_zone_id_id",
 									label: "zone",
-									format: (val) =>
-										addressMaps?.zones?.[val] ?? `Zone ID: ${val}`,
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "-"
+											: (zoneMap[val] ?? `Zone ID: ${val}`),
 								},
 								{
 									key: "pia_woreda_id",
 									label: "woreda",
-									format: (val) =>
-										addressMaps?.woredas?.[val] ?? `Woreda ID: ${val}`,
+									format: (val, row) =>
+										row.pia_is_other_region === 1
+											? "-"
+											: (woredaMap[val] ?? `Woreda ID: ${val}`),
 								},
 								...implementingAreaExportColumns,
+								{
+									key: "pia_is_other_region",
+									label: "Outside Oromia",
+									format: (val) => (val === 1 ? "Yes" : "No"),
+								},
 							]}
+							isSummaryRow={true}
+							summaryColumns={["pia_budget_amount"]}
 						/>
 					</Col>
 				</Row>
@@ -673,53 +777,60 @@ const ImplementingAreaModel = (props) => {
 								</Card>
 							</Col>
 						</Row>
+
+						{/* Outside Oromia Checkbox */}
 						<Row>
 							<Col xl={12} className="mb-3">
-								<CascadingDropdowns
-									validation={validation}
-									dropdown1name="pia_region_id"
-									dropdown2name="pia_zone_id_id"
-									dropdown3name="pia_woreda_id"
-									required={true}
-									layout="horizontal"
-									colSizes={{ md: 6, sm: 12, lg: 4 }}
-								/>
+								<FormGroup check>
+									<Input
+										type="checkbox"
+										id="pia_is_other_region"
+										name="pia_is_other_region"
+										checked={validation.values.pia_is_other_region === 1}
+										onChange={handleCheckboxChange}
+									/>
+									<Label check for="pia_is_other_region" className="ms-2">
+										{t("Outside Oromia Region")}
+									</Label>
+								</FormGroup>
+								<small className="text-muted">
+									{t("project_outside_oromia")}
+								</small>
 							</Col>
-							<Col xl={4} className="mb-3">
-								<Label>
-									{t("pia_sector_id")} <span className="text-danger">*</span>
-								</Label>
-								<Input
-									name="pia_sector_id"
-									type="select"
-									className="form-select"
-									{...validation.getFieldProps("pia_sector_id")}
-									invalid={
-										validation.touched.pia_sector_id &&
-										!!validation.errors.pia_sector_id
-									}
-								>
-									<option value="">{t("prj_select_category")}</option>
-									{sectorOptions[`sci_name_${lang}`]?.map((option) => (
-										<option key={option.value} value={option.value}>
-											{t(option.label)}
-										</option>
-									))}
-								</Input>
-								{validation.touched.pia_sector_id &&
-									validation.errors.pia_sector_id && (
-										<FormFeedback>
-											{validation.errors.pia_sector_id}
-										</FormFeedback>
-									)}
-							</Col>
+						</Row>
+
+						{validation.values.pia_is_other_region === 0 && (
+							<Row>
+								<Col xl={12} className="mb-3">
+									<CascadingDropdowns
+										validation={validation}
+										dropdown1name="pia_region_id"
+										dropdown2name="pia_zone_id_id"
+										dropdown3name="pia_woreda_id"
+										required={true}
+										layout="horizontal"
+										colSizes={{ md: 6, sm: 12, lg: 4 }}
+									/>
+								</Col>
+							</Row>
+						)}
+
+						<Row>
+							<AsyncSelectField
+								fieldId="pia_sector_id"
+								validation={validation}
+								isRequired
+								className="col-md-4 mb-3"
+								optionMap={sectorInformationMap}
+								isLoading={isSectorLoading}
+								isError={isSectorError}
+							/>
 							<Col className="col-md-4 mb-3">
 								<FormattedAmountField
 									validation={validation}
 									fieldId="pia_budget_amount"
 									label={t("pia_budget_amount")}
 									isRequired={true}
-									max={totalActualBudget}
 								/>
 
 								<small className="text-muted">
@@ -742,20 +853,85 @@ const ImplementingAreaModel = (props) => {
 								maxLength={400}
 							/>
 
-							<InputField
-								validation={validation}
-								fieldId={"pia_geo_location"}
-								isRequired={true}
-								className="col-md-4 mb-3"
-								maxLength={400}
-							/>
+							{/* Geo Location Fields - Split into Latitude and Longitude */}
+							<Col className="col-md-4 mb-3">
+								<Label htmlFor="latitude" className="form-label">
+									{t("Latitude")} <span className="text-danger">*</span>
+								</Label>
+								<Input
+									id="latitude"
+									name="latitude"
+									type="number"
+									step="any"
+									className="form-control"
+									placeholder="e.g., 9.145"
+									value={geoLocation.latitude}
+									onChange={(e) =>
+										handleGeoLocationChange("latitude", e.target.value)
+									}
+									invalid={
+										validation.touched.pia_geo_location &&
+										!!validation.errors.pia_geo_location
+									}
+									onBlur={() => validation.validateField("pia_geo_location")}
+								/>
+								{validation.touched.pia_geo_location &&
+									validation.errors.pia_geo_location && (
+										<FormFeedback type="invalid">
+											{validation.errors.pia_geo_location}
+										</FormFeedback>
+									)}
+								<small className="text-muted">
+									Ethiopia bounds: {ETHIOPIA_BOUNDS.minLat}° to{" "}
+									{ETHIOPIA_BOUNDS.maxLat}°
+								</small>
+							</Col>
+
+							<Col className="col-md-4 mb-3">
+								<Label htmlFor="longitude" className="form-label">
+									{t("Longitude")} <span className="text-danger">*</span>
+								</Label>
+								<Input
+									id="longitude"
+									name="longitude"
+									type="number"
+									step="any"
+									className="form-control"
+									placeholder="e.g., 40.4897"
+									value={geoLocation.longitude}
+									onChange={(e) =>
+										handleGeoLocationChange("longitude", e.target.value)
+									}
+									invalid={
+										validation.touched.pia_geo_location &&
+										!!validation.errors.pia_geo_location
+									}
+									onBlur={() => validation.validateField("pia_geo_location")}
+								/>
+								{validation.touched.pia_geo_location &&
+									validation.errors.pia_geo_location && (
+										<FormFeedback type="invalid">
+											{validation.errors.pia_geo_location}
+										</FormFeedback>
+									)}
+								<small className="text-muted">
+									Ethiopia bounds: {ETHIOPIA_BOUNDS.minLng}° to{" "}
+									{ETHIOPIA_BOUNDS.maxLng}°
+								</small>
+							</Col>
+
 							<InputField
 								type="textarea"
 								validation={validation}
 								fieldId={"pia_description"}
-								isRequired={true}
-								className="col-md-8 mb-3"
+								isRequired={validation.values.pia_is_other_region === 1}
+								className="col-md-12 mb-3"
 								maxLength={1000}
+								placeholder={
+									validation.values.pia_is_other_region === 1
+										? t("specify_region_details")
+										: "Description"
+								}
 							/>
 						</Row>
 						<Row>

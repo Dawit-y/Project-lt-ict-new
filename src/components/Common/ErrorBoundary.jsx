@@ -1,7 +1,7 @@
 import React from "react";
 import { FaRedo, FaExclamationCircle } from "react-icons/fa";
 import { useLocation } from "react-router-dom";
-import { Card, CardBody } from "reactstrap"
+import { Card, CardBody } from "reactstrap";
 import { useTranslation } from "react-i18next";
 
 class ErrorBoundary extends React.Component {
@@ -10,7 +10,7 @@ class ErrorBoundary extends React.Component {
     this.state = {
       hasError: false,
       error: null,
-      resetAttempts: 0
+      resetAttempts: 0,
     };
   }
 
@@ -19,24 +19,14 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // You can log the error to an error reporting service here
     console.error("Error caught by ErrorBoundary:", error, errorInfo);
   }
 
   resetErrorBoundary = () => {
-    const { resetAttempts } = this.state;
-    const MAX_RESET_ATTEMPTS = 1;
-
-    if (resetAttempts >= MAX_RESET_ATTEMPTS) {
-      // If we've exceeded max attempts, reload the page
-      window.location.reload();
-      return;
-    }
-
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       hasError: false,
       error: null,
-      resetAttempts: prevState.resetAttempts + 1
+      resetAttempts: prevState.resetAttempts + 1,
     }));
   };
 
@@ -47,18 +37,18 @@ class ErrorBoundary extends React.Component {
   }
 
   render() {
-    const t = this.props.t
+    const t = this.props.t;
     if (this.state.hasError) {
       return (
         <div
-          className=""
           style={{
             width: "100wh",
             height: "100vh",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-          }}>
+          }}
+        >
           <Card>
             <CardBody className="text-center">
               <FaExclamationCircle size={60} className="text-danger mb-3" />
@@ -70,7 +60,6 @@ class ErrorBoundary extends React.Component {
                   {"Please review your input and try again."}
                 </h5>
               </>
-
               <button
                 onClick={this.resetErrorBoundary}
                 className="btn btn-primary btn-md"
@@ -91,6 +80,6 @@ class ErrorBoundary extends React.Component {
 
 export default function ErrorBoundaryWrapper(props) {
   const location = useLocation();
-  const { t } = useTranslation()
+  const { t } = useTranslation();
   return <ErrorBoundary {...props} location={location} t={t} />;
 }

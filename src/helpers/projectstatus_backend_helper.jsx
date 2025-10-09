@@ -10,12 +10,11 @@ export const getProjectStatus = async () => {
     const response = await post(GET_PROJECT_STATUS);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
-export const addProjectStatus = async (data) =>
-  post(ADD_PROJECT_STATUS, data);
+export const addProjectStatus = async (data) => post(ADD_PROJECT_STATUS, data);
 
 export const updateProjectStatus = (data) =>
   post(UPDATE_PROJECT_STATUS + `?prs_id=${data?.prs_id}`, data);

@@ -11338,6 +11338,11 @@ prelude-ls@~1.1.2:
   resolved "https://registry.yarnpkg.com/prelude-ls/-/prelude-ls-1.1.2.tgz#21932a549f5e52ffd9a827f570e04be62a97da54"
   integrity sha512-ESF23V4SKG6lVSGZgYNpbsiaAkdab6ZgOxe52p7+Kid3W3u3bxR4Vfd/o21dmN7jSt0IwgZ4v5MUd26FEtXE9w==
 
+prettier@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-3.6.2.tgz#ccda02a1003ebbb2bfda6f83a074978f608b9393"
+  integrity sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==
+
 pretty-bytes@^5.3.0, pretty-bytes@^5.4.1:
   version "5.6.0"
   resolved "https://registry.yarnpkg.com/pretty-bytes/-/pretty-bytes-5.6.0.tgz#356256f643804773c82f64723fe78c92c62beaeb"
@@ -11698,10 +11703,10 @@ react-error-overlay@6.0.11, react-error-overlay@^6.0.11:
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.11.tgz#92835de5841c5cf08ba00ddd2d677b6d17ff9adb"
   integrity sha512-/6UZ2qgEyH2aqzYZgQPxEnz33NJ2gNsnHA2o5+o4wW9bLM/JYQitNP9xPhsXwC08hMMovfGe/8retsdDsczPRg==
 
-react-ethiopian-calendar@^1.0.13:
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/react-ethiopian-calendar/-/react-ethiopian-calendar-1.0.13.tgz#b8655b5158436d91ea3c9db061da8f749a216248"
-  integrity sha512-JA4AdUIjs1Lb5Bg3DtN1VSxHpS6yWQGYgPten06SqxmifhSfiEEuv/yjBmRntmzkW1BhKKNe5hmAaSBlxOqvlQ==
+react-ethiopian-calendar@^1.0.16:
+  version "1.0.16"
+  resolved "https://registry.yarnpkg.com/react-ethiopian-calendar/-/react-ethiopian-calendar-1.0.16.tgz#ac36b859206a2346bfd2ec3a6fb25c8428d43438"
+  integrity sha512-mydEWATP8sNBhKHcA0B9gN7xf962IonRLUl0k2CKaCOJr5deZ9HF5oe9mYO8DuE+szk9499ENQU937Ld3evhlg==
   dependencies:
     dayjs "^1.11.10"
     ethiopian-date "^0.0.6"

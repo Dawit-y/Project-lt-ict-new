@@ -14,7 +14,7 @@ const fetchNotifications = async () => {
 const markNotificationsAsRead = async (notificationIds) => {
   try {
     const response = await post(
-      `updatenotification?notification_ids=${notificationIds}`
+      `updatenotification?notification_ids=${notificationIds}`,
     );
     return response;
   } catch (error) {
@@ -46,7 +46,7 @@ export const useMarkNotificationsAsRead = () => {
         return oldData.map((notification) =>
           notificationIds.includes(notification.id)
             ? { ...notification, read: true }
-            : notification
+            : notification,
         );
       });
     },

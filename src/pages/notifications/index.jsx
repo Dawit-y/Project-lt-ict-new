@@ -35,7 +35,9 @@ const Notifications = () => {
                 <CardBody className="d-flex align-items-start">
                   <div className="avatar-xs me-3">
                     <span className="avatar-title bg-primary rounded-circle font-size-16">
-                      <i className={`bx bx-${notification.not_type.toLowerCase()}`} />
+                      <i
+                        className={`bx bx-${notification.not_type.toLowerCase()}`}
+                      />
                     </span>
                   </div>
                   <div className="flex-grow-1">

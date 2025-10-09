@@ -9,7 +9,6 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProjectHandovers,
-	useSearchProjectHandovers,
 	useAddProjectHandover,
 	useDeleteProjectHandover,
 	useUpdateProjectHandover,
@@ -39,16 +38,12 @@ import {
 	CardBody,
 	Spinner,
 } from "reactstrap";
-import {
-	alphanumericValidation,
-	amountValidation,
-	numberValidation,
-} from "../../utils/Validation/validation";
+import { alphanumericValidation } from "../../utils/Validation/validation";
 import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import FileUploadField from "../../components/Common/FileUploadField";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import { projectHandoverExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -96,25 +91,24 @@ const ProjectHandoverModel = (props) => {
 		try {
 			await addProjectHandover.mutateAsync(newProjectHandover);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleUpdateProjectHandover = async (updateData) => {
 		try {
-			await updateProjectHandover.mutateAsync(updateData),
-				toast.success(t("update_success"), { autoClose: 2000 });
+			await updateProjectHandover.mutateAsync(updateData);
+			toast.success(t("update_success"), { autoClose: 3000 });
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), { autoClose: 2000 });
-		} finally {
-			toggle();
+			toast.error(t("update_failure"), { autoClose: 3000 });
 		}
 	};
 
@@ -124,11 +118,11 @@ const ProjectHandoverModel = (props) => {
 				const id = projectHandover.prh_id;
 				await deleteProjectHandover.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -265,27 +259,7 @@ const ProjectHandoverModel = (props) => {
 				accessorKey: "prh_handover_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.prh_handover_date_gc, 30) ||
-								"-"}
-						</span>
-					);
-				},
-			},
-			{
-				header: "",
-				accessorKey: "prh_description",
-				enableColumnFilter: false,
-				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.prh_description, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("view_detail"),
@@ -315,8 +289,9 @@ const ProjectHandoverModel = (props) => {
 					return (
 						<Button
 							type="button"
-							color="primary"
+							color="success"
 							className="btn-sm"
+							outline
 							onClick={() => {
 								toggleFileModal();
 								setTransaction(cellProps.row.original);
@@ -337,6 +312,7 @@ const ProjectHandoverModel = (props) => {
 							type="button"
 							color="primary"
 							className="btn-sm"
+							outline
 							onClick={() => {
 								toggleConvModal();
 								setTransaction(cellProps.row.original);
@@ -356,10 +332,10 @@ const ProjectHandoverModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
 									<Button
@@ -406,7 +382,7 @@ const ProjectHandoverModel = (props) => {
 		}
 
 		return baseColumns;
-	}, [handleProjectHandoverClick, toggleViewModal, onClickDelete]);
+	}, [handleProjectHandoverClick, toggleViewModal, onClickDelete, data, t]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -467,8 +443,8 @@ const ProjectHandoverModel = (props) => {
 											pagination="pagination"
 											paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
 											refetch={refetch}
-                        isFetching={isFetching}
-                        exportColumns={projectHandoverExportColumns}
+											isFetching={isFetching}
+											exportColumns={projectHandoverExportColumns}
 										/>
 									</CardBody>
 								</Card>

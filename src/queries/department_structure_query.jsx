@@ -94,7 +94,7 @@ const buildTree = (data) => {
   };
 
   AllDepartment[0].children.forEach((child) =>
-    assignLevels(child, "Department")
+    assignLevels(child, "Department"),
   );
   return AllDepartment;
 };

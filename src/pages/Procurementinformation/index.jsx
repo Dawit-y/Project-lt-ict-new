@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -10,7 +8,6 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	useFetchProcurementInformations,
-	useSearchProcurementInformations,
 	useAddProcurementInformation,
 	useDeleteProcurementInformation,
 	useUpdateProcurementInformation,
@@ -40,21 +37,16 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
 	alphanumericValidation,
 	amountValidation,
-	numberValidation,
 } from "../../utils/Validation/validation";
 import { procurementExportColumns } from "../../utils/exportColumnsForDetails";
-
-const truncateText = (text, maxLength) => {
-	if (typeof text !== "string") {
-		return text;
-	}
-	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
-};
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import { toEthiopian } from "../../utils/commonMethods";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
 
 const ProcurementInformationModel = (props) => {
-	//meta title
 	document.title = "Procurement Information";
-	const { t } = useTranslation();
+	const { t, i18n } = useTranslation();
 	const { passedId, isActive, startDate } = props;
 	const param = { pri_project_id: passedId, request_type: "single" };
 	const [modal, setModal] = useState(false);
@@ -64,65 +56,77 @@ const ProcurementInformationModel = (props) => {
 		useState([]);
 	const [showCanvas, setShowCanvas] = useState(false);
 	const [procurementInformation, setProcurementInformation] = useState(null);
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
+
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchProcurementInformations(param, isActive);
-
-	const { data: procurementStageData } = useFetchProcurementStages();
-	const { data: procurementMethodData } = useFetchProcurementMethods();
-
-	const procurementStageMap = useMemo(() => {
-		return (
-			procurementStageData?.data?.reduce((acc, procurement_stage) => {
-				acc[procurement_stage.pst_id] = procurement_stage.pst_name_or;
-				return acc;
-			}, {}) || {}
-		);
-	}, [procurementStageData]);
-
-	const procurementMethodMap = useMemo(() => {
-		return (
-			procurementMethodData?.data?.reduce((acc, procurement_method) => {
-				acc[procurement_method.prm_id] = procurement_method.prm_name_or;
-				return acc;
-			}, {}) || {}
-		);
-	}, [procurementMethodData]);
-
 	const addProcurementInformation = useAddProcurementInformation();
 	const updateProcurementInformation = useUpdateProcurementInformation();
 	const deleteProcurementInformation = useDeleteProcurementInformation();
-	//START CRUD
+
+	const {
+		data: procurementStageData,
+		isLoading: isStageLoading,
+		isError: isStageError,
+	} = useFetchProcurementStages();
+	const {
+		data: procurementMethodData,
+		isLoading: isMethodLoading,
+		isError: isMethodError,
+	} = useFetchProcurementMethods();
+
+	const procurementStageMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			procurementStageData?.data || [],
+			"pst_id",
+			{
+				en: "pst_name_en",
+				am: "pst_name_am",
+				or: "pst_name_or",
+			},
+			i18n.language
+		);
+	}, [procurementStageData, i18n.language]);
+
+	const procurementMethodMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			procurementMethodData?.data || [],
+			"prm_id",
+			{
+				en: "prm_name_en",
+				am: "prm_name_am",
+				or: "prm_name_or",
+			},
+			i18n.language
+		);
+	}, [procurementMethodData, i18n.language]);
+
 	const handleAddProcurementInformation = async (data) => {
 		try {
 			await addProcurementInformation.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.success(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleUpdateProcurementInformation = async (data) => {
 		try {
 			await updateProcurementInformation.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.success(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteProcurementInformation = async () => {
 		if (procurementInformation && procurementInformation.pri_id) {
@@ -130,11 +134,11 @@ const ProcurementInformationModel = (props) => {
 				const id = procurementInformation.pri_id;
 				await deleteProcurementInformation.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.success(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -184,13 +188,6 @@ const ProcurementInformationModel = (props) => {
 			pri_description:
 				(procurementInformation && procurementInformation.pri_description) ||
 				"",
-			pri_status:
-				(procurementInformation && procurementInformation.pri_status) || "",
-
-			is_deletable:
-				(procurementInformation && procurementInformation.is_deletable) || 1,
-			is_editable:
-				(procurementInformation && procurementInformation.is_editable) || 1,
 		},
 		validationSchema: Yup.object({
 			pri_total_procurement_amount: amountValidation(100, 1000000000000, true),
@@ -231,10 +228,6 @@ const ProcurementInformationModel = (props) => {
 					pri_procurement_stage_id: values.pri_procurement_stage_id,
 					pri_procurement_method_id: values.pri_procurement_method_id,
 					pri_description: values.pri_description,
-					pri_status: values.pri_status,
-
-					is_deletable: values.is_deletable,
-					is_editable: values.is_editable,
 				};
 				// update ProcurementInformation
 				handleUpdateProcurementInformation(updateProcurementInformation);
@@ -251,7 +244,6 @@ const ProcurementInformationModel = (props) => {
 					pri_procurement_stage_id: values.pri_procurement_stage_id,
 					pri_procurement_method_id: values.pri_procurement_method_id,
 					pri_description: values.pri_description,
-					pri_status: values.pri_status,
 				};
 				// save new ProcurementInformation
 				handleAddProcurementInformation(newProcurementInformation);
@@ -265,16 +257,7 @@ const ProcurementInformationModel = (props) => {
 		setShowCanvas(!showCanvas);
 		setProcurementInformationMetaData(data);
 	};
-	// Fetch ProcurementInformation on component mount
-	useEffect(() => {
-		setProcurementInformation(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProcurementInformation(data);
-			setIsEdit(false);
-		}
-	}, [data]);
+
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -285,7 +268,6 @@ const ProcurementInformationModel = (props) => {
 	};
 	const handleProcurementInformationClick = (arg) => {
 		const procurementInformation = arg;
-		// console.log("handleProcurementInformationClick", procurementInformation);
 		setProcurementInformation({
 			pri_id: procurementInformation.pri_id,
 			pri_total_procurement_amount:
@@ -319,12 +301,7 @@ const ProcurementInformationModel = (props) => {
 		setProcurementInformation("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -332,106 +309,53 @@ const ProcurementInformationModel = (props) => {
 				accessorKey: "pri_total_procurement_amount",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_total_procurement_amount,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) =>
+					parseFloat(getValue()).toLocaleString(undefined, {
+						minimumFractionDigits: 0,
+						maximumFractionDigits: 2,
+					}) || "-",
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_announced_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_announced_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_invitation_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_invitation_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_opening_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_opening_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_closing_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_closing_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_evaluation_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								cellProps.row.original.pri_bid_evaluation_date,
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "pri_bid_award_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.pri_bid_award_date, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 
 			{
@@ -495,10 +419,10 @@ const ProcurementInformationModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
 								<Button
 									size="sm"
@@ -513,8 +437,9 @@ const ProcurementInformationModel = (props) => {
 								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 1 && (
-								<Link
-									to="#"
+								<Button
+									color="None"
+									size="sm"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -528,12 +453,11 @@ const ProcurementInformationModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
-
 							<Button
-								to="#"
 								color="none"
+								size="sm"
 								className="text-secondary"
 								onClick={() => handleClick(cellProps.row.original)}
 							>
@@ -548,7 +472,15 @@ const ProcurementInformationModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleProcurementInformationClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleProcurementInformationClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		t,
+		procurementStageMap,
+		procurementMethodMap,
+	]);
 
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
@@ -583,12 +515,12 @@ const ProcurementInformationModel = (props) => {
 				isLoading={deleteProcurementInformation.isPending}
 			/>
 			<div className="">
-				{isLoading || isSearchLoading ? (
+				{isLoading ? (
 					<Spinners />
 				) : (
 					<TableContainer
 						columns={columns}
-						data={showSearchResult ? searchResults?.data : data?.data || []}
+						data={data?.data || []}
 						isGlobalFilter={true}
 						isAddButton={data?.previledge?.is_role_can_add == 1}
 						isCustomPageSize={true}
@@ -604,6 +536,8 @@ const ProcurementInformationModel = (props) => {
 						refetch={refetch}
 						isFetching={isFetching}
 						exportColumns={procurementExportColumns}
+						isSummaryRow={true}
+						summaryColumns={["pri_total_procurement_amount"]}
 					/>
 				)}
 				<Modal isOpen={modal} toggle={toggle} className="modal-xl">
@@ -621,34 +555,14 @@ const ProcurementInformationModel = (props) => {
 							}}
 						>
 							<Row>
-								<Col className="col-md-6 mb-3">
-									<Label>
-										{t("pri_total_procurement_amount")}
-										<span className="text-danger">*</span>
-									</Label>
-									<Input
-										name="pri_total_procurement_amount"
-										type="number"
-										placeholder={t("pri_total_procurement_amount")}
-										onChange={validation.handleChange}
-										onBlur={validation.handleBlur}
-										value={validation.values.pri_total_procurement_amount || ""}
-										invalid={
-											validation.touched.pri_total_procurement_amount &&
-											validation.errors.pri_total_procurement_amount
-												? true
-												: false
-										}
-										maxLength={20}
-									/>
-									{validation.touched.pri_total_procurement_amount &&
-									validation.errors.pri_total_procurement_amount ? (
-										<FormFeedback type="invalid">
-											{validation.errors.pri_total_procurement_amount}
-										</FormFeedback>
-									) : null}
-								</Col>
-
+								<FormattedAmountField
+									fieldId="pri_total_procurement_amount"
+									label={t("pri_total_procurement_amount")}
+									validation={validation}
+									className={"col-md-6 mb-3"}
+									isRequired={true}
+									allowDecimal={true}
+								/>
 								<Col className="col-md-6 mb-3">
 									<DatePicker
 										isRequired={true}
@@ -727,75 +641,24 @@ const ProcurementInformationModel = (props) => {
 										</FormFeedback>
 									) : null}
 								</Col>
-
-								<Col className="col-md-6 mb-3">
-									<Label>
-										{t("pri_procurement_stage_id")}
-										<span className="text-danger">*</span>
-									</Label>
-									<Input
-										name="pri_procurement_stage_id"
-										type="select"
-										className="form-select"
-										onChange={validation.handleChange}
-										onBlur={validation.handleBlur}
-										value={validation.values.pri_procurement_stage_id || ""}
-										invalid={
-											validation.touched.pri_procurement_stage_id &&
-											validation.errors.pri_procurement_stage_id
-												? true
-												: false
-										}
-									>
-										<option value="">{t("select_one")}</option>
-										{procurementStageData?.data?.map((data) => (
-											<option key={data.pst_id} value={data.pst_id}>
-												{data.pst_name_or}
-											</option>
-										))}
-									</Input>
-									{validation.touched.pri_procurement_stage_id &&
-									validation.errors.pri_procurement_stage_id ? (
-										<FormFeedback type="invalid">
-											{validation.errors.pri_procurement_stage_id}
-										</FormFeedback>
-									) : null}
-								</Col>
-
-								<Col className="col-md-6 mb-3">
-									<Label>
-										{t("pri_procurement_method_id")}
-										<span className="text-danger">*</span>
-									</Label>
-									<Input
-										name="pri_procurement_method_id"
-										type="select"
-										className="form-select"
-										onChange={validation.handleChange}
-										onBlur={validation.handleBlur}
-										value={validation.values.pri_procurement_method_id || ""}
-										invalid={
-											validation.touched.pri_procurement_method_id &&
-											validation.errors.pri_procurement_method_id
-												? true
-												: false
-										}
-									>
-										<option value="">{t("select_one")}</option>
-										{procurementMethodData?.data?.map((data) => (
-											<option key={data.prm_id} value={data.prm_id}>
-												{data.prm_name_or}
-											</option>
-										))}
-									</Input>
-									{validation.touched.pri_procurement_method_id &&
-									validation.errors.pri_procurement_method_id ? (
-										<FormFeedback type="invalid">
-											{validation.errors.pri_procurement_method_id}
-										</FormFeedback>
-									) : null}
-								</Col>
-
+								<AsyncSelectField
+									fieldId="pri_procurement_stage_id"
+									validation={validation}
+									isRequired
+									className="col-md-6 mb-3"
+									optionMap={procurementStageMap}
+									isLoading={isStageLoading}
+									isError={isStageError}
+								/>
+								<AsyncSelectField
+									fieldId="pri_procurement_method_id"
+									validation={validation}
+									isRequired
+									className="col-md-6 mb-3"
+									optionMap={procurementMethodMap}
+									isLoading={isMethodLoading}
+									isError={isMethodError}
+								/>
 								<Col className="col-md-6 mb-3">
 									<Label>{t("pri_description")}</Label>
 									<Input

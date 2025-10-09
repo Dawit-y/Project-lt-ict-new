@@ -1,67 +1,78 @@
-import React from 'react';
-import { useTable, useGlobalFilter, useSortBy, usePagination } from 'react-table';
-import { Input, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import React from "react";
+import {
+  useTable,
+  useGlobalFilter,
+  useSortBy,
+  usePagination,
+} from "react-table";
+import { Input, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import ExportToExcel from "../../components/Common/ExportToExcel";
 
-const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => {
-
- const columns = React.useMemo(
+const ProjectPaymentTable = ({
+  data,
+  isGlobalFilter,
+  SearchPlaceholder,
+  t,
+}) => {
+  const columns = React.useMemo(
     () => [
       {
-        Header: 'SN',
-        accessor: 'sn',
-         Cell: ({ row, state }) => row.index + 1 + (state.pageIndex * state.pageSize),
-      width: 50,
+        Header: "SN",
+        accessor: "sn",
+        Cell: ({ row, state }) =>
+          row.index + 1 + state.pageIndex * state.pageSize,
+        width: 50,
       },
       {
-        Header: t('Project Category'),
-        accessor: 'Project Category',
+        Header: t("Project Category"),
+        accessor: "Project Category",
         sortable: true,
       },
       {
-        Header: t('Zone'),
-        accessor: 'Zone',
+        Header: t("Zone"),
+        accessor: "Zone",
         sortable: true,
       },
       {
-        Header: t('Sector'),
-        accessor: 'Sector',
+        Header: t("Sector"),
+        accessor: "Sector",
         sortable: true,
       },
       {
-        Header: t('Project Name (Code)'),
-        accessor: 'Project Name(Code)',
+        Header: t("Project Name (Code)"),
+        accessor: "Project Name(Code)",
         sortable: true,
       },
       {
-        Header: t('Payment Type'),
-        accessor: 'Payment Type',
+        Header: t("Payment Type"),
+        accessor: "Payment Type",
         sortable: true,
       },
       {
-        Header: t('Payment Date'),
-        accessor: 'Payment Date',
+        Header: t("Payment Date"),
+        accessor: "Payment Date",
         sortable: true,
         Cell: ({ value }) => new Date(value).toLocaleDateString(),
       },
       {
-        Header: t('Payment Amount'),
-        accessor: 'Payment Amount',
+        Header: t("Payment Amount"),
+        accessor: "Payment Amount",
         sortable: true,
-        Cell: ({ value }) => new Intl.NumberFormat('en-US', {
-          style: 'currency',
-          currency: 'USD',
-          minimumFractionDigits: 2
-        }).format(value),
+        Cell: ({ value }) =>
+          new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 2,
+          }).format(value),
       },
       {
-        Header: t('Payment Percentage'),
-        accessor: 'Payment Percentage',
+        Header: t("Payment Percentage"),
+        accessor: "Payment Percentage",
         sortable: true,
         Cell: ({ value }) => `${value}%`,
       },
     ],
-    [t]
+    [t],
   );
 
   const {
@@ -88,12 +99,12 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
       initialState: {
         pageIndex: 0,
         pageSize: 10,
-        sortBy: [{ id: 'Payment Date', desc: true }],
+        sortBy: [{ id: "Payment Date", desc: true }],
       },
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
   );
 
   return (
@@ -106,7 +117,7 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
                 type="text"
                 className="form-control"
                 placeholder={SearchPlaceholder}
-                value={globalFilter || ''}
+                value={globalFilter || ""}
                 onChange={(e) => setGlobalFilter(e.target.value)}
               />
               <i className="bx bx-search-alt search-icon"></i>
@@ -119,7 +130,7 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
           <Input
             type="select"
             className="form-select form-select-sm"
-            style={{ width: '70px' }}
+            style={{ width: "70px" }}
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
@@ -133,14 +144,14 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
           </Input>
         </div>
       </div>
-   <ExportToExcel tableData={data} tablename="Budget_Request_report" />
+      <ExportToExcel tableData={data} tablename="Budget_Request_report" />
       <table {...getTableProps()} className="table table-bordered table-hover">
         <thead className="table-light">
           {headerGroups.map((headerGroup) => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
+                  {column.render("Header")}
                 </th>
               ))}
             </tr>
@@ -153,7 +164,7 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
               return (
                 <tr {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                   ))}
                 </tr>
               );
@@ -161,7 +172,7 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
           ) : (
             <tr>
               <td colSpan={columns.length} className="text-center">
-                {t('no_records_found')}
+                {t("no_records_found")}
               </td>
             </tr>
           )}
@@ -170,10 +181,11 @@ const ProjectPaymentTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => 
 
       <div className="d-flex justify-content-between align-items-center mt-3">
         <div>
-          Showing {pageIndex * pageSize + 1} to{' '}
-          {Math.min((pageIndex + 1) * pageSize, data.length)} of {data.length} entries
+          Showing {pageIndex * pageSize + 1} to{" "}
+          {Math.min((pageIndex + 1) * pageSize, data.length)} of {data.length}{" "}
+          entries
         </div>
-        
+
         <Pagination>
           <PaginationItem disabled={!canPreviousPage}>
             <PaginationLink previous onClick={() => previousPage()} />

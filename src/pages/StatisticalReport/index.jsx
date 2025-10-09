@@ -1,14 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Row,
-  Col,
-  FormGroup,
-  Label,
-  Input,
-  Card,
-  CardBody,
-  Spinner,
-} from "reactstrap";
+import { Row, Col, Input, Card, CardBody, Spinner } from "reactstrap";
 import PivotTableUI from "react-pivottable/PivotTableUI";
 import "react-pivottable/pivottable.css";
 import Plot from "react-plotly.js";
@@ -18,12 +9,13 @@ import { aggregators } from "react-pivottable/Utilities";
 import { useTranslation } from "react-i18next";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useSearchStatisticalReport } from "../../queries/statisticalreport_query";
 import "./statistical.css";
 import { createSelectOptions } from "../../utils/commonMethods";
 import PrintStatisticalReportPage from "../../components/Common/PrintStatisticalReportPage";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
@@ -70,11 +62,13 @@ const StatisticalReport = () => {
   const [localizedRenderersUI, setLocalizedRenderersUI] = useState({});
   const [localizedAggregatorTemplates, setLocalizedAggregatorTemplates] =
     useState({});
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   const { data: budgetYearData } = useFetchBudgetYears();
   const budgetYearOptions = createSelectOptions(
     budgetYearData?.data || [],
     "bdy_id",
-    "bdy_name"
+    "bdy_name",
   );
 
   useEffect(() => {
@@ -85,7 +79,7 @@ const StatisticalReport = () => {
         acc[localizedKey] = TableRenderers[key];
         return acc;
       },
-      {}
+      {},
     );
     // Create localized aggregators
     const localizedAggregatorTemplates = Object.entries(aggregators).reduce(
@@ -94,7 +88,7 @@ const StatisticalReport = () => {
         acc[localizedKey] = value;
         return acc;
       },
-      {}
+      {},
     );
     // Add Plotly renderers if needed
     Object.keys(PlotlyRenderers).forEach((key) => {
@@ -412,89 +406,101 @@ const StatisticalReport = () => {
             onNodeSelect={handleNodeSelect}
             setIsAddressLoading={setIsAddressLoading}
             setInclude={setInclude}
+            isCollapsed={isCollapsed}
+            setIsCollapsed={setIsCollapsed}
+            widthInPercent={15}
           />
-          <div className="w-100">
-            <Row className="d-flex align-items-center justify-content-center">
-              <Col xs="4" sm="4" lg="4">
-                <Card>
-                  <CardBody>
-                    <div className="d-flex align-items-center gap-5">
-                      <Input
-                        type="select"
-                        name="endpoint"
-                        id="api-endpoints"
-                        value={selectedEndpoint.name}
-                        onChange={handleSelectionChange}
-                      >
-                        <option value="">{t("select_stat")}</option>
-                        {endpoints.map((endpoint, index) => (
-                          <option key={index} value={endpoint.name}>
-                            {t(endpoint.name)}
-                          </option>
-                        ))}
-                      </Input>
+          <div style={{ flex: "1 1 0", overflowX: "auto", minHeight: "100vh" }}>
+            <div
+              style={{
+                flex: isCollapsed ? "1 1 auto" : `0 0 85%`,
+                transition: "all 0.3s ease",
+              }}
+            >
+              <Row className="d-flex align-items-center justify-content-center">
+                <Col xs="4" sm="4" lg="4">
+                  <Card className="p-0 m-0 mb-3 shadow-none">
+                    <CardBody className="p-2">
+                      <div className="d-flex align-items-center gap-5">
+                        <Input
+                          type="select"
+                          name="endpoint"
+                          id="api-endpoints"
+                          value={selectedEndpoint.name}
+                          onChange={handleSelectionChange}
+                        >
+                          <option value="">{t("select_stat")}</option>
+                          {endpoints.map((endpoint, index) => (
+                            <option key={index} value={endpoint.name}>
+                              {t(endpoint.name)}
+                            </option>
+                          ))}
+                        </Input>
 
-                      <PrintStatisticalReportPage
-                        tableData={searchResults || []}
-                        tablename={t("Statistical Report")}
-                        excludeKey={["is_editable", "is_deletable"]}
-                      />
-                    </div>
-                  </CardBody>
-                </Card>
-              </Col>
+                        <PrintStatisticalReportPage
+                          tableData={searchResults || []}
+                          tablename={t("Statistical Report")}
+                          excludeKey={["is_editable", "is_deletable"]}
+                        />
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Col>
 
-              <Col xs="8" sm="8" lg="8">
-                <AdvancedSearch
-                  searchHook={useSearchStatisticalReport}
-                  textSearchKeys={textSearchKeys}
-                  dateSearchKeys={dateSearchKeys}
-                  dropdownSearchKeys={dropdownSearchKeys}
-                  checkboxSearchKeys={[]}
-                  additionalParams={projectParams}
-                  setAdditionalParams={setProjectParams}
-                  onSearchResult={handleSearchResults}
-                  setIsSearchLoading={setIsSearchLoading}
-                  setSearchResults={setSearchResults}
-                  setShowSearchResult={setShowSearchResult}
-                />
-              </Col>
-            </Row>
-            <Col xs="12">
-              {loading || isSearchLoading ? (
-                <div className="d-flex justify-content-center">
-                  <Spinner color="primary" />
-                </div>
-              ) : (
-                <>
-                  {!loading &&
-                    showPivot &&
-                    searchResults.length > 0 &&
-                    showSearchResult && (
-                      <Card>
-                        <CardBody>
-                          <div className="overflow-x-auto">
-                            <PivotTableUI
-                              key={selectedEndpoint || "default"}
-                              data={searchResults}
-                              onChange={(state) => setPivotState(state)}
-                              renderers={localizedRenderersUI}
-                              aggregators={localizedAggregatorTemplates}
-                              aggregatorName={
-                                Object.keys(localizedAggregatorTemplates)[0]
-                              }
-                              {...pivotState}
-                            />
-                          </div>
-                        </CardBody>
-                      </Card>
+                <Col xs="8" sm="8" lg="8">
+                  <AdvancedSearch
+                    searchHook={useSearchStatisticalReport}
+                    textSearchKeys={textSearchKeys}
+                    dateSearchKeys={dateSearchKeys}
+                    dropdownSearchKeys={dropdownSearchKeys}
+                    checkboxSearchKeys={[]}
+                    additionalParams={projectParams}
+                    setAdditionalParams={setProjectParams}
+                    onSearchResult={handleSearchResults}
+                    setIsSearchLoading={setIsSearchLoading}
+                    setSearchResults={setSearchResults}
+                    setShowSearchResult={setShowSearchResult}
+                  />
+                </Col>
+              </Row>
+              <Col xs="12">
+                {loading || isSearchLoading ? (
+                  <div className="d-flex justify-content-center">
+                    <Spinner color="primary" />
+                  </div>
+                ) : (
+                  <>
+                    {!loading &&
+                      showPivot &&
+                      searchResults.length > 0 &&
+                      showSearchResult && (
+                        <Card>
+                          <CardBody>
+                            <div className="overflow-x-auto">
+                              <PivotTableUI
+                                key={selectedEndpoint || "default"}
+                                data={searchResults}
+                                onChange={(state) => setPivotState(state)}
+                                renderers={localizedRenderersUI}
+                                aggregators={localizedAggregatorTemplates}
+                                aggregatorName={
+                                  Object.keys(localizedAggregatorTemplates)[0]
+                                }
+                                {...pivotState}
+                              />
+                            </div>
+                          </CardBody>
+                        </Card>
+                      )}
+                    {searchResults && searchResults.length === 0 && (
+                      <div className="text-center mt-5">
+                        <p>{t("statistical_search")}</p>
+                      </div>
                     )}
-                  {searchResults && searchResults.length === 0 && (
-                    <p>{t("statistical_search")}</p>
-                  )}
-                </>
-              )}
-            </Col>
+                  </>
+                )}
+              </Col>
+            </div>
           </div>
         </div>
       </div>

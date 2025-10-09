@@ -11,10 +11,7 @@ import {
   Col,
   Row,
 } from "reactstrap";
-const modalStyle = {
-  width: "100%",
-  height: "100%",
-};
+
 const DynamicDetailsModal = (props) => {
   const { t } = useTranslation();
   const {
@@ -28,7 +25,7 @@ const DynamicDetailsModal = (props) => {
     modalClassName,
     dateInGC,
     dateInEC,
-    projectName
+    projectName,
   } = props;
   const renderTableRows = () => {
     // Ensure that fields is an array and data (transaction) is an object
@@ -37,24 +34,26 @@ const DynamicDetailsModal = (props) => {
         <tr key={index}>
           <th scope="row">{field.label} :</th>
           <td>
-          {
-         field.value
-        ? field.value
-        : typeof data[field.key] === "number"
-        ? data[field.key].toLocaleString()
-        : data && data[field.key]
-        ? data[field.key]
-        : "-"
-          }
+            {field.value
+              ? field.value
+              : typeof data[field.key] === "number"
+                ? data[field.key].toLocaleString()
+                : data && data[field.key]
+                  ? data[field.key]
+                  : "-"}
           </td>
         </tr>
       ));
     }
     return null; // Return null if fields or data are not valid
   };
-    const printDetail = () => {
+  const printDetail = () => {
     const modalContent = document.getElementById("printable-detail").innerHTML;
-    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    const printWindow = window.open(
+      "",
+      "_blank",
+      `width=${window.screen.width},height=${window.screen.height}`,
+    );
     printWindow.document.open();
     printWindow.document.write(`
       <html>
@@ -104,10 +103,11 @@ const DynamicDetailsModal = (props) => {
       className={modalClassName || "modal-xl"}
       tabIndex="-1"
       toggle={toggle}
-      style={modalStyle}
     >
       <div className={modalClassName || "modal-xl"} id="printable-detail">
-        <ModalHeader toggle={toggle}>{t(title)} - {projectName}</ModalHeader>
+        <ModalHeader toggle={toggle}>
+          {t(title)} - {projectName}
+        </ModalHeader>
         <ModalBody>
           <div className="d-flex">
             <div className="flex-grow-1 overflow-hidden">
@@ -148,7 +148,7 @@ const DynamicDetailsModal = (props) => {
           </Row>
         </ModalBody>
         <ModalFooter>
-        <Button onClick={printDetail} className="btn btn-success me-2">
+          <Button onClick={printDetail} className="btn btn-success me-2">
             <i className="fa fa-print" />
           </Button>
           <Button type="button" color="secondary" onClick={toggle}>
@@ -167,7 +167,7 @@ DynamicDetailsModal.propTypes = {
     PropTypes.shape({
       label: PropTypes.string.isRequired,
       key: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   title: PropTypes.string,
   footerText: PropTypes.string,

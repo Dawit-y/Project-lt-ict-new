@@ -1,5 +1,65 @@
+import { useMemo } from "react";
+import { useFetchSectorInformations } from "../queries/sectorinformation_query";
+import { useFetchProjectStatuss } from "../queries/projectstatus_query";
+import { createMultiLangKeyValueMap } from "./commonMethods";
+import { useTranslation } from "react-i18next";
+
+export const useUserExportColumns = () => {
+	const { i18n, t } = useTranslation();
+
+	const { data: sectorInformationData } = useFetchSectorInformations();
+
+	const sectorInformationMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			sectorInformationData?.data || [],
+			"sci_id",
+			{
+				en: "sci_name_en",
+				am: "sci_name_am",
+				or: "sci_name_or",
+			},
+			i18n.language
+		);
+	}, [sectorInformationData, i18n.language]);
+
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "usr_email",
+				label: t("usr_email"),
+				format: (val) => (val ? val : "-"),
+			},
+			{
+				key: "usr_full_name",
+				label: t("usr_full_name"),
+				format: (val) => (val ? val : "-"),
+			},
+			{
+				key: "usr_phone_number",
+				label: t("usr_phone_number"),
+				format: (val) => (val ? val : "-"),
+			},
+			{
+				key: "usr_sector_id",
+				label: t("usr_sector_id"),
+				format: (val) => sectorInformationMap[val] || "-",
+				width: 40,
+			},
+			{
+				key: "dep_name",
+				label: t("department"),
+				format: (val) => (val ? val : "-"),
+				width: 60,
+			},
+		],
+		[t, sectorInformationMap]
+	);
+
+	return exportColumns;
+};
+
 export const monitoringExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "mne_physical_region",
@@ -44,7 +104,7 @@ export const monitoringExportColumns = [
 
 export const ProjectPlanExportColumns = [
 	{ key: "pld_name", label: "pld_name" },
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "pld_start_date_gc", label: "pld_start_date_gc" },
 	{ key: "pld_end_date_gc", label: "pld_end_date_gc" },
@@ -54,10 +114,12 @@ export const citizenshipProjectExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
 		label: "prj_code",
+		width: 40,
 	},
 	{
 		key: "zone_name",
@@ -66,6 +128,7 @@ export const citizenshipProjectExportColumns = [
 	{
 		key: "sector_name",
 		label: "prj_sector_id",
+		width: 40,
 	},
 	{
 		key: "status_name",
@@ -83,10 +146,12 @@ export const projectExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
 		label: "prj_code",
+		width: 40,
 	},
 	{
 		key: "zone_name",
@@ -95,6 +160,7 @@ export const projectExportColumns = [
 	{
 		key: "sector_name",
 		label: "prj_sector_id",
+		width: 40,
 	},
 	{
 		key: "status_name",
@@ -105,13 +171,14 @@ export const projectExportColumns = [
 		label: "prj_total_estimate_budget",
 		format: (val) => (val != null ? parseFloat(val).toLocaleString() : "0"),
 		type: "number",
+		width: 30,
 	},
 ];
 
 export const budgetRequestExportColumns = [
 	{ key: "bdy_name", label: "bdy_name" },
-	{ key: "prj_name", label: "prj_name" },
-	{ key: "prj_code", label: "prj_code" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
+	{ key: "prj_code", label: "prj_code", width: 40 },
 	{
 		key: "status_name",
 		label: "bdr_request_status",
@@ -140,7 +207,7 @@ export const budgetRequestExportColumns = [
 
 export const approverBdrExportColumns = [
 	{ key: "bdy_name", label: "bdy_name" },
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "status_name",
@@ -172,6 +239,7 @@ export const projectPaymentExportColumns = [
 	{
 		key: "prj_name",
 		label: "prj_name",
+		width: 60,
 	},
 	{
 		key: "prj_code",
@@ -195,137 +263,298 @@ export const projectPaymentExportColumns = [
 	},
 ];
 
-export const projectPerformanceExportColumns = [
-	{
-		key: "prp_budget_year_id",
-		label: "prp_budget_year_id",
-		format: (val, row) => row.year_name || "-",
-	},
-	{ key: "prj_name", label: "prj_name" },
-	{ key: "prj_code", label: "prj_code" },
-	{ key: "prp_record_date_gc", label: "prp_record_date_gc" },
+export const usePerformanceExportColumns = () => {
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+	const { data: projectStatusData } = useFetchProjectStatuss();
+	const projectStatusMap = useMemo(() => {
+		return (
+			projectStatusData?.data?.reduce((acc, project_status) => {
+				acc[project_status.prs_id] =
+					lang === "en"
+						? project_status.prs_status_name_en
+						: lang === "am"
+							? project_status.prs_status_name_am
+							: project_status.prs_status_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [projectStatusData, lang]);
 
-	// Quarter 1 columns
-	{
-		key: "quarter_1_physical_planned",
-		label: "Q1 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_1_financial_planned",
-		label: "Q1 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_1_physical_actual",
-		label: "Q1 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_1_financial_actual",
-		label: "Q1 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [11, 12, 1], "prp_finan_actual_month_"),
-	},
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "prp_budget_year_id",
+				label: "prp_budget_year_id",
+				format: (val, row) => row.year_name || "-",
+			},
+			{ key: "prj_name", label: "prj_name", width: 60 },
+			{ key: "prj_code", label: "prj_code" },
+			{
+				key: "prp_project_status_id",
+				label: t("prp_project_status_id"),
+				format: (val) => {
+					return projectStatusMap[val] || "-";
+				},
+			},
+			{ key: "prp_record_date_gc", label: "prp_record_date_gc" },
 
-	// Quarter 2 columns
-	{
-		key: "quarter_2_physical_planned",
-		label: "Q2 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_2_financial_planned",
-		label: "Q2 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_2_physical_actual",
-		label: "Q2 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_2_financial_actual",
-		label: "Q2 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [2, 3, 4], "prp_finan_actual_month_"),
-	},
+			// Quarter 1
+			{
+				key: "quarter_1",
+				label: "Quarter 1",
+				columns: [
+					{
+						key: "quarter_1_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_1_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_1_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_finan_planned_month_"
+									),
+							},
+						],
+					},
+					{
+						key: "quarter_1_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_1_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[11, 12, 1],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_1_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [11, 12, 1], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	// Quarter 3 columns
-	{
-		key: "quarter_3_physical_planned",
-		label: "Q3 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_3_financial_planned",
-		label: "Q3 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_3_physical_actual",
-		label: "Q3 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_3_financial_actual",
-		label: "Q3 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [5, 6, 7], "prp_finan_actual_month_"),
-	},
+			// Quarter 2
+			{
+				key: "quarter_2",
+				label: "Quarter 2",
+				columns: [
+					{
+						key: "quarter_2_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_2_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[2, 3, 4],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_2_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [2, 3, 4], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_2_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_2_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[2, 3, 4],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_2_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [2, 3, 4], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	// Quarter 4 columns
-	{
-		key: "quarter_4_physical_planned",
-		label: "Q4 physical_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_pyhsical_planned_month_"),
-	},
-	{
-		key: "quarter_4_financial_planned",
-		label: "Q4 financial_planned",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_finan_planned_month_"),
-	},
-	{
-		key: "quarter_4_physical_actual",
-		label: "Q4 physical_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_pyhsical_actual_month_"),
-	},
-	{
-		key: "quarter_4_financial_actual",
-		label: "Q4 financial_actual",
-		format: (_, row) =>
-			sumMonthlyValues(row, [8, 9, 10], "prp_finan_actual_month_"),
-	},
+			// Quarter 3
+			{
+				key: "quarter_3",
+				label: "Quarter 3",
+				columns: [
+					{
+						key: "quarter_3_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_3_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[5, 6, 7],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_3_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [5, 6, 7], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_3_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_3_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[5, 6, 7],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_3_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [5, 6, 7], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
 
-	{
-		key: "prp_budget_baseline",
-		label: "prp_budget_baseline",
-		format: (val) => (val ? Number(val).toLocaleString() : "-"),
-	},
-	{
-		key: "prp_physical_baseline",
-		label: "prp_physical_baseline",
-		format: (val) => (val ? Number(val).toLocaleString() : "-"),
-	},
-	{
-		key: "prp_total_budget_used",
-		label: "prp_total_budget_used",
-		format: (val) => (val ? val.toFixed(2) : "0.00"),
-	},
-	{ key: "prp_physical_performance", label: "prp_physical_performance" },
-];
+			// Quarter 4
+			{
+				key: "quarter_4",
+				label: "Quarter 4",
+				columns: [
+					{
+						key: "quarter_4_planned",
+						label: "Planned",
+						columns: [
+							{
+								key: "quarter_4_physical_planned",
+								label: "Physical Planned",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[8, 9, 10],
+										"prp_pyhsical_planned_month_"
+									),
+							},
+							{
+								key: "quarter_4_financial_planned",
+								label: "Financial Planned",
+								format: (_, row) =>
+									sumMonthlyValues(row, [8, 9, 10], "prp_finan_planned_month_"),
+							},
+						],
+					},
+					{
+						key: "quarter_4_actual",
+						label: "Actual",
+						columns: [
+							{
+								key: "quarter_4_physical_actual",
+								label: "Physical Actual",
+								format: (_, row) =>
+									sumMonthlyValues(
+										row,
+										[8, 9, 10],
+										"prp_pyhsical_actual_month_"
+									),
+							},
+							{
+								key: "quarter_4_financial_actual",
+								label: "Financial Actual",
+								format: (_, row) =>
+									sumMonthlyValues(row, [8, 9, 10], "prp_finan_actual_month_"),
+							},
+						],
+					},
+				],
+			},
+
+			// Baseline and Summary Information
+			{
+				key: "baseline_summary",
+				label: "Baseline & Summary",
+				columns: [
+					{
+						key: "baseline",
+						label: "Baseline",
+						columns: [
+							{
+								key: "prp_budget_baseline",
+								label: "Budget Baseline",
+								format: (val) => (val ? Number(val).toLocaleString() : "-"),
+							},
+							{
+								key: "prp_physical_baseline",
+								label: "Physical Baseline",
+								format: (val) => (val ? Number(val).toLocaleString() : "-"),
+							},
+						],
+					},
+					{
+						key: "performance_summary",
+						label: "Performance Summary",
+						columns: [
+							{
+								key: "prp_total_budget_used",
+								label: "Total Budget Used",
+								format: (val) => (val ? val.toFixed(2) : "0.00"),
+							},
+							{
+								key: "prp_physical_performance",
+								label: "Physical Performance",
+							},
+						],
+					},
+				],
+			},
+		],
+		[t, projectStatusMap]
+	);
+
+	return exportColumns;
+};
 
 // Helper function to sum monthly values for quarters
 function sumMonthlyValues(row, months, prefix) {
@@ -337,7 +566,7 @@ function sumMonthlyValues(row, months, prefix) {
 }
 
 export const projectBudgetExpenditureExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "pbe_budget_code", label: "pbe_budget_code" },
 	{ key: "pbe_budget_year", label: "pbe_budget_year" },
@@ -350,14 +579,14 @@ export const projectBudgetExpenditureExportColumns = [
 				? new Intl.NumberFormat("en-US", {
 						minimumFractionDigits: 2,
 						maximumFractionDigits: 2,
-				  }).format(val)
+					}).format(val)
 				: "0.00",
 		type: "number",
 	},
 ];
 
 export const projectEmployeeExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "emp_id_no", label: "emp_id_no" },
 	{ key: "emp_full_name", label: "emp_full_name" },
@@ -368,7 +597,7 @@ export const projectEmployeeExportColumns = [
 ];
 
 export const projectContractorExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	// prj_code is hidden in the original, so we exclude it from exports too
 	{ key: "cni_name", label: "cni_name" },
 	{ key: "cni_contractor_type", label: "cni_contractor_type" },
@@ -387,7 +616,7 @@ export const projectContractorExportColumns = [
 ];
 
 export const projectBudgetPlanExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "bpl_budget_year", label: "bpl_budget_year" },
 	{ key: "bpl_budget_code", label: "bpl_budget_code" },
@@ -400,7 +629,7 @@ export const projectBudgetPlanExportColumns = [
 ];
 
 export const projectStakeholderExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "psh_name", label: "psh_name" },
 	{ key: "psh_stakeholder_type", label: "psh_stakeholder_type" },
@@ -410,14 +639,13 @@ export const projectStakeholderExportColumns = [
 ];
 
 export const projectHandoverExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{ key: "prh_handover_date_gc", label: "prh_handover_date_gc" },
-	{ key: "prh_description", label: "prh_description" },
 ];
 
 export const procurementExportColumns = [
-	{ key: "prj_name", label: "prj_name" },
+	{ key: "prj_name", label: "prj_name", width: 60 },
 	{ key: "prj_code", label: "prj_code" },
 	{
 		key: "pri_total_procurement_amount",
@@ -428,4 +656,77 @@ export const procurementExportColumns = [
 	{ key: "pri_bid_opening_date", label: "pri_bid_opening_date" },
 	{ key: "pri_bid_closing_date", label: "pri_bid_closing_date" },
 	{ key: "pri_bid_award_date", label: "pri_bid_award_date" },
+];
+
+export const csoExportColumns = [
+	{
+		key: "cso_name",
+		label: "cso_name",
+		format: (val) => val || "-",
+		width: 20,
+	},
+	{
+		key: "cso_contact_person",
+		label: "cso_contact_person",
+		format: (val) => val || "-",
+		width: 20,
+	},
+	{
+		key: "cso_code",
+		label: "cso_code",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_address",
+		label: "cso_address",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_phone",
+		label: "cso_phone",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_email",
+		label: "cso_email",
+		format: (val) => val || "-",
+	},
+	{
+		key: "cso_status",
+		label: "cso_status",
+		format: (val) => (val === 1 ? "Approved" : "Requested"),
+	},
+];
+
+export const programExportColumns = [
+	{
+		key: "pri_id",
+		label: "pri_id",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_or",
+		label: "pri_name_or",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_or",
+		label: "pri_name_or",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_am",
+		label: "pri_name_am",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_name_en",
+		label: "pri_name_en",
+		format: (val) => val || "-",
+	},
+	{
+		key: "pri_program_code",
+		label: "pri_program_code",
+		format: (val) => val || "-",
+	},
 ];

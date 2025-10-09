@@ -82,34 +82,34 @@ const ExpenditureCodeModel = () => {
   const deleteExpenditureCode = useDeleteExpenditureCode();
   //START CRUD
   const handleAddExpenditureCode = async (data) => {
-    try {
-      await addExpenditureCode.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
+		try {
+			await addExpenditureCode.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateExpenditureCode = async (data) => {
-    try {
-      await updateExpenditureCode.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
+	const handleUpdateExpenditureCode = async (data) => {
+		try {
+			await updateExpenditureCode.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
   const handleDeleteExpenditureCode = async () => {
     if (expenditureCode && expenditureCode.pec_id) {
@@ -117,12 +117,12 @@ const ExpenditureCodeModel = () => {
         const id = expenditureCode.pec_id;
         await deleteExpenditureCode.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }
@@ -152,9 +152,9 @@ const ExpenditureCodeModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.pec_name == value && item.pec_id !== expenditureCode?.pec_id
+              item.pec_name == value && item.pec_id !== expenditureCode?.pec_id,
           );
-        }
+        },
       ),
       pec_code: alphanumericValidation(2, 100, true).test(
         "unique-pec_code",
@@ -162,9 +162,9 @@ const ExpenditureCodeModel = () => {
         (value) => {
           return !data?.data.some(
             (item) =>
-              item.pec_code == value && item.pec_id !== expenditureCode?.pec_id
+              item.pec_code == value && item.pec_id !== expenditureCode?.pec_id,
           );
-        }
+        },
       ),
       pec_description: alphanumericValidation(3, 425, false),
     }),
@@ -328,55 +328,57 @@ const ExpenditureCodeModel = () => {
       data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleExpenditureCodeClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleExpenditureCodeClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
     }
 
     return baseColumns;
-  }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete]);
+  }, [handleExpenditureCodeClick, toggleViewModal, onClickDelete, data]);
 
   if (isError) {
     return <FetchErrorHandler error={error} refetch={refetch} />;

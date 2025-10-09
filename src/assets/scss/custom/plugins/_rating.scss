@@ -1,13 +1,13 @@
-
 //
 // Rating
 //
 
-.symbol{
+.symbol {
   border-color: var(--#{$prefix}secondary-bg);
 }
 
-.rating-symbol-background, .rating-symbol-foreground {
+.rating-symbol-background,
+.rating-symbol-foreground {
   font-size: 24px;
 }
 
@@ -19,12 +19,12 @@
   top: 0px;
 }
 
-.rating-star{
-  > span{
+.rating-star {
+  > span {
     display: inline-block;
     vertical-align: middle;
 
-    &.badge{
+    &.badge {
       margin-left: 4px;
     }
   }

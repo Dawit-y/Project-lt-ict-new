@@ -27,8 +27,7 @@ import { useUpdateBudgetRequest } from "../../queries/budget_request_query";
 import { toast } from "react-toastify";
 
 const modalStyle = {
-  width: "100%",
-  height: "100%",
+	width: "100%",
 };
 
 const BudgetRequestListModal = (props) => {
@@ -48,12 +47,12 @@ const BudgetRequestListModal = (props) => {
     try {
       await mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -64,7 +63,7 @@ const BudgetRequestListModal = (props) => {
       .min(0, "Released amount must be greater or equal to 0")
       .max(
         transaction.bdr_requested_amount,
-        "Can not release more than requested"
+        "Can not release more than requested",
       )
       .when("bdr_request_status", {
         is: "Accepted",
@@ -206,7 +205,7 @@ const BudgetRequestListModal = (props) => {
                         onChange={(date) =>
                           formik.setFieldValue(
                             "bdr_released_date_gc",
-                            formatDate(date[0])
+                            formatDate(date[0]),
                           )
                         }
                         options={{

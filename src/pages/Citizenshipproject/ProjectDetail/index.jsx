@@ -12,17 +12,17 @@ import { TabWrapper } from "../../../components/Common/DetailViewWrapper";
 import { useAuthUser } from "../../../hooks/useAuthUser";
 // Lazy Load Components
 const LazyComponents = {
-  ProjectDocument: lazy(() =>
-    import("../../../pages/Projectdocument/FileManager/index")
+  ProjectDocument: lazy(
+    () => import("../../../pages/Projectdocument/FileManager/index"),
   ),
   ProjectPayment: lazy(() => import("../../../pages/Projectpayment")),
   ProjectStakeholder: lazy(() => import("../../../pages/Projectstakeholder")),
   Projectcontractor: lazy(() => import("../../../pages/Projectcontractor")),
-  GeoLocation: lazy(() =>
-    import("../../../pages/GeoLocation/CitizenshipGeoLocation")
+  GeoLocation: lazy(
+    () => import("../../../pages/GeoLocation/CitizenshipGeoLocation"),
   ),
-  ProjectBudgetExpenditureModel: lazy(() =>
-    import("../../Projectbudgetexpenditure")
+  ProjectBudgetExpenditureModel: lazy(
+    () => import("../../Projectbudgetexpenditure"),
   ),
   ProjectEmployeeModel: lazy(() => import("../../../pages/Projectemployee")),
   ProjectHandoverModel: lazy(() => import("../../Projecthandover")),
@@ -31,21 +31,21 @@ const LazyComponents = {
   ProjectVariationModel: lazy(() => import("../../Projectvariation")),
   ProposalRequestModel: lazy(() => import("../../../pages/Proposalrequest")),
   Conversation: lazy(() => import("../../Conversationinformation/index1")),
-  ProjectMonitoringEvaluationModel: lazy(() =>
-    import("../../Projectmonitoringevaluation/index")
+  ProjectMonitoringEvaluationModel: lazy(
+    () => import("../../Projectmonitoringevaluation/index"),
   ),
   ProjectKpiResultModel: lazy(() => import("../../Projectkpiresult/index")),
-  RequestInformationModel: lazy(() =>
-    import("../../../pages/Requestinformation")
+  RequestInformationModel: lazy(
+    () => import("../../../pages/Requestinformation"),
   ),
-  BudgetRequestModel: lazy(() =>
-    import("../../../pages/Budgetrequest/BudgetRequestRegistration")
+  BudgetRequestModel: lazy(
+    () => import("../../../pages/Budgetrequest/BudgetRequestRegistration"),
   ),
-  ProjectPlanModel: lazy(() =>
-    import("../../../pages/Projectplan/ProjectPlanRegistration")
+  ProjectPlanModel: lazy(
+    () => import("../../../pages/Projectplan/ProjectPlanRegistration"),
   ),
-  ProcurementInformationModel: lazy(() =>
-    import("../../Procurementinformation")
+  ProcurementInformationModel: lazy(
+    () => import("../../Procurementinformation"),
   ),
   ImplementingAreaModel: lazy(() => import("../../Implementingarea")),
   ProjectBudgetSourceModel: lazy(() => import("../../Projectbudgetsource")),
@@ -174,7 +174,7 @@ const ProjectsOverview = () => {
       },
       //39: { label: t("request_information"), component: LazyComponents.RequestInformationModel, path: "information" },
     }),
-    [t]
+    [t],
   );
 
   // Allowed tabs based on project data
@@ -198,7 +198,7 @@ const ProjectsOverview = () => {
         }
         return acc;
       }, {}),
-    [allowedTabs, tabMapping]
+    [allowedTabs, tabMapping],
   );
 
   const tabs = [

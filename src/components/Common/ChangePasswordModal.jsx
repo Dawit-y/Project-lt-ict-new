@@ -36,10 +36,10 @@ const ChangePasswordModal = ({ isOpen, toggle }) => {
         user_id: userId,
         password: values.password,
       });
-      toast.success("Password changed successfully!", { autoClose: 2000 });
+      toast.success("Password changed successfully!", { autoClose: 3000 });
       toggle();
     } catch (error) {
-      toast.error("Failed to change password", { autoClose: 2000 });
+      toast.error("Failed to change password", { autoClose: 3000 });
     }
   };
 
@@ -98,12 +98,13 @@ const ChangePasswordModal = ({ isOpen, toggle }) => {
             {/* Password Strength Checker */}
             {validation.values.password && (
               <div
-                className={`mt-1 text-sm ${passwordStrength === "Strong"
-                  ? "text-success"
-                  : passwordStrength === "Moderate"
-                    ? "text-warning"
-                    : "text-danger"
-                  }`}
+                className={`mt-1 text-sm ${
+                  passwordStrength === "Strong"
+                    ? "text-success"
+                    : passwordStrength === "Moderate"
+                      ? "text-warning"
+                      : "text-danger"
+                }`}
               >
                 {t(passwordStrength)}
               </div>
@@ -144,9 +145,13 @@ const ChangePasswordModal = ({ isOpen, toggle }) => {
           {/* Submit Button */}
           <div className="text-end">
             <Button color="primary" type="submit" disabled={isPending}>
-              {isPending ?
-                <span><Spinner size="sm" className="me-1" /> {t("change_password")}</span>
-                : t("change_password")}
+              {isPending ? (
+                <span>
+                  <Spinner size="sm" className="me-1" /> {t("change_password")}
+                </span>
+              ) : (
+                t("change_password")
+              )}
             </Button>
           </div>
         </Form>

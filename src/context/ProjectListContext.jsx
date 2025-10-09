@@ -98,7 +98,9 @@ export default ProjectListProvider;
 export const useProjectListContext = () => {
   const context = useContext(ProjectListContext);
   if (!context) {
-    throw new Error("useProjectListContext must be used within a ProjectListProvider");
+    throw new Error(
+      "useProjectListContext must be used within a ProjectListProvider",
+    );
   }
   return context;
 };

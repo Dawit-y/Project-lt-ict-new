@@ -22,7 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 					<App />
 				</QueryProvider>
 			</Provider>
-			<ToastContainer />
+			<ToastContainer position="top-center" />
 		</DndProvider>
 	</React.Fragment>
 );

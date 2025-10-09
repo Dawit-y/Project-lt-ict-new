@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,7 +8,7 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 import { DetailsView } from "../../components/Common/DetailViewWrapper";
 
 const CsoInfoModal = (props) => {
@@ -30,12 +30,20 @@ const CsoInfoModal = (props) => {
         <ModalBody>
           <DetailsView
             details={transaction}
-            keysToRemove={["is_editable", "is_deletable", "cso_id", "cso_update_time", "cso_create_time", "cso_delete_time", "cso_created_by"]}
+            keysToRemove={[
+              "is_editable",
+              "is_deletable",
+              "cso_id",
+              "cso_update_time",
+              "cso_create_time",
+              "cso_delete_time",
+              "cso_created_by",
+            ]}
           />
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

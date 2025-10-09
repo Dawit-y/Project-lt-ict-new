@@ -1,4 +1,4 @@
-FROM node:16.20-alpine
+FROM node:16.18-alpine
 
 # 1) Update and install Nginx
 RUN apk update && apk add --no-cache nginx

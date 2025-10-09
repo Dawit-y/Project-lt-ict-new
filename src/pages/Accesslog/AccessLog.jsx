@@ -49,7 +49,7 @@ const AccessLog = (props) => {
   const pagesOptions = createSelectOptions(
     pageInfo?.data || [],
     "pag_id",
-    "pag_name"
+    "pag_name",
   );
 
   const [transaction, setTransaction] = useState({});

@@ -130,9 +130,9 @@ export const documentTypeExportColumns = [
 ];
 
 export const sectorInformationExportColumns = [
-	{ key: "sci_name_or", label: "sci_name_or" },
-	{ key: "sci_name_am", label: "sci_name_am" },
-	{ key: "sci_name_en", label: "sci_name_en" },
+	{ key: "sci_name_or", label: "sci_name_or", width: 40 },
+	{ key: "sci_name_am", label: "sci_name_am", width: 40 },
+	{ key: "sci_name_en", label: "sci_name_en", width: 40 },
 	{ key: "sci_code", label: "sci_code" },
 	{
 		key: "sci_available_at_region",

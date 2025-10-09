@@ -13,7 +13,7 @@ const InputField = ({
   className,
   isRequired = false,
   rows = 3,
-  cols
+  cols,
 }) => {
   const { t } = useTranslation();
 
@@ -24,7 +24,8 @@ const InputField = ({
   return (
     <Col className={className}>
       <Label htmlFor={fieldId}>
-        {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}
+        {label ? label : t(fieldId)}{" "}
+        {isRequired && <span className="text-danger">*</span>}
       </Label>
       <Input
         id={fieldId}
@@ -40,9 +41,7 @@ const InputField = ({
         rows={type === "textarea" ? rows : undefined}
         cols={type === "textarea" ? cols : undefined}
       />
-      {touched && error && (
-        <FormFeedback type="invalid">{error}</FormFeedback>
-      )}
+      {touched && error && <FormFeedback type="invalid">{error}</FormFeedback>}
     </Col>
   );
 };

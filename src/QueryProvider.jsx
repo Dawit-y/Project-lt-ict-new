@@ -13,6 +13,12 @@ const useErrorMessages = () => {
 		453: t("errors_missingField"),
 		454: t("errors_invalidReference"),
 		455: t("errors_genericError"),
+		456: t("errors_valueTooLong"),
+		457: t("errors_updateIdNotProvided"),
+		458: t("errors_dataNotFoundWithId"),
+		459: t("errors_notAllowedSave"),
+		460: t("errors_notAllowedUpdate"),
+		461: t("errors_notAllowedViewList"),
 		429: t("Too Many Attempts"),
 		487: t("Incorrect Input"),
 		500: t("Internal Server Error"),
@@ -22,7 +28,6 @@ const useErrorMessages = () => {
 // Function to extract API error message
 const GetErrorMessage = ({ error }) => {
 	const statusMessages = useErrorMessages();
-
 	if (error?.response?.status) {
 		return `${statusMessages[error?.response?.status]}`;
 	} else if (error?.response?.data) {
@@ -57,32 +62,32 @@ const queryClient = new QueryClient({
 		// },
 	}),
 	mutationCache: new MutationCache({
-		onError: (error, _, __, mutation) => {
+    onError: (error, _, __, mutation) => {
 			if (!error.handledByMutationCache && error.response?.status !== 401) {
 				error.handledByMutationCache = true;
 				const message = <GetErrorMessage error={error} />;
-				toast.error(message, { autoClose: 2000 });
+				toast.error(message, { autoClose: 3000 });
 			}
 		},
 	}),
 });
 
 const QueryProvider = ({ children }) => {
-  return (
-    <PersistQueryClientProvider
-      client={queryClient}
-      persistOptions={{
-        persister: localStoragePersistor,
-        dehydrateOptions: {
-          shouldDehydrateQuery: (query) => query.meta?.persist === true,
-        },
-        buster: "1"
-      }}
-    >
-      {children}
-      <ReactQueryDevtools initialIsOpen={false} />
-    </PersistQueryClientProvider>
-  );
+	return (
+		<PersistQueryClientProvider
+			client={queryClient}
+			persistOptions={{
+				persister: localStoragePersistor,
+				dehydrateOptions: {
+					shouldDehydrateQuery: (query) => query.meta?.persist === true,
+				},
+				buster: "1",
+			}}
+		>
+			{children}
+			<ReactQueryDevtools initialIsOpen={false} />
+		</PersistQueryClientProvider>
+	);
 };
 
 export default QueryProvider;

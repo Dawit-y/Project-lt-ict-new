@@ -1,60 +1,23 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import axios from "axios";
-import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
-import TableContainer from "../../components/Common/TableContainer";
-import * as Yup from "yup";
-import { useFormik } from "formik";
-import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-import SearchComponent from "../../components/Common/SearchComponent";
-//import components
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-import DeleteModal from "../../components/Common/DeleteModal";
-
 import {
-  useFetchRequestCategorys,
   useSearchRequestCategorys,
-  useAddRequestCategory,
-  useDeleteRequestCategory,
-  useUpdateRequestCategory,
 } from "../../queries/requestcategory_query";
-import RequestCategoryModal from "./RequestCategoryModal";
 import { useTranslation } from "react-i18next";
-
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
-
 import {
   Button,
   Col,
   Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+  Input
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -66,10 +29,6 @@ const RequestCategoryList = () => {
   //meta title
   document.title = " RequestCategory";
   const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [requestCategory, setRequestCategory] = useState(null);
 
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -84,9 +43,6 @@ const RequestCategoryList = () => {
   const [quickFilterText, setQuickFilterText] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const gridRef = useRef(null);
-
-
-
 
   // When selection changes, update selectedRows
   const onSelectionChanged = () => {
@@ -105,7 +61,6 @@ const RequestCategoryList = () => {
     gridRef.current.api.setRowData(showSearchResults ? results : data);
   };
   //START FOREIGN CALLS
-
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
@@ -140,76 +95,70 @@ const RequestCategoryList = () => {
   const columns = useMemo(() => {
     const baseColumns = [
       {
-        header: '',
-        accessorKey: 'rqc_name_or',
+        header: "",
+        accessorKey: "rqc_name_or",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_or, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_or, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqc_name_am',
+        header: "",
+        accessorKey: "rqc_name_am",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_am, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_am, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqc_name_en',
+        header: "",
+        accessorKey: "rqc_name_en",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_name_en, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_name_en, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqc_description',
+        header: "",
+        accessorKey: "rqc_description",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_description, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_description, 30) || "-"}
             </span>
           );
         },
       },
       {
-        header: '',
-        accessorKey: 'rqc_status',
+        header: "",
+        accessorKey: "rqc_status",
         enableColumnFilter: false,
         enableSorting: true,
         cell: (cellProps) => {
           return (
             <span>
-              {truncateText(cellProps.row.original.rqc_status, 30) ||
-                '-'}
+              {truncateText(cellProps.row.original.rqc_status, 30) || "-"}
             </span>
           );
         },
       },
-
     ];
     return baseColumns;
   });
@@ -225,29 +174,15 @@ const RequestCategoryList = () => {
             breadcrumbItem={t("Project Payment List")}
           />
           <div className="w-100 d-flex gap-2">
-            <TreeForLists onNodeSelect={handleNodeSelect} setIsAddressLoading={setIsAddressLoading} />
+            <TreeForLists
+              onNodeSelect={handleNodeSelect}
+              setIsAddressLoading={setIsAddressLoading}
+            />
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchRequestCategorys}
                 textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["payment_date"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prp_type",
-                    options: [
-                      { value: "Advance", label: "Advance" },
-                      { value: "Interim", label: "Interim" },
-                      { value: "Final", label: "Final" },
-                    ],
-                  },
-                ]}
                 checkboxSearchKeys={[]}
-                Component={CascadingDropdowns}
-                component_params={{
-                  dropdown1name: "prj_location_region_id",
-                  dropdown2name: "prj_location_zone_id",
-                  dropdown3name: "prj_location_woreda_id",
-                }}
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
@@ -282,7 +217,9 @@ const RequestCategoryList = () => {
                     <AgGridReact
                       ref={gridRef}
                       rowData={
-                        showSearchResult ? searchResults?.data : data?.data || []
+                        showSearchResult
+                          ? searchResults?.data
+                          : data?.data || []
                       }
                       columnDefs={columnDefs}
                       pagination={true}
@@ -304,7 +241,6 @@ const RequestCategoryList = () => {
           </div>
         </div>
       </div>
-
     </React.Fragment>
   );
 };

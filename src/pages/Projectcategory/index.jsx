@@ -41,6 +41,7 @@ import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Filter from "./Filter";
 import { projectCategoryExportColumns } from "../../utils/exportColumnsForLookups";
+
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {
     return text;
@@ -55,8 +56,7 @@ export const OwnerTypeLabels = {
 };
 
 const ProjectCategoryModel = () => {
-  //meta title
-  document.title = " ProjectCategory";
+  document.title = "Project Category";
   const { t } = useTranslation();
   const [modal, setModal] = useState(false);
   const [modal1, setModal1] = useState(false);
@@ -79,54 +79,47 @@ const ProjectCategoryModel = () => {
   const updateProjectCategory = useUpdateProjectCategory();
   const deleteProjectCategory = useDeleteProjectCategory();
 
-  // const sectorCategoryOptions = createSelectOptions(
-  //   sectorCategoryData?.data || [],
-  //   "psc_id",
-  //   "psc_name"
-  // );
-
-  //START CRUD
   const handleAddProjectCategory = async (data) => {
-    try {
-      await addProjectCategory.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
+		try {
+			await addProjectCategory.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
 
-  const handleUpdateProjectCategory = async (data) => {
-    try {
-      await updateProjectCategory.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
+	const handleUpdateProjectCategory = async (data) => {
+		try {
+			await updateProjectCategory.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
   const handleDeleteProjectCategory = async () => {
     if (projectCategory && projectCategory.pct_id) {
       try {
         const id = projectCategory.pct_id;
         await deleteProjectCategory.mutateAsync(id);
         toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(t("delete_failure"), {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }
@@ -163,9 +156,9 @@ const ProjectCategoryModel = () => {
           return !data?.data.some(
             (item) =>
               item.pct_name_or == value &&
-              item.pct_id !== projectCategory?.pct_id
+              item.pct_id !== projectCategory?.pct_id,
           );
-        }
+        },
       ),
       pct_owner_type_id: Yup.number()
         .required(t("Owner type is required"))
@@ -410,55 +403,57 @@ const ProjectCategoryModel = () => {
       data?.previledge?.is_role_deletable == 1
     ) {
       baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProjectCategoryClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleProjectCategoryClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable === 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
+							{cellProps.row.original.is_deletable === 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
     }
 
     return baseColumns;
-  }, [handleProjectCategoryClick, toggleViewModal, onClickDelete]);
+  }, [handleProjectCategoryClick, toggleViewModal, onClickDelete, data, t]);
 
   // Filter the data based on filter state
 

@@ -1,10 +1,4 @@
-import React, {
-	useEffect,
-	useMemo,
-	useState,
-	useRef,
-	useCallback,
-} from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -22,22 +16,18 @@ import {
 	Button,
 	Col,
 	Row,
-	Input,
 	Badge,
 	UncontrolledTooltip,
 	Modal,
 	ModalHeader,
 	ModalBody,
 	Form,
-	FormFeedback,
-	Label,
 	Spinner,
 	Nav,
 	NavItem,
 	NavLink,
 	TabContent,
 	TabPane,
-	Alert,
 } from "reactstrap";
 import classnames from "classnames";
 import { useFormik } from "formik";
@@ -48,16 +38,14 @@ import {
 	createMultiLangKeyValueMap,
 	createKeyValueMap,
 } from "../../utils/commonMethods";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import TreeForLists from "../../components/Common/TreeForLists";
+import TreeForLists from "../../components/Common/TreeForLists2";
 import {
 	alphanumericValidation,
-	amountValidation,
 	numberValidation,
 	onlyAmharicValidation,
 	formattedAmountValidation,
 } from "../../utils/Validation/validation";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns2";
+import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { useFetchSectorCategorys } from "../../queries/sectorcategory_query";
 import DatePicker from "../../components/Common/DatePicker";
@@ -66,13 +54,13 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import InputField from "../../components/Common/InputField";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
 
 const ProjectModel = () => {
 	document.title = "Citizenship Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 	const [modal, setModal] = useState(false);
-	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [project, setProject] = useState(null);
 
@@ -86,6 +74,7 @@ const ProjectModel = () => {
 	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [include, setInclude] = useState(0);
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
 	const [activeTab, setActiveTab] = useState("1");
 	const [tabErrors, setTabErrors] = useState({
@@ -94,11 +83,6 @@ const ProjectModel = () => {
 		tab3: false,
 	});
 
-	const [params, setParams] = useState({});
-	const [searchParams, setSearchParams] = useState({});
-
-	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const { data, isLoading, error, isError, refetch } = useState(false);
 	const param = { owner_type_id: "3" };
 	const {
 		data: projectCategoryData,
@@ -169,23 +153,6 @@ const ProjectModel = () => {
 	const deleteProject = useDeleteProject();
 
 	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				setIsSearchLoading(true);
-				await search();
-				setShowSearchResult(true);
-			} catch (error) {
-				console.error("Error during search:", error);
-			} finally {
-				setIsSearchLoading(false);
-			}
-		};
-		if (Object.keys(searchParams).length > 0) {
-			fetchData();
-		}
-	}, [searchParams]);
-
-	useEffect(() => {
 		setProjectParams({
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
@@ -202,30 +169,30 @@ const ProjectModel = () => {
 		try {
 			await addProject.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateProject = async (data) => {
 		try {
 			await updateProject.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteProject = async () => {
 		if (project && project.prj_id) {
@@ -233,11 +200,11 @@ const ProjectModel = () => {
 				const id = project.prj_id;
 				await deleteProject.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -662,10 +629,11 @@ const ProjectModel = () => {
 				width: 100,
 				cellRenderer: (params) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{searchResults?.previledge?.is_role_editable == 1 &&
 								params.data?.is_editable == 1 && (
-									<Link
+									<Button
+										color="Link"
 										className="text-success"
 										onClick={() => {
 											const data = params.data;
@@ -679,7 +647,7 @@ const ProjectModel = () => {
 										<UncontrolledTooltip placement="top" target="edittooltip">
 											Edit
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 						</div>
 					);
@@ -727,17 +695,16 @@ const ProjectModel = () => {
 		<React.Fragment>
 			<div className="page-content">
 				<div>
-					<Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+					<Breadcrumbs />
 					<div className="w-100 d-flex gap-2">
-						<div style={{ flex: "0 0 25%", minWidth: "250px" }}>
-							<TreeForLists
-								onNodeSelect={handleNodeSelect}
-								setIsAddressLoading={setIsAddressLoading}
-								setInclude={setInclude}
-							/>
-						</div>
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
 						{/* Main Content */}
-						<div style={{ flex: "0 0 75%" }}>
+						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
 								searchHook={useSearchProjects}
 								textSearchKeys={["prj_name", "prj_code"]}
@@ -748,8 +715,8 @@ const ProjectModel = () => {
 											lang === "en"
 												? projectCategoryOptionsEn
 												: lang === "am"
-												? projectCategoryOptionsAm
-												: projectCategoryOptionsOr,
+													? projectCategoryOptionsAm
+													: projectCategoryOptionsOr,
 									},
 								]}
 								checkboxSearchKeys={[]}
@@ -778,7 +745,7 @@ const ProjectModel = () => {
 									excludeKey={["is_editable", "is_deletable"]}
 								/>
 							</AdvancedSearch>
-						</div>
+						</SearchTableContainer>
 
 						<Modal isOpen={modal} toggle={toggle} className="modal-xl">
 							<ModalHeader toggle={toggle} tag="h4">
@@ -853,8 +820,9 @@ const ProjectModel = () => {
 														dropdown1name="prj_location_region_id"
 														dropdown2name="prj_location_zone_id"
 														dropdown3name="prj_location_woreda_id"
-														isEdit={isEdit}
-														row
+														required={true}
+														layout="horizontal"
+														colSizes={{ md: 6, sm: 12, lg: 4 }}
 													/>
 												</Col>
 												<Col md={12} className="mb-3">

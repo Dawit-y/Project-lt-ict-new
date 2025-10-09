@@ -8,23 +8,27 @@ const GET_USER_SECTOR_TREE = "user_sector/listgridtree";
 // get user_sector
 export const getUserSector = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
-  const url = queryString ? `${GET_USER_SECTOR}?${queryString}` : GET_USER_SECTOR;
+  const url = queryString
+    ? `${GET_USER_SECTOR}?${queryString}`
+    : GET_USER_SECTOR;
   try {
     const response = await post(url);
     return response;
   } catch (error) {
-    throw (error)
+    throw error;
   }
 };
 
 export const getUserSectorTree = async (params = {}) => {
   const queryString = new URLSearchParams(params).toString();
-  const url = queryString ? `${GET_USER_SECTOR_TREE}?${queryString}` : GET_USER_SECTOR_TREE;
+  const url = queryString
+    ? `${GET_USER_SECTOR_TREE}?${queryString}`
+    : GET_USER_SECTOR_TREE;
   try {
     const response = await post(url);
     return response;
   } catch (error) {
-    throw (error)
+    throw error;
   }
 };
 

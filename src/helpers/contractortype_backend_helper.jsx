@@ -10,7 +10,7 @@ export const getContractorType = async () => {
     const response = await post(GET_CONTRACTOR_TYPE);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 

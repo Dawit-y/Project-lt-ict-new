@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo } from "react";
 import {
   Button,
   Col,
@@ -11,31 +11,47 @@ import {
   FormFeedback,
   Label,
   Spinner,
-  Table
+  Table,
 } from "reactstrap";
-import FormattedAmountField from "../../components/Common/FormattedAmountField"
-import InputField from "../../components/Common/InputField"
-import AsyncSelectField from "../../components/Common/AsyncSelectField"
-import { useTranslation } from 'react-i18next';
+import FormattedAmountField from "../../components/Common/FormattedAmountField";
+import InputField from "../../components/Common/InputField";
+import AsyncSelectField from "../../components/Common/AsyncSelectField";
+import { useTranslation } from "react-i18next";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
-import { createMultiLangKeyValueMap, addMonths, addYears } from "../../utils/commonMethods";
+import {
+  createMultiLangKeyValueMap,
+  addMonths,
+  addYears,
+} from "../../utils/commonMethods";
 
-const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPending, leftBudget }) => {
-  const { t, i18n } = useTranslation()
-  const lang = i18n.language
-  const { data: projectCategoryData, isLoading: isPctLoading, isError: isPctError } = useFetchProjectCategorys();
+const ActivityForm = ({
+  isOpen,
+  toggle,
+  isEdit,
+  activeTabName,
+  validation,
+  isPending,
+  leftBudget,
+}) => {
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const {
+    data: projectCategoryData,
+    isLoading: isPctLoading,
+    isError: isPctError,
+  } = useFetchProjectCategorys();
   const projectCategoryMap = useMemo(() => {
     return createMultiLangKeyValueMap(
-			projectCategoryData?.data || [],
-			"pct_id",
-			{
-				en: "pct_name_en",
-				am: "pct_name_am",
-				or: "pct_name_or",
-			},
-			lang,
-			(item) => item.pct_owner_type_id === 2
-		);
+      projectCategoryData?.data || [],
+      "pct_id",
+      {
+        en: "pct_name_en",
+        am: "pct_name_am",
+        or: "pct_name_or",
+      },
+      lang,
+      (item) => item.pct_owner_type_id === 2,
+    );
   }, [projectCategoryData, lang]);
 
   return (
@@ -104,10 +120,7 @@ const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPen
                   color="success"
                   type="submit"
                   className="save-user"
-                  disabled={
-                    isPending ||
-                    !validation.dirty
-                  }
+                  disabled={isPending || !validation.dirty}
                 >
                   {isPending && (
                     <Spinner size="sm" color="light" className="me-2" />
@@ -120,7 +133,7 @@ const ActivityForm = ({ isOpen, toggle, isEdit, activeTabName, validation, isPen
         </Form>
       </ModalBody>
     </Modal>
-  )
-}
+  );
+};
 
-export default ActivityForm
+export default ActivityForm;

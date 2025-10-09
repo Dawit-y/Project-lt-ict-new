@@ -1,19 +1,7 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import Spinners from "../../components/Common/Spinner";
-
-//import components
-import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
-
 import { useSearchProjectContractors } from "../../queries/projectcontractor_query";
 import { useTranslation } from "react-i18next";
-
-import { Col, Row, Input } from "reactstrap";
-import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists2";
@@ -30,7 +18,7 @@ const truncateText = (text, maxLength) => {
 
 const ProjectContractorList = () => {
   //meta title
-  document.title = " ProjectContractor";
+  document.title = "Project Contractors List";
   const { t } = useTranslation();
 
   const [searchResults, setSearchResults] = useState(null);
@@ -44,25 +32,18 @@ const ProjectContractorList = () => {
   const [isAddressLoading, setIsAddressLoading] = useState(false);
   const [include, setInclude] = useState(0);
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useState("");
-  const [quickFilterText, setQuickFilterText] = useState("");
-  const [selectedRows, setSelectedRows] = useState([]);
-  const gridRef = useRef(null);
-
-  // When selection changes, update selectedRows
-  const onSelectionChanged = () => {
-    const selectedNodes = gridRef.current.api.getSelectedNodes();
-    const selectedData = selectedNodes.map((node) => node.data);
-    setSelectedRows(selectedData);
-  };
-
-  //START FOREIGN CALLS
+  const [exportSearchParams, setExportSearchParams] = useState({});
 
   const handleSearchResults = ({ data, error }) => {
     setSearchResults(data);
     setSearchError(error);
     setShowSearchResult(true);
   };
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
   useEffect(() => {
     setProjectParams({
       ...(prjLocationRegionId && {
@@ -108,7 +89,7 @@ const ProjectContractorList = () => {
         minWidth: 200,
         width: 150,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 35) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {
@@ -232,11 +213,6 @@ const ProjectContractorList = () => {
     return baseColumnDefs;
   });
 
-  //START UNCHANGED
-
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
   return (
     <React.Fragment>
       <div className="page-content">
@@ -263,13 +239,14 @@ const ProjectContractorList = () => {
                 additionalParams={projectParams}
                 setAdditionalParams={setProjectParams}
                 onSearchResult={handleSearchResults}
+                onSearchLabels={handleSearchLabels}
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
                 setShowSearchResult={setShowSearchResult}
               >
                 <AgGridContainer
                   rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
+                    showSearchResult ? searchResults?.data : []
                   }
                   columnDefs={columnDefs}
                   isLoading={isSearchLoading}
@@ -282,6 +259,7 @@ const ProjectContractorList = () => {
                   isPrint={true}
                   tableName="Project Contract/Contractor"
                   exportColumns={projectContractorExportColumns}
+                  exportSearchParams={exportSearchParams}
                 />
               </AdvancedSearch>
             </SearchTableContainer>
@@ -291,4 +269,5 @@ const ProjectContractorList = () => {
     </React.Fragment>
   );
 };
+
 export default ProjectContractorList;

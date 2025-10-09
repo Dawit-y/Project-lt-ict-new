@@ -2,27 +2,19 @@
 // Forms.scss
 //
 
-
-
-
 [type="tel"],
 [type="url"],
 [type="email"],
 [type="number"] {
   &::placeholder {
-    text-align: left
-      /*rtl: right*/
-    ;
+    text-align: left /*rtl: right*/;
   }
 }
 
 .form-check {
   position: relative;
-  text-align: left
-    /*rtl: right*/
-  ;
+  text-align: left /*rtl: right*/;
 }
-
 
 // checkbox input right
 
@@ -42,12 +34,9 @@
   }
 }
 
-
-
 // checkbox
 
 .form-checkbox-outline {
-
   .form-check-input {
     border-width: 2px;
     background-color: var(--#{$prefix}secondary-bg);
@@ -57,16 +46,15 @@
     }
 
     &:checked {
-      background-color: var(--#{$prefix}secondary-bg)  !important;
+      background-color: var(--#{$prefix}secondary-bg) !important;
 
-      &[type=checkbox] {
+      &[type="checkbox"] {
         background-image: none;
-
       }
 
       &:after {
         position: absolute;
-        content: '\F012C';
+        content: "\F012C";
         font-family: "Material Design Icons";
         top: -4px !important;
         left: 1px;
@@ -90,16 +78,15 @@
     }
 
     &:checked {
-      background-color: var(--#{$prefix}secondary-bg)  !important;
+      background-color: var(--#{$prefix}secondary-bg) !important;
 
-      &[type=checkbox] {
+      &[type="checkbox"] {
         background-image: none;
-
       }
 
       &:after {
         position: absolute;
-        content: '';
+        content: "";
         top: 3px !important;
         left: 3px;
         width: 5px;
@@ -110,12 +97,9 @@
   }
 }
 
-
-
 // checkbox color
 
-@each $color,
-$value in $theme-colors {
+@each $color, $value in $theme-colors {
   .form-check-#{$color} {
     .form-check-input {
       &:checked {
@@ -165,7 +149,6 @@ $value in $theme-colors {
   }
 }
 
-
 .form-switch-lg {
   padding-left: 2.75rem;
   min-height: 28px;
@@ -208,9 +191,10 @@ $value in $theme-colors {
 }
 
 .rdl-move {
-
-    .form-check-input,
-    .form-check-input:focus {
-      background-image: escape-svg(url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$gray-400}'/></svg>"));
-    }
+  .form-check-input,
+  .form-check-input:focus {
+    background-image: escape-svg(
+      url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'><circle r='3' fill='#{$gray-400}'/></svg>")
+    );
   }
+}

@@ -19,13 +19,16 @@ import { useTranslation } from "react-i18next";
 const MAX_SIZE_MB = 75;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => {
+const FileUploadField = ({
+  validation,
+  accept = { "application/pdf": [] },
+}) => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const { data: documentTypeData } = useFetchDocumentTypes();
   const documentTypeOptions = createSelectOptions(
     documentTypeData?.data || [],
     "pdt_id",
-    "pdt_doc_name_en"
+    "pdt_doc_name_en",
   );
   const { t } = useTranslation();
 
@@ -42,7 +45,7 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
       Object.assign(file, {
         preview: URL.createObjectURL(file),
         formattedSize: formatBytes(file.size),
-      })
+      }),
     );
     setSelectedFiles(updatedFiles);
   }
@@ -58,7 +61,7 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
       validation.setFieldValue("prd_file_path", file.name);
       validation.setFieldValue(
         "prd_file_extension",
-        file.name.split(".").pop()
+        file.name.split(".").pop(),
       );
       validation.setFieldValue("prd_size", `${fileSizeInKB}`);
     }
@@ -74,9 +77,9 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
         errorMessages: errors.map((e) =>
           e.code === "file-too-large"
             ? `File is too large (${(file.size / (1024 * 1024)).toFixed(
-              2
-            )} MB). Max size allowed is ${MAX_SIZE_MB} MB.`
-            : e.message
+                2,
+              )} MB). Max size allowed is ${MAX_SIZE_MB} MB.`
+            : e.message,
         ),
       };
     });
@@ -99,7 +102,7 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
           value={validation.values.prd_document_type_id || ""}
           invalid={
             validation.touched.prd_document_type_id &&
-              validation.errors.prd_document_type_id
+            validation.errors.prd_document_type_id
               ? true
               : false
           }
@@ -112,7 +115,7 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
           ))}
         </Input>
         {validation.touched.prd_document_type_id &&
-          validation.errors.prd_document_type_id ? (
+        validation.errors.prd_document_type_id ? (
           <FormFeedback type="invalid">
             {validation.errors.prd_document_type_id}
           </FormFeedback>
@@ -156,9 +159,9 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
                 maxSize={MAX_SIZE_BYTES}
                 accept={accept}
                 onDrop={(acceptedFiles, rejectedFiles) => {
-                  const maxSize = MAX_SIZE_BYTES
+                  const maxSize = MAX_SIZE_BYTES;
                   const validFiles = acceptedFiles.filter(
-                    (file) => file.size <= maxSize
+                    (file) => file.size <= maxSize,
                   );
 
                   handleRejectedFiles(rejectedFiles);
@@ -179,10 +182,11 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
               >
                 {({ getRootProps, getInputProps }) => (
                   <div
-                    className={`dropzone ${validation.touched.prd_file && validation.errors.prd_file
-                      ? "border border-danger"
-                      : ""
-                      }`}
+                    className={`dropzone ${
+                      validation.touched.prd_file && validation.errors.prd_file
+                        ? "border border-danger"
+                        : ""
+                    }`}
                   >
                     <div
                       className="dz-message needsclick mt-2"
@@ -213,7 +217,8 @@ const FileUploadField = ({ validation, accept = { "application/pdf": [] } }) => 
                               className={
                                 f.name.endsWith(".pdf")
                                   ? "bx bxs-file-pdf text-danger"
-                                  : f.name.endsWith(".doc") || f.name.endsWith(".docx")
+                                  : f.name.endsWith(".doc") ||
+                                      f.name.endsWith(".docx")
                                     ? "bx bxs-file-doc text-primary"
                                     : "bx bxs-file text-secondary"
                               }

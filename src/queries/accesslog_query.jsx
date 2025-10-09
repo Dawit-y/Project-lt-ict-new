@@ -79,7 +79,7 @@ export const useUpdateAccessLog = () => {
           data: oldData.data.map((AccessLogData) =>
             AccessLogData.acl_id === updatedAccessLog.data.acl_id
               ? { ...AccessLogData, ...updatedAccessLog.data }
-              : AccessLogData
+              : AccessLogData,
           ),
         };
       });
@@ -99,7 +99,7 @@ export const useDeleteAccessLog = () => {
           ...oldData,
           data: oldData.data.filter(
             (AccessLogData) =>
-              AccessLogData.acl_id !== parseInt(deletedData.deleted_id)
+              AccessLogData.acl_id !== parseInt(deletedData.deleted_id),
           ),
         };
       });

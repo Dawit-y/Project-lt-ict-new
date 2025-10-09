@@ -27,17 +27,15 @@ const ProjectDocumentModal = (props) => {
     "prd_delete_time",
     "prd_uploaded_date",
     "prd_description",
-    "prd_created_by"
+    "prd_created_by",
   ];
   const tabs = [
     {
       id: "details",
       label: "Details",
-      content:
-        <DetailsView
-          details={transaction}
-          keysToRemove={keysToRemove}
-        />,
+      content: (
+        <DetailsView details={transaction} keysToRemove={keysToRemove} />
+      ),
     },
     {
       id: "pdf",

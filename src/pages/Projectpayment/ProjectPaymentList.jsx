@@ -1,4 +1,11 @@
-import React, { useEffect, lazy, useMemo, useState } from "react";
+import React, {
+	useEffect,
+	lazy,
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
+} from "react";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectPayments } from "../../queries/projectpayment_query";
 import TreeForLists from "../../components/Common/TreeForLists2";
@@ -7,22 +14,18 @@ import { useTranslation } from "react-i18next";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
 import { Button } from "reactstrap";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { FaChartLine } from "react-icons/fa6";
-import {
-	createMultiSelectOptions,
-	createSelectOptions,
-} from "../../utils/commonMethods";
+import { createMultiSelectOptions } from "../../utils/commonMethods";
 import { projectPaymentExportColumns } from "../../utils/exportColumnsForLists";
 
-const AgGridContainer = lazy(() =>
-	import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+	() => import("../../components/Common/AgGridContainer")
 );
-const SinglePaymentAnalysisModal = lazy(() =>
-	import("./Analysis/SinglePaymentAnalysisModal")
+const SinglePaymentAnalysisModal = lazy(
+	() => import("./Analysis/SinglePaymentAnalysisModal")
 );
-const TotalPaymentAnalysisModal = lazy(() =>
-	import("./Analysis/TotalPaymentAnalysisModal")
+const TotalPaymentAnalysisModal = lazy(
+	() => import("./Analysis/TotalPaymentAnalysisModal")
 );
 
 const truncateText = (text, maxLength) => {
@@ -47,7 +50,8 @@ const ProjectPaymentList = () => {
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [include, setInclude] = useState(0);
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const { data, error, isError, refetch } = useState({});
+
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
 	const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
@@ -73,8 +77,8 @@ const ProjectPaymentList = () => {
 					lang === "en"
 						? payment_type.pyc_name_en
 						: lang === "am"
-						? payment_type.pyc_name_am
-						: payment_type.pyc_name_or;
+							? payment_type.pyc_name_am
+							: payment_type.pyc_name_or;
 				return acc;
 			}, {}) || {}
 		);
@@ -84,6 +88,10 @@ const ProjectPaymentList = () => {
 		setSearchResults(data);
 		setSearchError(error);
 		setShowSearchResult(true);
+	};
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
 	};
 
 	useEffect(() => {
@@ -141,7 +149,7 @@ const ProjectPaymentList = () => {
 				sortable: true,
 				filter: true,
 				cellRenderer: (params) => {
-					return truncateText(params.data.prj_name, 30) || "-";
+					return truncateText(params.data.prj_name, 100) || "-";
 				},
 			},
 			{
@@ -227,10 +235,6 @@ const ProjectPaymentList = () => {
 		return baseColumnDefs;
 	}, [paymentCategoryMap, t]);
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
-
 	return (
 		<React.Fragment>
 			<div className="page-content">
@@ -260,14 +264,15 @@ const ProjectPaymentList = () => {
 											lang === "en"
 												? paymentCategoryOptionsEn
 												: lang === "am"
-												? paymentCategoryOptionsAm
-												: paymentCategoryOptionsOr,
+													? paymentCategoryOptionsAm
+													: paymentCategoryOptionsOr,
 									},
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
 								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
@@ -280,10 +285,10 @@ const ProjectPaymentList = () => {
 									totalAnalysisModal={totalAnalysisModal}
 									toggleSingleAnalysisModal={toggleSingleAnalysisModal}
 									toggleTotalAnalysisModal={toggleTotalAnalysisModal}
-									data={data}
 									isSearchLoading={isSearchLoading}
 									searchResults={searchResults}
 									paymentCategoryMap={paymentCategoryMap}
+									exportSearchParams={exportSearchParams}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -306,7 +311,8 @@ const TableWrapper = ({
 	toggleTotalAnalysisModal,
 	isSearchLoading,
 	searchResults,
-	paymentCategoryMap, // Add this prop
+	paymentCategoryMap,
+	exportSearchParams,
 }) => {
 	const { t } = useTranslation();
 	let transformedData = [];
@@ -315,14 +321,14 @@ const TableWrapper = ({
 			? searchResults.data.map((item) => ({
 					...item,
 					payment_category: paymentCategoryMap[item.prp_type] || "Unknown",
-			  }))
+				}))
 			: [];
 	} else if (data) {
 		transformedData = Array.isArray(data.data)
 			? data.data.map((item) => ({
 					...item,
 					payment_category: paymentCategoryMap[item.prp_type] || "Unknown",
-			  }))
+				}))
 			: [];
 	}
 
@@ -366,6 +372,7 @@ const TableWrapper = ({
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}
 					disabled={!showSearchResult || isLoading}
+					exportSearchParams={exportSearchParams}
 				/>
 			</div>
 		</>

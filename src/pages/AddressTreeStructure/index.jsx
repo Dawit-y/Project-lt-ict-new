@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect, memo } from 'react'
-import TreeTableContainer from '../../components/Common/TreeTableContainer'
+import React, { useMemo, useState, useEffect, memo } from "react";
+import TreeTableContainer from "../../components/Common/TreeTableContainer";
 import {
 	FaChevronRight,
 	FaChevronDown,
@@ -41,9 +41,14 @@ const ExpandButton = ({ row }) => {
 ExpandButton.displayName = "ExpandButton";
 
 const AddressStructure = () => {
-	const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-	const { data, isLoading, isError, error, refetch } =
-		useFetchAddressStructures(userId);
+	const { userId } = useAuthUser();
+	const {
+		tree: data,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useFetchAddressStructures(userId);
 	const queryClient = useQueryClient();
 
 	const [selectedRow, setSelectedRow] = useState(null);

@@ -1,364 +1,327 @@
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchDateSettings,
-  useSearchDateSettings,
-  useAddDateSetting,
-  useDeleteDateSetting,
-  useUpdateDateSetting,
+	useFetchDateSettings,
+	useAddDateSetting,
+	useDeleteDateSetting,
+	useUpdateDateSetting,
 } from "../../queries/datesetting_query";
 import DateSettingModal from "./DateSettingModal";
 import { useTranslation } from "react-i18next";
-import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from "reselect";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
+import { alphanumericValidation } from "../../utils/Validation/validation";
+
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
-import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-} from "../../utils/Validation/validation";
+
 const DateSettingModel = () => {
-  //meta title
-  document.title = " DateSetting";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [dateSetting, setDateSetting] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchDateSettings();
-  const addDateSetting = useAddDateSetting();
-  const updateDateSetting = useUpdateDateSetting();
-  const deleteDateSetting = useDeleteDateSetting();
-  //START CRUD
-  const handleAddDateSetting = async (data) => {
-    try {
-      await addDateSetting.mutateAsync(data);
-      toast.success(t('add_success'), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t('add_failure'), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateDateSetting = async (data) => {
-    try {
-      await updateDateSetting.mutateAsync(data);
-      toast.success(t('update_success'), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.error(t('update_failure'), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteDateSetting = async () => {
-    if (dateSetting && dateSetting.dts_id) {
-      try {
-        const id = dateSetting.dts_id;
-        await deleteDateSetting.mutateAsync(id);
-        toast.success(t('delete_success'), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.error(t('delete_failure'), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	document.title = "Date Setting";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [dateSetting, setDateSetting] = useState(null);
 
+	const { data, isLoading, error, isError, refetch } = useFetchDateSettings();
+	const addDateSetting = useAddDateSetting();
+	const updateDateSetting = useUpdateDateSetting();
+	const deleteDateSetting = useDeleteDateSetting();
+	//START CRUD
+	const handleAddDateSetting = async (data) => {
+		try {
+			await addDateSetting.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateDateSetting = async (data) => {
+		try {
+			await updateDateSetting.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteDateSetting = async () => {
+		if (dateSetting && dateSetting.dts_id) {
+			try {
+				const id = dateSetting.dts_id;
+				await deleteDateSetting.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.error(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      dts_parameter_name: (dateSetting && dateSetting.dts_parameter_name) || "",
-      dts_parameter_code: (dateSetting && dateSetting.dts_parameter_code) || "",
-      dts_start_date: (dateSetting && dateSetting.dts_start_date) || "",
-      dts_end_date: (dateSetting && dateSetting.dts_end_date) || "",
-      dts_description: (dateSetting && dateSetting.dts_description) || "",
-      dts_status: (dateSetting && dateSetting.dts_status) || "",
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			dts_parameter_name: (dateSetting && dateSetting.dts_parameter_name) || "",
+			dts_parameter_code: (dateSetting && dateSetting.dts_parameter_code) || "",
+			dts_start_date: (dateSetting && dateSetting.dts_start_date) || "",
+			dts_end_date: (dateSetting && dateSetting.dts_end_date) || "",
+			dts_description: (dateSetting && dateSetting.dts_description) || "",
+			dts_status: (dateSetting && dateSetting.dts_status) || "",
 
-      is_deletable: (dateSetting && dateSetting.is_deletable) || 1,
-      is_editable: (dateSetting && dateSetting.is_editable) || 1
-    },
-    validationSchema: Yup.object({
-      dts_parameter_name: alphanumericValidation(3, 425, true),
-      dts_parameter_code: Yup.string().required(t("dts_parameter_code")),
-      dts_start_date: Yup.string().required(t("dts_start_date")),
-      dts_end_date: Yup.string().required(t("dts_end_date")),
-      dts_description: alphanumericValidation(3, 425, false)
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateDateSetting = {
-          dts_id: dateSetting?.dts_id,
-          dts_parameter_name: values.dts_parameter_name,
-          dts_parameter_code: values.dts_parameter_code,
-          dts_start_date: values.dts_start_date,
-          dts_end_date: values.dts_end_date,
-          dts_description: values.dts_description,
-          dts_status: values.dts_status,
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update DateSetting
-        handleUpdateDateSetting(updateDateSetting);
-      } else {
-        const newDateSetting = {
-          dts_parameter_name: values.dts_parameter_name,
-          dts_parameter_code: values.dts_parameter_code,
-          dts_start_date: values.dts_start_date,
-          dts_end_date: values.dts_end_date,
-          dts_description: values.dts_description,
-          dts_status: values.dts_status,
+			is_deletable: (dateSetting && dateSetting.is_deletable) || 1,
+			is_editable: (dateSetting && dateSetting.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			dts_parameter_name: alphanumericValidation(3, 425, true),
+			dts_parameter_code: Yup.string().required(t("dts_parameter_code")),
+			dts_start_date: Yup.string().required(t("dts_start_date")),
+			dts_end_date: Yup.string().required(t("dts_end_date")),
+			dts_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateDateSetting = {
+					dts_id: dateSetting?.dts_id,
+					dts_parameter_name: values.dts_parameter_name,
+					dts_parameter_code: values.dts_parameter_code,
+					dts_start_date: values.dts_start_date,
+					dts_end_date: values.dts_end_date,
+					dts_description: values.dts_description,
+					dts_status: values.dts_status,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update DateSetting
+				handleUpdateDateSetting(updateDateSetting);
+			} else {
+				const newDateSetting = {
+					dts_parameter_name: values.dts_parameter_name,
+					dts_parameter_code: values.dts_parameter_code,
+					dts_start_date: values.dts_start_date,
+					dts_end_date: values.dts_end_date,
+					dts_description: values.dts_description,
+					dts_status: values.dts_status,
+				};
+				// save new DateSetting
+				handleAddDateSetting(newDateSetting);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-        };
-        // save new DateSetting
-        handleAddDateSetting(newDateSetting);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-  // Fetch DateSetting on component mount
-  useEffect(() => {
-    setDateSetting(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setDateSetting(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setDateSetting(null);
-    } else {
-      setModal(true);
-    }
-  };
-  const handleDateSettingClick = (arg) => {
-    const dateSetting = arg;
-    // console.log("handleDateSettingClick", dateSetting);
-    setDateSetting({
-      dts_id: dateSetting.dts_id,
-      dts_parameter_name: dateSetting.dts_parameter_name,
-      dts_parameter_code: dateSetting.dts_parameter_code,
-      dts_start_date: dateSetting.dts_start_date,
-      dts_end_date: dateSetting.dts_end_date,
-      dts_description: dateSetting.dts_description,
-      dts_status: dateSetting.dts_status,
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setDateSetting(null);
+		} else {
+			setModal(true);
+		}
+	};
+	const handleDateSettingClick = (arg) => {
+		const dateSetting = arg;
+		setDateSetting({
+			dts_id: dateSetting.dts_id,
+			dts_parameter_name: dateSetting.dts_parameter_name,
+			dts_parameter_code: dateSetting.dts_parameter_code,
+			dts_start_date: dateSetting.dts_start_date,
+			dts_end_date: dateSetting.dts_end_date,
+			dts_description: dateSetting.dts_description,
+			dts_status: dateSetting.dts_status,
+			is_deletable: dateSetting.is_deletable,
+			is_editable: dateSetting.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (dateSetting) => {
+		setDateSetting(dateSetting);
+		setDeleteModal(true);
+	};
+	const handleDateSettingClicks = () => {
+		setIsEdit(false);
+		setDateSetting("");
+		toggle();
+	};
 
-      is_deletable: dateSetting.is_deletable,
-      is_editable: dateSetting.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (dateSetting) => {
-    setDateSetting(dateSetting);
-    setDeleteModal(true);
-  };
-  const handleDateSettingClicks = () => {
-    setIsEdit(false);
-    setDateSetting("");
-    toggle();
-  }
-    ; const handleSearchResults = ({ data, error }) => {
-      setSearchResults(data);
-      setSearchError(error);
-      setShowSearchResult(true);
-    };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: '',
-        accessorKey: 'dts_parameter_name',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_parameter_name, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'dts_parameter_code',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_parameter_code, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'dts_start_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_start_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'dts_end_date',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_end_date, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: '',
-        accessorKey: 'dts_description',
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.dts_description, 30) ||
-                '-'}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleDateSettingClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-    return baseColumns;
-  }, [handleDateSettingClick, toggleViewModal, onClickDelete]);
-  return (
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "dts_parameter_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.dts_parameter_name, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "dts_parameter_code",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.dts_parameter_code, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "dts_start_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.dts_start_date, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "dts_end_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.dts_end_date, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "dts_description",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.dts_description, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleDateSettingClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
+		return baseColumns;
+	}, [handleDateSettingClick, toggleViewModal, onClickDelete, data, t]);
+
+	if (isError) {
+		return <FetchErrorHandler refetch={refetch} error={error} />;
+	}
+
+	return (
 		<React.Fragment>
 			<DateSettingModal
 				isOpen={modal1}
@@ -377,7 +340,7 @@ const DateSettingModel = () => {
 						title={t("date_setting")}
 						breadcrumbItem={t("date_setting")}
 					/>
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -386,11 +349,7 @@ const DateSettingModel = () => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={false}
 											isCustomPageSize={true}
@@ -554,6 +513,6 @@ const DateSettingModel = () => {
 	);
 };
 DateSettingModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default DateSettingModel;

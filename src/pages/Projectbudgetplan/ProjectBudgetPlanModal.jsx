@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+	width: "100%",
 };
 
 const ProjectBudgetPlanModal = (props) => {
@@ -33,31 +32,46 @@ const ProjectBudgetPlanModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('bpl_project_id')}: <span className="text-primary">{transaction.bpl_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_budget_year_id')}: <span className="text-primary">{transaction.bpl_budget_year_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_budget_code_id')}: <span className="text-primary">{transaction.bpl_budget_code_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_amount')}: <span className="text-primary">{transaction.bpl_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('bpl_description')}: <span className="text-primary">{transaction.bpl_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("bpl_project_id")}:{" "}
+              <span className="text-primary">{transaction.bpl_project_id}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("bpl_budget_year_id")}:{" "}
+              <span className="text-primary">
+                {transaction.bpl_budget_year_id}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("bpl_budget_code_id")}:{" "}
+              <span className="text-primary">
+                {transaction.bpl_budget_code_id}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("bpl_amount")}:{" "}
+              <span className="text-primary">{transaction.bpl_amount}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("bpl_description")}:{" "}
+              <span className="text-primary">
+                {transaction.bpl_description}
+              </span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

@@ -10,7 +10,6 @@ import { connect } from "react-redux";
 import { useFetchSideData } from "../../queries/side_data_query";
 import { useAuthUser } from "../../hooks/useAuthUser";
 
-
 const Navbar = (props) => {
   const [activeMenuIndex, setActiveMenuIndex] = useState(null); // Track active menu
   const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
@@ -95,5 +94,5 @@ const mapStatetoProps = (state) => {
 };
 
 export default withRouter(
-  connect(mapStatetoProps, {})(withTranslation()(Navbar))
+  connect(mapStatetoProps, {})(withTranslation()(Navbar)),
 );

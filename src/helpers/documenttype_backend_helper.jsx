@@ -10,12 +10,11 @@ export const getDocumentType = async () => {
     const response = await post(GET_DOCUMENT_TYPE);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
-export const addDocumentType = async (data) =>
-  post(ADD_DOCUMENT_TYPE, data);
+export const addDocumentType = async (data) => post(ADD_DOCUMENT_TYPE, data);
 
 export const updateDocumentType = (data) =>
   post(UPDATE_DOCUMENT_TYPE + `?pdt_id=${data?.pdt_id}`, data);

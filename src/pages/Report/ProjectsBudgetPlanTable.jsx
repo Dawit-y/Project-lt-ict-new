@@ -1,31 +1,41 @@
-import React from 'react';
-import { useTable, useGlobalFilter, useSortBy, usePagination } from 'react-table';
-import { Input, Pagination, PaginationItem, PaginationLink } from 'reactstrap';
+import React from "react";
+import {
+  useTable,
+  useGlobalFilter,
+  useSortBy,
+  usePagination,
+} from "react-table";
+import { Input, Pagination, PaginationItem, PaginationLink } from "reactstrap";
 
-const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t }) => {
+const ProjectsBudgetPlanTable = ({
+  data,
+  isGlobalFilter,
+  SearchPlaceholder,
+  t,
+}) => {
   // Prepare grouped data by project name
   const groupedData = React.useMemo(() => {
     const groups = {};
     let projectSN = 1;
-    
-    data.forEach(item => {
-      const projectName = item['Project Name(Code)'];
+
+    data.forEach((item) => {
+      const projectName = item["Project Name(Code)"];
       if (!groups[projectName]) {
         groups[projectName] = {
           projectName,
-          zone: item.Zone || 'N/A',
-          woreda: item.Woreda || 'N/A',
-          sector: item.Sector || 'N/A',
+          zone: item.Zone || "N/A",
+          woreda: item.Woreda || "N/A",
+          sector: item.Sector || "N/A",
           budgetPlans: [],
           totalBudget: 0,
-          projectSN: projectSN++
+          projectSN: projectSN++,
         };
       }
-      const amount = Number(item['Budget Amount']) || 0;
+      const amount = Number(item["Budget Amount"]) || 0;
       groups[projectName].budgetPlans.push({
-        year: item['Budget Year'] || 'N/A',
-        code: item['Budget Code'] || 'N/A',
-        amount: amount
+        year: item["Budget Year"] || "N/A",
+        code: item["Budget Code"] || "N/A",
+        amount: amount,
       });
       groups[projectName].totalBudget += amount;
     });
@@ -41,70 +51,74 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
   const columns = React.useMemo(
     () => [
       {
-        Header: 'SN',
-        accessor: 'projectSN',
+        Header: "SN",
+        accessor: "projectSN",
         width: 50,
-        Cell: ({ value }) => <span className="fw-bold">{value}</span>
+        Cell: ({ value }) => <span className="fw-bold">{value}</span>,
       },
       {
-        Header: 'Project Name (Code)',
-        accessor: 'projectName',
-        Cell: ({ value }) => <span className="fw-bold">{value}</span>
+        Header: "Project Name (Code)",
+        accessor: "projectName",
+        Cell: ({ value }) => <span className="fw-bold">{value}</span>,
       },
       {
-        Header: 'Zone',
-        accessor: 'zone'
+        Header: "Zone",
+        accessor: "zone",
       },
       {
-        Header: 'Woreda',
-        accessor: 'woreda'
+        Header: "Woreda",
+        accessor: "woreda",
       },
       {
-        Header: 'Sector',
-        accessor: 'sector'
+        Header: "Sector",
+        accessor: "sector",
       },
       {
-        Header: 'Budget Year',
-        id: 'budgetYear',
+        Header: "Budget Year",
+        id: "budgetYear",
         Cell: ({ row }) => (
           <div className="d-flex flex-column">
             {row.original.budgetPlans.map((plan, i) => (
               <div key={i}>{plan.year}</div>
             ))}
           </div>
-        )
+        ),
       },
       {
-        Header: 'Budget Code',
-        id: 'budgetCode',
+        Header: "Budget Code",
+        id: "budgetCode",
         Cell: ({ row }) => (
           <div className="d-flex flex-column">
             {row.original.budgetPlans.map((plan, i) => (
               <div key={i}>{plan.code}</div>
             ))}
           </div>
-        )
+        ),
       },
       {
-        Header: 'Budget Amount',
-        id: 'budgetAmount',
+        Header: "Budget Amount",
+        id: "budgetAmount",
         Cell: ({ row }) => (
           <div className="d-flex flex-column">
             {row.original.budgetPlans.map((plan, i) => (
-              <div key={i}>{new Intl.NumberFormat('en-US').format(plan.amount)}</div>
+              <div key={i}>
+                {new Intl.NumberFormat("en-US").format(plan.amount)}
+              </div>
             ))}
           </div>
-        )
+        ),
       },
       {
-        Header: 'Total Budget',
-        accessor: 'totalBudget',
+        Header: "Total Budget",
+        accessor: "totalBudget",
         Cell: ({ value }) => (
-          <span className="fw-bold">{new Intl.NumberFormat('en-US').format(value)}</span>
-        )
-      }
+          <span className="fw-bold">
+            {new Intl.NumberFormat("en-US").format(value)}
+          </span>
+        ),
+      },
     ],
-    []
+    [],
   );
 
   const {
@@ -130,12 +144,12 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
       initialState: {
         pageIndex: 0,
         pageSize: 10,
-        sortBy: [{ id: 'projectName', desc: false }],
+        sortBy: [{ id: "projectName", desc: false }],
       },
     },
     useGlobalFilter,
     useSortBy,
-    usePagination
+    usePagination,
   );
 
   const { globalFilter, pageIndex, pageSize } = state;
@@ -150,7 +164,7 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
                 type="text"
                 className="form-control"
                 placeholder={SearchPlaceholder}
-                value={globalFilter || ''}
+                value={globalFilter || ""}
                 onChange={(e) => setGlobalFilter(e.target.value)}
               />
               <i className="bx bx-search-alt search-icon"></i>
@@ -163,7 +177,7 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
           <Input
             type="select"
             className="form-select form-select-sm"
-            style={{ width: '70px' }}
+            style={{ width: "70px" }}
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
@@ -184,8 +198,8 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map((column) => (
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render('Header')}
-                 </th>
+                  {column.render("Header")}
+                </th>
               ))}
             </tr>
           ))}
@@ -196,7 +210,7 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
             return (
               <tr {...row.getRowProps()}>
                 {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                 ))}
               </tr>
             );
@@ -204,17 +218,18 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
           {/* Grand Total Row */}
           <tr className="fw-bold bg-light">
             <td colSpan={8}>Sum of Total Budget</td>
-            <td>{new Intl.NumberFormat('en-US').format(grandTotalBudget)}</td>
+            <td>{new Intl.NumberFormat("en-US").format(grandTotalBudget)}</td>
           </tr>
         </tbody>
       </table>
 
       <div className="d-flex justify-content-between align-items-center mt-3">
         <div>
-          Showing {pageIndex * pageSize + 1} to{' '}
-          {Math.min((pageIndex + 1) * pageSize, groupedData.length)} of {groupedData.length} entries
+          Showing {pageIndex * pageSize + 1} to{" "}
+          {Math.min((pageIndex + 1) * pageSize, groupedData.length)} of{" "}
+          {groupedData.length} entries
         </div>
-        
+
         <Pagination>
           <PaginationItem disabled={!canPreviousPage}>
             <PaginationLink first onClick={() => gotoPage(0)} />
@@ -222,17 +237,19 @@ const ProjectsBudgetPlanTable = ({ data, isGlobalFilter, SearchPlaceholder, t })
           <PaginationItem disabled={!canPreviousPage}>
             <PaginationLink previous onClick={() => previousPage()} />
           </PaginationItem>
-          
-          {pageOptions.slice(
-            Math.max(0, pageIndex - 2),
-            Math.min(pageOptions.length, pageIndex + 3)
-          ).map((page) => (
-            <PaginationItem active={pageIndex === page} key={page}>
-              <PaginationLink onClick={() => gotoPage(page)}>
-                {page + 1}
-              </PaginationLink>
-            </PaginationItem>
-          ))}
+
+          {pageOptions
+            .slice(
+              Math.max(0, pageIndex - 2),
+              Math.min(pageOptions.length, pageIndex + 3),
+            )
+            .map((page) => (
+              <PaginationItem active={pageIndex === page} key={page}>
+                <PaginationLink onClick={() => gotoPage(page)}>
+                  {page + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
 
           <PaginationItem disabled={!canNextPage}>
             <PaginationLink next onClick={() => nextPage()} />

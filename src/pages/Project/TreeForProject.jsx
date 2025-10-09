@@ -3,13 +3,30 @@ import { useTranslation } from "react-i18next";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { getUserSectorListTree } from "../../queries/usersector_query";
-import { useFetchProgramTree } from "../../queries/programinfo_query"
+import { useFetchProgramTree } from "../../queries/programinfo_query";
 import { Tree } from "react-arborist";
-import { FaFolder, FaFile, FaChevronRight, FaChevronDown, FaChevronUp } from "react-icons/fa";
-import { Card, CardBody, Input, Label, Col, Row, Button } from "reactstrap";
+import {
+	FaFolder,
+	FaFile,
+	FaChevronRight,
+	FaChevronDown,
+	FaChevronUp,
+	FaSpinner,
+} from "react-icons/fa";
+import {
+	Card,
+	CardBody,
+	Input,
+	Label,
+	Col,
+	Row,
+	Button,
+	Spinner,
+} from "reactstrap";
 import useResizeObserver from "use-resize-observer";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import { useDragDropManager } from "react-dnd";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const INDENT_STEP = 15;
 const levelMap = {
@@ -103,10 +120,17 @@ const AddressTree = ({ onNodeSelect }) => {
 	const { t, i18n } = useTranslation();
 	const dndManager = useDragDropManager();
 	const treeRef = useRef();
-	const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-	const { data, isLoading, isError } = useFetchAddressStructures(userId);
+	const { userId } = useAuthUser();
+	const {
+		tree: data,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useFetchAddressStructures(userId);
 	const [treeData, setTreeData] = useState([]);
 	const [projectParams, setProjectParams] = useState({});
+	const [loadingNodes, setLoadingNodes] = useState(new Set());
 
 	const [selectedSector, setSelectedSector] = useState({});
 	const { ref, width, height } = useResizeObserver();
@@ -116,11 +140,15 @@ const AddressTree = ({ onNodeSelect }) => {
 		data: clusters,
 		isLoading: isClusterLoading,
 		isError: isClusterError,
+		error: clusterError,
+		refetch: refetchClusters,
 	} = getUserSectorListTree(userId);
 	const {
 		data: projects,
 		isLoading: isProjectsLoading,
+		isError: isProjectsError,
 		refetch: refetchProjects,
+		error: projectsError,
 	} = useFetchProgramTree(projectParams, Object.keys(projectParams).length > 0);
 
 	useEffect(() => {
@@ -128,15 +156,12 @@ const AddressTree = ({ onNodeSelect }) => {
 			const transformData = (regions) =>
 				regions.map((region) => ({
 					...region,
-					id: region.id?.toString() || uuidv4(),
 					children: region.children
 						? region.children.map((zone) => ({
 								...zone,
-								id: zone.id?.toString() || uuidv4(),
 								children: zone.children
 									? zone.children.map((woreda) => ({
 											...woreda,
-											id: woreda.id?.toString() || uuidv4(),
 											children: [
 												...woreda.children,
 												...clusters.map((c) => ({
@@ -165,9 +190,9 @@ const AddressTree = ({ onNodeSelect }) => {
 													})),
 												})),
 											],
-									  }))
+										}))
 									: [],
-						  }))
+							}))
 						: [],
 				}));
 			setTreeData(transformData(data));
@@ -177,6 +202,10 @@ const AddressTree = ({ onNodeSelect }) => {
 	// Handle fetching projects when sector node is clicked
 	const handleSectorClick = async (node) => {
 		const { id, region_id, zone_id, woreda_id, s_id } = node.data;
+
+		// Add node to loading set
+		setLoadingNodes((prev) => new Set(prev).add(id));
+
 		setProjectParams({
 			pri_sector_id: s_id,
 		});
@@ -200,8 +229,21 @@ const AddressTree = ({ onNodeSelect }) => {
 					formattedProjects
 				);
 				setTreeData(updatedTreeData);
+
+				// Remove node from loading set when data is loaded
+				setLoadingNodes((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(id);
+					return newSet;
+				});
 			} catch (error) {
 				console.error("Error during sector refetch:", error);
+				// Remove node from loading set on error too
+				setLoadingNodes((prev) => {
+					const newSet = new Set(prev);
+					newSet.delete(selectedSector.id);
+					return newSet;
+				});
 			}
 		};
 
@@ -213,7 +255,16 @@ const AddressTree = ({ onNodeSelect }) => {
 	useEffect(() => {
 		if (!projects || !selectedSector.id) return;
 
-		const { id, region_id, zone_id, woreda_id, s_id } = selectedSector;
+		const { id } = selectedSector;
+
+		// Remove node from loading set when data is loaded
+		setLoadingNodes((prev) => {
+			const newSet = new Set(prev);
+			newSet.delete(id);
+			return newSet;
+		});
+
+		const { region_id, zone_id, woreda_id, s_id } = selectedSector;
 		const formattedProjects = projects?.data?.map((p) =>
 			formatProjectNode(p, { region_id, zone_id, woreda_id, s_id })
 		);
@@ -257,11 +308,14 @@ const AddressTree = ({ onNodeSelect }) => {
 			>
 				<h5 className="">{t("address_tree_Search")}</h5>
 				<hr className="" />
-				<p>Loading...</p>
+				<p className="text-center">
+					<Spinner size={"sm"} color="primary" />
+				</p>
 			</div>
 		);
 	}
-	if (isError || isClusterError) {
+
+	if (isError || isClusterError || isProjectsError) {
 		return (
 			<div
 				style={{ minHeight: "100vh", minWidth: "250px" }}
@@ -269,11 +323,26 @@ const AddressTree = ({ onNodeSelect }) => {
 			>
 				<h5 className="">{t("address_tree_Search")}</h5>
 				<hr className="" />
-				<p>Error Fetching address structure</p>
+				{isError && (
+					<FetchErrorHandler error={error} refetch={refetch} onTree />
+				)}
+				{!isError && isClusterError && (
+					<FetchErrorHandler
+						error={clusterError}
+						refetch={refetchClusters}
+						onTree
+					/>
+				)}
+				{!isError && !isClusterError && isProjectsError && (
+					<FetchErrorHandler
+						error={projectsError}
+						refetch={refetchProjects}
+						onTree
+					/>
+				)}
 			</div>
 		);
 	}
-
 	return (
 		<Card className="border shadow-sm">
 			<CardBody className="p-3">
@@ -332,6 +401,7 @@ const AddressTree = ({ onNodeSelect }) => {
 									dragHandle={dragHandle}
 									handleSectorClick={handleSectorClick}
 									onNodeSelect={onNodeSelect}
+									isLoading={loadingNodes.has(node.data.id)}
 								/>
 							)}
 						</Tree>
@@ -342,77 +412,99 @@ const AddressTree = ({ onNodeSelect }) => {
 	);
 };
 
-const Node = ({ node, style, dragHandle, handleSectorClick, onNodeSelect }) => {
-  if (!node?.data) return null;
-  const indentSize = Number.parseFloat(`${style.paddingLeft || 0}`);
-  const { i18n } = useTranslation();
-  const lang = i18n.language
-  const isLeafNode = node.isLeaf;
-  const icon = isLeafNode ? <FaFile /> : <FaFolder />;
-  const chevronIcon = node.isOpen ? <FaChevronDown /> : <FaChevronRight />;
+const Node = ({
+	node,
+	style,
+	dragHandle,
+	handleSectorClick,
+	onNodeSelect,
+	isLoading,
+}) => {
+	if (!node?.data) return null;
+	const indentSize = Number.parseFloat(`${style.paddingLeft || 0}`);
+	const { i18n } = useTranslation();
+	const lang = i18n.language;
+	const isLeafNode = node.isLeaf;
+	const icon = isLeafNode ? <FaFile /> : <FaFolder />;
 
-  const handleNodeClick = (node) => {
-    node.toggle();
-    onNodeSelect(node);
+	// Determine which icon to show
+	let toggleIcon;
+	if (isLoading) {
+		toggleIcon = <FaSpinner className="fa-spin" />;
+	} else if (node.isOpen) {
+		toggleIcon = <FaChevronDown />;
+	} else {
+		toggleIcon = <FaChevronRight />;
+	}
 
-    if (node.data.level === "sector") {
-      handleSectorClick(node);
-    }
-  };
+	const handleNodeClick = (node) => {
+		node.toggle();
+		onNodeSelect(node);
 
-  return (
-    <div
-      onClick={() => handleNodeClick(node)}
-      style={{ ...style, display: "flex" }}
-      ref={dragHandle}
-      className={`${node.isSelected ? "bg-info-subtle" : ""} py-1 rounded hover-zoom`}
-    >
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          zIndex: -1,
-          display: "flex",
-          alignItems: "flex-start",
-          height: "100%",
-        }}
-      >
-        {new Array(indentSize / INDENT_STEP).fill(0).map((_, index) => (
-          <div
-            key={index}
-            style={{
-              height: "100%",
-              paddingLeft: "10px",
-              borderRight: "1px solid #ccc",
-              marginRight: "4px",
-            }}
-          ></div>
-        ))}
-      </div>
-      {!isLeafNode && node.data.level !== "output" && <span className="me-2 ps-2">{chevronIcon}</span>}
-      <span className={`${node.data.level === "output" ? "ms-4" : ""}  me-1 text-warning`}>{icon}</span>
-      <span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
-        {levelSymbolMap[node.data.level] || ""}
-      </span>
-      <span
-        style={{
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          maxWidth: "100%",
-          display: "inline-block",
-          verticalAlign: "middle",
-        }}
-      >
-        {lang === "en" && node.data.add_name_en
-          ? node.data.add_name_en
-          : lang === "am" && node.data.add_name_am
-            ? node.data.add_name_am
-            : node.data.name}
-      </span>
-    </div>
-  );
+		if (node.data.level === "sector") {
+			handleSectorClick(node);
+		}
+	};
+
+	return (
+		<div
+			onClick={() => handleNodeClick(node)}
+			style={{ ...style, display: "flex" }}
+			ref={dragHandle}
+			className={`${node.isSelected ? "bg-info-subtle" : ""} py-1 rounded hover-zoom`}
+		>
+			<div
+				style={{
+					position: "absolute",
+					top: 0,
+					left: 0,
+					zIndex: -1,
+					display: "flex",
+					alignItems: "flex-start",
+					height: "100%",
+				}}
+			>
+				{new Array(indentSize / INDENT_STEP).fill(0).map((_, index) => (
+					<div
+						key={index}
+						style={{
+							height: "100%",
+							paddingLeft: "10px",
+							borderRight: "1px solid #ccc",
+							marginRight: "4px",
+						}}
+					></div>
+				))}
+			</div>
+			{!isLeafNode && node.data.level !== "output" && (
+				<span className="me-2 ps-2">{toggleIcon}</span>
+			)}
+			<span
+				className={`${node.data.level === "output" ? "ms-4" : ""}  me-1 text-warning`}
+			>
+				{icon}
+			</span>
+			<span className="text-danger my-auto px-1" style={{ fontWeight: 900 }}>
+				{levelSymbolMap[node.data.level] || ""}
+			</span>
+			<span
+				style={{
+					whiteSpace: "nowrap",
+					overflow: "hidden",
+					textOverflow: "ellipsis",
+					maxWidth: "100%",
+					display: "inline-block",
+					verticalAlign: "middle",
+				}}
+			>
+				{lang === "en" && node.data.add_name_en
+					? node.data.add_name_en
+					: lang === "am" && node.data.add_name_am
+						? node.data.add_name_am
+						: node.data.name}
+			</span>
+		</div>
+	);
 };
 
-export default AddressTree
+export default AddressTree;

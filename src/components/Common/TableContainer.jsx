@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState, useRef } from "react";
+import React, { Fragment, useEffect, useState, useRef, useMemo } from "react";
 import { Row, Table, Button, Col, Spinner } from "reactstrap";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -80,32 +80,36 @@ const MAX_PAGE_NUMBERS = 10;
 const TableContainer = ({
 	columns,
 	data,
-	tableClass,
+	tableClass = "align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline",
 	theadClass,
 	divClassName,
 	isLoading = false,
-	isBordered,
+	isBordered = true,
+	size = "sm",
 	isPagination,
 	isGlobalFilter,
-	paginationWrapper,
+	paginationWrapper = "dataTables_paginate paging_simple_numbers pagination-rounded",
 	SearchPlaceholder,
 	pagination,
-	buttonClass,
 	buttonName,
 	isAddButton,
 	isCustomPageSize,
 	handleUserClick,
-	isJobListGlobalFilter,
 	isExcelExport = false,
 	isPdfExport = false,
 	isPrint = true,
-	excludeKey = [],
 	exportColumns = [],
 	tableName = "",
 	infoIcon = false,
 	refetch,
 	isFetching,
 	resetPageIndexTrigger,
+	isSummaryRow = false,
+	summaryColumns = [],
+	summaryLabel = "Total",
+	summaryPosition = "bottom",
+	customSummaryFunction,
+	exportSearchParams = {},
 }) => {
 	const [columnFilters, setColumnFilters] = useState([]);
 	const [globalFilter, setGlobalFilter] = useState("");
@@ -190,6 +194,42 @@ const TableContainer = ({
 		}
 	}, [resetPageIndexTrigger]);
 
+	const calculateSummary = (data, summaryColumns, customSummaryFunction) => {
+		if (customSummaryFunction) {
+			return customSummaryFunction(data);
+		}
+
+		const summary = {};
+
+		summaryColumns.forEach((column) => {
+			summary[column] = data.reduce((total, row) => {
+				const value = parseFloat(row[column]) || 0;
+				return total + value;
+			}, 0);
+		});
+
+		return summary;
+	};
+
+	const summaryData =
+		isSummaryRow && data.length > 0
+			? calculateSummary(data, summaryColumns, customSummaryFunction)
+			: null;
+
+	const flattenedColumns = useMemo(() => {
+		const flatten = (cols) => {
+			return cols.reduce((acc, column) => {
+				if (column.columns) {
+					return [...acc, ...flatten(column.columns)];
+				} else {
+					return [...acc, column];
+				}
+			}, []);
+		};
+
+		return flatten(columns);
+	}, [columns]);
+
 	return (
 		<Fragment>
 			<Row className="mb-2 d-flex align-items-center justify-content-between">
@@ -246,6 +286,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 										{isPdfExport && (
@@ -254,6 +295,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 										{isPrint && (
@@ -262,6 +304,7 @@ const TableContainer = ({
 												tableName={tableName}
 												dropdownItem={true}
 												exportColumns={exportColumns}
+												exportSearchParams={exportSearchParams}
 											/>
 										)}
 									</DropdownMenu>
@@ -323,7 +366,8 @@ const TableContainer = ({
 					<div id="printable-table">
 						<Table
 							hover
-							className={`${tableClass} table-sm table-bordered table-striped`}
+							className={`${tableClass} table-striped`}
+							size={size}
 							bordered={isBordered}
 						>
 							<thead className={theadClass}>
@@ -332,7 +376,6 @@ const TableContainer = ({
 										{idx === getHeaderGroups().length - 1 ? (
 											<th rowSpan={1}>{t("S.N")}</th>
 										) : (
-											// For upper groups, add an empty cell that spans where S.N would be
 											<th
 												rowSpan={1}
 												colSpan={1}
@@ -344,8 +387,8 @@ const TableContainer = ({
 												key={header.id}
 												colSpan={header.colSpan}
 												className={`${
-													header.column.columnDef.enableSorting
-														? "sorting sorting_desc"
+													header.column.getCanSort()
+														? "cursor-pointer select-none"
 														: ""
 												}`}
 											>
@@ -353,9 +396,7 @@ const TableContainer = ({
 													<Fragment>
 														<div
 															{...{
-																className: header.column.getCanSort()
-																	? "cursor-pointer select-none"
-																	: "",
+																className: "d-flex align-items-center",
 																onClick:
 																	header.column.getToggleSortingHandler(),
 															}}
@@ -364,14 +405,22 @@ const TableContainer = ({
 																header.column.columnDef.header || t(header.id),
 																header.getContext()
 															)}
-															{{
-																asc: "",
-																desc: "",
-															}[header.column.getIsSorted()] ?? null}
+															{/* Add sorting arrows */}
+															{header.column.getCanSort() && (
+																<span className="ms-1">
+																	{header.column.getIsSorted() === "asc" ? (
+																		<i className="mdi mdi-arrow-up" />
+																	) : header.column.getIsSorted() === "desc" ? (
+																		<i className="mdi mdi-arrow-down" />
+																	) : (
+																		<i className="mdi mdi-unfold-more-horizontal" />
+																	)}
+																</span>
+															)}
 														</div>
 														{header.column.getCanFilter() ? (
 															<div>
-																<Filter column={header.column} table={table} />
+																<Filter column={header.column} />
 															</div>
 														) : null}
 													</Fragment>
@@ -382,6 +431,30 @@ const TableContainer = ({
 								))}
 							</thead>
 							<tbody style={{ height: "auto" }}>
+								{/* Summary row at top */}
+								{isSummaryRow && summaryPosition === "top" && summaryData && (
+									<tr className="summary-row">
+										<td colSpan={1}>
+											<strong>{summaryLabel}</strong>
+										</td>
+										{flattenedColumns.map((column, index) => {
+											const columnKey = column.accessorKey || column.id;
+											if (summaryColumns.includes(columnKey)) {
+												return (
+													<td key={`summary-${columnKey}`}>
+														<strong>
+															{typeof summaryData[columnKey] === "number"
+																? summaryData[columnKey].toLocaleString()
+																: summaryData[columnKey]}
+														</strong>
+													</td>
+												);
+											}
+											return <td key={`empty-${index}`}></td>;
+										})}
+									</tr>
+								)}
+
 								{data.length === 0 ? (
 									<tr>
 										<td
@@ -406,6 +479,32 @@ const TableContainer = ({
 										</tr>
 									))
 								)}
+
+								{/* Summary row at bottom */}
+								{isSummaryRow &&
+									summaryPosition === "bottom" &&
+									summaryData && (
+										<tr className="summary-row bg-light">
+											<td colSpan={1}>
+												<strong>{summaryLabel}</strong>
+											</td>
+											{flattenedColumns.map((column, index) => {
+												const columnKey = column.accessorKey || column.id;
+												if (summaryColumns.includes(columnKey)) {
+													return (
+														<td key={`summary-${columnKey}`}>
+															<strong>
+																{typeof summaryData[columnKey] === "number"
+																	? summaryData[columnKey].toLocaleString()
+																	: summaryData[columnKey]}
+															</strong>
+														</td>
+													);
+												}
+												return <td key={`empty-${index}`}></td>;
+											})}
+										</tr>
+									)}
 							</tbody>
 						</Table>
 					</div>
@@ -418,7 +517,7 @@ const TableContainer = ({
 									? `${t("Showing")} ${data.length} of ${data.length}`
 									: `${t("Showing")} ${paginationState.pageSize} of ${
 											data.length
-									  }`}
+										}`}
 							</div>
 						</Col>
 						<Col sm={12} md={7}>

@@ -112,7 +112,7 @@ const ProjectPaymentAnalysis = ({
 
     const validPayments = data.filter(
       (payment) =>
-        payment && typeof payment === "object" && payment.prp_payment_amount
+        payment && typeof payment === "object" && payment.prp_payment_amount,
     );
 
     totals.paymentCount = validPayments.length;
@@ -168,12 +168,12 @@ const ProjectPaymentAnalysis = ({
       const calculatedTotals = isOverallView
         ? calculateOverallTotals(filteredData)
         : paymentData
-        ? calculateSinglePaymentTotals(paymentData)
-        : {
-            payment: { amount: 0, percentage: 0 },
-            details: { date: "-", type: "-", description: "-" },
-            paymentCount: 0,
-          };
+          ? calculateSinglePaymentTotals(paymentData)
+          : {
+              payment: { amount: 0, percentage: 0 },
+              details: { date: "-", type: "-", description: "-" },
+              paymentCount: 0,
+            };
 
       let series = [];
       let options = {
@@ -253,7 +253,7 @@ const ProjectPaymentAnalysis = ({
                       formatter: function (w) {
                         return (
                           formatNumber(
-                            w.globals.seriesTotals.reduce((a, b) => a + b, 0)
+                            w.globals.seriesTotals.reduce((a, b) => a + b, 0),
                           ) +
                           " " +
                           t("birr")
@@ -269,7 +269,7 @@ const ProjectPaymentAnalysis = ({
             },
           };
           series = Object.values(calculatedTotals.byType).map(
-            (type) => type.totalAmount
+            (type) => type.totalAmount,
           );
         } else {
           options = {
@@ -361,7 +361,7 @@ const ProjectPaymentAnalysis = ({
               : t("payment_amount"),
             data: isOverallView
               ? Object.values(calculatedTotals.byType).map(
-                  (type) => type.totalAmount
+                  (type) => type.totalAmount,
                 )
               : [calculatedTotals.payment.amount],
           },
@@ -396,7 +396,7 @@ const ProjectPaymentAnalysis = ({
                 {isOverallView
                   ? `${t("overall_payments_analysis")}`
                   : `${paymentData?.prj_name || "Project"} ${t(
-                      "payment_analysis"
+                      "payment_analysis",
                     )}`}
                 {isOverallView && (
                   <Badge color="primary" className="ms-2" pill>
@@ -541,7 +541,7 @@ const ProjectPaymentAnalysis = ({
                                   {formatNumber(
                                     totals?.payment?.amount ||
                                       totals?.totalAmount ||
-                                      0
+                                      0,
                                   )}{" "}
                                   <small className="text-muted">
                                     {t("birr")}
@@ -561,7 +561,7 @@ const ProjectPaymentAnalysis = ({
                                   {formatNumber(
                                     totals?.payment?.percentage ||
                                       totals?.averagePercentage ||
-                                      0
+                                      0,
                                   )}
                                   <small>%</small>
                                 </h3>
@@ -617,21 +617,21 @@ const ProjectPaymentAnalysis = ({
                                         style={{
                                           width: `${calculatePercentage(
                                             data.totalAmount,
-                                            totals.totalAmount
+                                            totals.totalAmount,
                                           )}%`,
                                           backgroundColor:
                                             getColorForType(type),
                                         }}
                                         aria-valuenow={calculatePercentage(
                                           data.totalAmount,
-                                          totals.totalAmount
+                                          totals.totalAmount,
                                         )}
                                         aria-valuemin="0"
                                         aria-valuemax="100"
                                       ></div>
                                     </div>
                                   </div>
-                                )
+                                ),
                               )}
                             </div>
                           </CardBody>
@@ -676,7 +676,7 @@ const ProjectPaymentAnalysis = ({
                             <Progress
                               value={Math.min(
                                 totals?.payment?.percentage || 0,
-                                100
+                                100,
                               )}
                               color="info"
                               style={{ height: "6px" }}
@@ -758,7 +758,7 @@ const ProjectPaymentAnalysis = ({
                                 {formatNumber(data.averagePercentage)}%
                               </td>
                             </tr>
-                          )
+                          ),
                         )}
                       </tbody>
                     </table>

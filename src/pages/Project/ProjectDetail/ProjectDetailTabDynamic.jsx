@@ -1,12 +1,9 @@
-import React, { useState, useEffect, Suspense, lazy } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import {
-  Col,
-  Nav,
-  NavItem,
-  NavLink,
-  TabContent,
-  TabPane,
-  Spinner,
+	Nav,
+	NavItem,
+	NavLink,
+	TabContent,
 } from "reactstrap";
 import classnames from "classnames";
 import { useLocation } from "react-router-dom";
@@ -20,6 +17,8 @@ const ProjectDetailTabDynamic = ({
 	status = null,
 	startDate = null,
 	endDate = null,
+	value = null,
+	unit = null,
 	components,
 }) => {
 	const location = useLocation();
@@ -57,8 +56,10 @@ const ProjectDetailTabDynamic = ({
 					projectName={name}
 					totalActualBudget={totalActualBudget}
 					status={status}
-          startDate={startDate}
-          endDate={endDate}
+					startDate={startDate}
+					endDate={endDate}
+					value={value}
+					unit={unit}
 				/>
 			</Suspense>
 		);

@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+	width: "100%",
 };
 
 const ProjectStakeholderModal = (props) => {
@@ -33,35 +32,54 @@ const ProjectStakeholderModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('psh_name')}: <span className="text-primary">{transaction.psh_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_stakeholder_type')}: <span className="text-primary">{transaction.psh_stakeholder_type}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_representative_name')}: <span className="text-primary">{transaction.psh_representative_name}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_representative_phone')}: <span className="text-primary">{transaction.psh_representative_phone}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_role')}: <span className="text-primary">{transaction.psh_role}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('psh_description')}: <span className="text-primary">{transaction.psh_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("psh_name")}:{" "}
+              <span className="text-primary">{transaction.psh_name}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("psh_stakeholder_type")}:{" "}
+              <span className="text-primary">
+                {transaction.psh_stakeholder_type}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("psh_representative_name")}:{" "}
+              <span className="text-primary">
+                {transaction.psh_representative_name}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("psh_representative_phone")}:{" "}
+              <span className="text-primary">
+                {transaction.psh_representative_phone}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("psh_role")}:{" "}
+              <span className="text-primary">{transaction.psh_role}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("psh_description")}:{" "}
+              <span className="text-primary">
+                {transaction.psh_description}
+              </span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

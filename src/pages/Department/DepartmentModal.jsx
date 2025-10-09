@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+  width: "100%",
 };
 
 const DepartmentModal = (props) => {
@@ -33,43 +32,66 @@ const DepartmentModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('dep_name_or')}: <span className="text-primary">{transaction.dep_name_or}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_name_am')}: <span className="text-primary">{transaction.dep_name_am}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_name_en')}: <span className="text-primary">{transaction.dep_name_en}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_code')}: <span className="text-primary">{transaction.dep_code}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_available_at_region')}: <span className="text-primary">{transaction.dep_available_at_region}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_available_at_zone')}: <span className="text-primary">{transaction.dep_available_at_zone}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_available_at_woreda')}: <span className="text-primary">{transaction.dep_available_at_woreda}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('dep_description')}: <span className="text-primary">{transaction.dep_description}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("dep_name_or")}:{" "}
+              <span className="text-primary">{transaction.dep_name_or}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_name_am")}:{" "}
+              <span className="text-primary">{transaction.dep_name_am}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_name_en")}:{" "}
+              <span className="text-primary">{transaction.dep_name_en}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_code")}:{" "}
+              <span className="text-primary">{transaction.dep_code}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_available_at_region")}:{" "}
+              <span className="text-primary">
+                {transaction.dep_available_at_region}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_available_at_zone")}:{" "}
+              <span className="text-primary">
+                {transaction.dep_available_at_zone}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_available_at_woreda")}:{" "}
+              <span className="text-primary">
+                {transaction.dep_available_at_woreda}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("dep_description")}:{" "}
+              <span className="text-primary">
+                {transaction.dep_description}
+              </span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

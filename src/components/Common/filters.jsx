@@ -1,10 +1,10 @@
-import React from 'react';
-import { Input } from 'reactstrap';
+import React from "react";
+import { Input } from "reactstrap";
 
 export const Filter = ({ column }) => {
   return (
     <div style={{ marginTop: 5 }}>
-      {column.canFilter && column.render('Filter')}
+      {column.canFilter && column.render("Filter")}
     </div>
   );
 };
@@ -18,7 +18,7 @@ export const DefaultColumnFilter = ({
 }) => {
   return (
     <Input
-      value={filterValue || ''}
+      value={filterValue || ""}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
@@ -40,14 +40,14 @@ export const SelectColumnFilter = ({
 
   return (
     <select
-      id='custom-select'
+      id="custom-select"
       className="form-select"
       value={filterValue}
       onChange={(e) => {
         setFilter(e.target.value || undefined);
       }}
     >
-      <option value=''>All</option>
+      <option value="">All</option>
       {options.map((option) => (
         <option key={option} value={option}>
           {option}

@@ -49,43 +49,42 @@ export const useAddProjectPerformance = () => {
 				queryKey: PROJECT_PERFORMANCE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			const tempId = Date.now();
+			const optimisticData = { ...newData, prp_id: tempId };
+
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: [newData, ...oldData.data],
+						data: [optimisticData, ...oldData.data],
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries, tempId };
 		},
 
 		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
 
-		onSuccess: (newDataResponse) => {
-			const newData = {
-				...newDataResponse.data,
-				...newDataResponse.previledge,
-			};
+		onSuccess: (response, _newData, context) => {
+			const serverData = response.data;
 
 			const queries = queryClient.getQueriesData({
 				queryKey: PROJECT_PERFORMANCE_QUERY_KEY,
 			});
 
-			queries.forEach(([queryKey, oldData]) => {
+			queries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
 						data: oldData.data.map((d) =>
-							d.tempId === newData.tempId ? newData : d
+							d.prp_id === context.tempId ? serverData : d
 						),
 					};
 				});
@@ -115,7 +114,7 @@ export const useUpdateProjectPerformance = () => {
 				queryKey: PROJECT_PERFORMANCE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
@@ -125,14 +124,13 @@ export const useUpdateProjectPerformance = () => {
 						),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _newData, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},
@@ -160,22 +158,21 @@ export const useDeleteProjectPerformance = () => {
 				queryKey: PROJECT_PERFORMANCE_QUERY_KEY,
 			});
 
-			const previousData = previousQueries.map(([queryKey, oldData]) => {
+			previousQueries.forEach(([queryKey]) => {
 				queryClient.setQueryData(queryKey, (oldData) => {
 					if (!oldData) return;
 					return {
 						...oldData,
-						data: oldData.data.filter((item) => item.prp_id !== parseInt(id)),
+						data: oldData.data.filter((d) => d.prp_id !== parseInt(id)),
 					};
 				});
-				return [queryKey, oldData];
 			});
 
-			return { previousData };
+			return { previousQueries };
 		},
 
 		onError: (_err, _id, context) => {
-			context?.previousData?.forEach(([queryKey, oldData]) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
 				queryClient.setQueryData(queryKey, oldData);
 			});
 		},

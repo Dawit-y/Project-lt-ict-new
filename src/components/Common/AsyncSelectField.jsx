@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types'
-import { Col, Label, Input, FormFeedback } from 'reactstrap'
-import { useTranslation } from 'react-i18next'
+import PropTypes from "prop-types";
+import { Col, Label, Input, FormFeedback } from "reactstrap";
+import { useTranslation } from "react-i18next";
 
 /**
  * AsyncSelectField renders a select input based on a key-value map.
@@ -29,12 +29,13 @@ const AsyncSelectField = ({
   isLoading = false,
   isError = false,
 }) => {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
     <Col className={className}>
       <Label htmlFor={fieldId}>
-        {label ? label : t(fieldId)} {isRequired && <span className="text-danger">*</span>}
+        {label ? label : t(fieldId)}{" "}
+        {isRequired && <span className="text-danger">*</span>}
       </Label>
 
       <Input
@@ -47,7 +48,9 @@ const AsyncSelectField = ({
         onBlur={validation.handleBlur}
         value={validation.values[fieldId] || ""}
         invalid={
-          validation.touched[fieldId] && validation.errors[fieldId] ? true : false
+          validation.touched[fieldId] && validation.errors[fieldId]
+            ? true
+            : false
         }
       >
         {isLoading && <option value="">{t("Loading")}...</option>}
@@ -55,7 +58,9 @@ const AsyncSelectField = ({
 
         {!isLoading && !isError && (
           <>
-            <option value="">{t("Select")} {label ? label : t(fieldId)}</option>
+            <option value="">
+              {t("Select")} {label ? label : t(fieldId)}
+            </option>
             {Object.entries(optionMap).map(([value, label]) => (
               <option key={value} value={value}>
                 {t(label)}
@@ -69,8 +74,8 @@ const AsyncSelectField = ({
         <FormFeedback>{validation.errors[fieldId]}</FormFeedback>
       )}
     </Col>
-  )
-}
+  );
+};
 
 AsyncSelectField.propTypes = {
   fieldId: PropTypes.string.isRequired,
@@ -83,9 +88,11 @@ AsyncSelectField.propTypes = {
   }).isRequired,
   isRequired: PropTypes.bool,
   className: PropTypes.string,
-  optionMap: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])).isRequired,
+  optionMap: PropTypes.objectOf(
+    PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  ).isRequired,
   isLoading: PropTypes.bool,
   isError: PropTypes.bool,
-}
+};
 
-export default AsyncSelectField
+export default AsyncSelectField;

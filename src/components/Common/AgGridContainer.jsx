@@ -45,6 +45,7 @@ const AgGridContainer = ({
 	tableName = "",
 	includeKey = [],
 	exportColumns = [],
+	exportSearchParams = {},
 	buttonChildren = null,
 	onButtonClick = () => {},
 	disabled,
@@ -108,6 +109,7 @@ const AgGridContainer = ({
 											tableName={tableName}
 											dropdownItem={true}
 											exportColumns={exportColumns}
+											exportSearchParams={exportSearchParams}
 										/>
 									)}
 									{isPdfExport && (
@@ -116,6 +118,7 @@ const AgGridContainer = ({
 											tableName={tableName}
 											dropdownItem={true}
 											exportColumns={exportColumns}
+											exportSearchParams={exportSearchParams}
 										/>
 									)}
 									{isPrint && (
@@ -124,6 +127,7 @@ const AgGridContainer = ({
 											tableName={tableName}
 											dropdownItem={true}
 											exportColumns={exportColumns}
+											exportSearchParams={exportSearchParams}
 										/>
 									)}
 								</DropdownMenu>
@@ -145,7 +149,7 @@ const AgGridContainer = ({
 					loadingOverlayComponent={LoadingOverlay}
 					overlayNoRowsTemplate={t("no_rows_to_show")}
 					pagination={isPagination}
-					paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+					paginationPageSizeSelector={[10, 30, 50, 100, 200]}
 					paginationPageSize={paginationPageSize}
 					quickFilterText={quickFilterText}
 					rowHeight={rowHeight}

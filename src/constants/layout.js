@@ -1,24 +1,24 @@
 const layoutTypes = {
   HORIZONTAL: "horizontal",
   VERTICAL: "vertical",
-}
+};
 
 const layoutWidthTypes = {
   FLUID: "fluid",
   BOXED: "boxed",
   SCROLLABLE: "scrollable",
-}
+};
 
 const layoutModeTypes = {
   DARK: "dark",
   LIGHT: "light",
-}
+};
 
 const topBarThemeTypes = {
   LIGHT: "light",
   DARK: "dark",
   COLORED: "colored",
-}
+};
 
 const leftBarThemeImageTypes = {
   NONE: "none",
@@ -26,13 +26,13 @@ const leftBarThemeImageTypes = {
   IMG2: "img2",
   IMG3: "img3",
   IMG4: "img4",
-}
+};
 
 const leftSidebarTypes = {
   DEFAULT: "default",
   COMPACT: "compact",
   ICON: "icon",
-}
+};
 
 const leftSideBarThemeTypes = {
   LIGHT: "light",
@@ -43,7 +43,7 @@ const leftSideBarThemeTypes = {
   PLUMPLATE: "plumplate",
   STRONGBLISS: "strongbliss",
   GREATWHALE: "greatwhale",
-}
+};
 
 export {
   layoutTypes,
@@ -53,4 +53,4 @@ export {
   leftBarThemeImageTypes,
   leftSidebarTypes,
   leftSideBarThemeTypes,
-}
+};

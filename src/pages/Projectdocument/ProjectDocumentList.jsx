@@ -1,6 +1,6 @@
 import React, { useEffect, lazy, useMemo, useState, useRef } from "react";
-const AgGridContainer = lazy(() =>
-  import("../../components/Common/AgGridContainer")
+const AgGridContainer = lazy(
+  () => import("../../components/Common/AgGridContainer"),
 );
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useSearchProjectDocuments } from "../../queries/projectdocument_query";
@@ -22,7 +22,7 @@ const ProjectDocumentList = () => {
   document.title = "Project Document List";
   const { t } = useTranslation();
   const [modal1, setModal1] = useState(false);
-  const [details, setDetails] = useState({})
+  const [details, setDetails] = useState({});
   const [searchResults, setSearchResults] = useState(null);
   const [isSearchLoading, setIsSearchLoading] = useState(false);
   const [searcherror, setSearchError] = useState(null);
@@ -95,7 +95,7 @@ const ProjectDocumentList = () => {
         valueGetter: (params) => params.node.rowIndex + 1,
         sortable: false,
         filter: false,
-        width: 70
+        width: 70,
       },
       {
         headerName: t("prj_name"),
@@ -104,7 +104,7 @@ const ProjectDocumentList = () => {
         filter: true,
         // flex: 4,
         cellRenderer: (params) => {
-          return truncateText(params.data.prj_name, 30) || "-";
+          return truncateText(params.data.prj_name, 100) || "-";
         },
       },
       {
@@ -123,8 +123,13 @@ const ProjectDocumentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          const { icon, color } = getFileIcon(params.data.prd_file_extension)
-          return <span> <i className={`${icon} ${color} me-1`}></i> {params.data.prd_name}</span>
+          const { icon, color } = getFileIcon(params.data.prd_file_extension);
+          return (
+            <span>
+              {" "}
+              <i className={`${icon} ${color} me-1`}></i> {params.data.prd_name}
+            </span>
+          );
         },
       },
       {
@@ -142,7 +147,7 @@ const ProjectDocumentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return params.data?.created_by
+          return params.data?.created_by;
         },
       },
       {
@@ -151,7 +156,9 @@ const ProjectDocumentList = () => {
         sortable: true,
         filter: true,
         cellRenderer: (params) => {
-          return new Date(params.data?.prd_create_time).toISOString().split("T")[0]
+          return new Date(params.data?.prd_create_time)
+            .toISOString()
+            .split("T")[0];
         },
       },
       // {
@@ -198,9 +205,7 @@ const ProjectDocumentList = () => {
             <div className="w-100">
               <AdvancedSearch
                 searchHook={useSearchProjectDocuments}
-                textSearchKeys={[
-                  "prd_name",
-                ]}
+                textSearchKeys={["prd_name"]}
                 dateSearchKeys={[]}
                 dropdownSearchKeys={[]}
                 checkboxSearchKeys={[]}
@@ -209,7 +214,8 @@ const ProjectDocumentList = () => {
                 onSearchResult={handleSearchResults}
                 setIsSearchLoading={setIsSearchLoading}
                 setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}>
+                setShowSearchResult={setShowSearchResult}
+              >
                 <AgGridContainer
                   rowData={
                     showSearchResult ? searchResults?.data : data?.data || []
@@ -229,7 +235,7 @@ const ProjectDocumentList = () => {
                     "prj_code",
                     "prd_name",
                     "prd_size",
-                    "prd_create_time"
+                    "prd_create_time",
                   ]}
                   excludeKey={["is_editable", "is_deletable"]}
                 />

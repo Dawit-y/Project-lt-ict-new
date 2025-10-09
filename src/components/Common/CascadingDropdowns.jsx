@@ -1,130 +1,305 @@
-import React, { useState, useEffect } from "react";
-import { FormGroup, Label, Input } from "reactstrap";
-import axios from "axios";
+import React, { useEffect } from "react";
+import { FormGroup, Label, Input, FormFeedback, Row, Col } from "reactstrap";
+import { useTranslation } from "react-i18next";
+import { useQuery } from "@tanstack/react-query";
+import { post } from "../../helpers/api_Lists";
 
-const CascadingDropdowns = () => {
-  const [firstDropdown, setFirstDropdown] = useState("1"); // Addis Ababa ID is 1
-  const [secondDropdown, setSecondDropdown] = useState(""); // Initial value empty string
-  const [thirdDropdown, setThirdDropdown] = useState(""); // Initial value empty string
+const fetchAddressByParent = async (parentId) => {
+	const response = await post(`addressbyparent?parent_id=${parentId}`);
+	return response?.data || [];
+};
 
-  const [secondOptions, setSecondOptions] = useState([]); // Default to empty array
-  const [thirdOptions, setThirdOptions] = useState([]); // Default to empty array
+const CascadingDropdowns = ({
+	validation,
+	dropdown1name,
+	dropdown2name,
+	dropdown3name,
+	required = false,
+	disabled,
+	layout = "horizontal", // 'vertical' or 'horizontal'
+	colSizes = { md: 4 }, // default column sizes for horizontal layout
+}) => {
+	const { t } = useTranslation();
+	const OROMIA_ID = "1";
 
-  const [loadingSecond, setLoadingSecond] = useState(false); // Loading state for second dropdown
-  const [loadingThird, setLoadingThird] = useState(false); // Loading state for third dropdown
+	// Set default region value to Oromia on initial load
+	useEffect(() => {
+		if (!validation?.values?.[dropdown1name]) {
+			validation?.setFieldValue?.(dropdown1name, OROMIA_ID);
+		}
+	}, [dropdown1name, validation]);
 
-  // Fetch the second dropdown data when the first dropdown value changes
-  useEffect(() => {
-    if (firstDropdown) {
-      setLoadingSecond(true); // Start loading state for the second dropdown
-      axios
-        .post(
-          `${
-            import.meta.env.VITE_BASE_API_URL
-          }addressbyparent?parent_id=${firstDropdown}`
-        )
-        .then((response) => {
-          console.log(response);
-          setSecondOptions(response.data.data || []); // Safeguard against undefined
-          setSecondDropdown(""); // Reset second dropdown when new data is loaded
-          setThirdDropdown(""); // Reset third dropdown
-          setLoadingSecond(false); // End loading state for second dropdown
-        })
-        .catch((error) => {
-          console.error("Error fetching second dropdown data:", error);
-          setLoadingSecond(false); // End loading state on error
-        });
-    }
-  }, [firstDropdown]);
+	// Fetch zones for the selected region
+	const {
+		data: zones = [],
+		isLoading: loadingZones,
+		refetch: refetchZones,
+	} = useQuery({
+		queryKey: ["zones", validation?.values?.[dropdown1name]],
+		queryFn: () => fetchAddressByParent(validation?.values?.[dropdown1name]),
+		enabled: !!validation?.values?.[dropdown1name],
+	});
 
-  // Fetch the third dropdown data when the second dropdown value changes
-  useEffect(() => {
-    if (secondDropdown) {
-      setLoadingThird(true); // Start loading state for third dropdown
-      axios
-        .post(
-          `${
-            import.meta.env.VITE_BASE_API_URL
-          }addressbyparent?parent_id=${secondDropdown}`
-        )
-        .then((response) => {
-          setThirdOptions(response.data.data || []); // Safeguard against undefined
-          setThirdDropdown(""); // Reset third dropdown when new data is loaded
-          setLoadingThird(false); // End loading state for third dropdown
-        })
-        .catch((error) => {
-          console.error("Error fetching third dropdown data:", error);
-          setLoadingThird(false); // End loading state on error
-        });
-    }
-  }, [secondDropdown]);
-  console.log(secondOptions);
+	// Fetch woredas for the selected zone
+	const {
+		data: woredas = [],
+		isLoading: loadingWoredas,
+		refetch: refetchWoredas,
+	} = useQuery({
+		queryKey: ["woredas", validation?.values?.[dropdown2name]],
+		queryFn: () => fetchAddressByParent(validation?.values?.[dropdown2name]),
+		enabled: !!validation?.values?.[dropdown2name],
+	});
 
-  return (
-    <>
-      {/* First Dropdown */}
-      <FormGroup>
-        <Label for="firstDropdown">City</Label>
-        <Input
-          type="select"
-          name="firstDropdown"
-          id="firstDropdown"
-          value={firstDropdown}
-          onChange={(e) => setFirstDropdown(e.target.value)}
-        >
-          <option value="1">Addis Ababa</option>
-        </Input>
-      </FormGroup>
+	// Handle region change
+	const handleRegionChange = (e) => {
+		validation?.handleChange?.(e);
+		validation?.setFieldValue?.(dropdown2name, "");
+		validation?.setFieldValue?.(dropdown3name, "");
+		refetchZones();
+	};
 
-      {/* Second Dropdown */}
-      <FormGroup>
-        <Label for="secondDropdown">Sub City</Label>
-        <Input
-          type="select"
-          name="secondDropdown"
-          id="secondDropdown"
-          value={secondDropdown}
-          onChange={(e) => setSecondDropdown(e.target.value)}
-          disabled={loadingSecond || secondOptions.length === 0} // Disable if loading or no options
-        >
-          <option value="">Select Sub City</option>
-          {loadingSecond ? (
-            <option>Loading...</option>
-          ) : (
-            secondOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))
-          )}
-        </Input>
-      </FormGroup>
+	// Handle zone change
+	const handleZoneChange = (e) => {
+		validation?.handleChange?.(e);
+		validation?.setFieldValue?.(dropdown3name, "");
+		refetchWoredas();
+	};
 
-      {/* Third Dropdown */}
-      <FormGroup>
-        <Label for="thirdDropdown">Woreda</Label>
-        <Input
-          type="select"
-          name="thirdDropdown"
-          id="thirdDropdown"
-          value={thirdDropdown}
-          onChange={(e) => setThirdDropdown(e.target.value)}
-          disabled={loadingThird || thirdOptions.length === 0} // Disable if loading or no options
-        >
-          <option value="">Select Woreda</option>
-          {loadingThird ? (
-            <option>Loading...</option>
-          ) : (
-            thirdOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))
-          )}
-        </Input>
-      </FormGroup>
-    </>
-  );
+	// Render dropdown group (vertical layout)
+	const renderDropdownGroup = () => (
+		<>
+			{/* Region Dropdown */}
+			<FormGroup>
+				<Label for={dropdown1name}>
+					{t("region")} {required && <span className="text-danger">*</span>}
+				</Label>
+				<Input
+					type="select"
+					name={dropdown1name}
+					id={dropdown1name}
+					value={validation?.values?.[dropdown1name] || ""}
+					onChange={handleRegionChange}
+					onBlur={validation?.handleBlur}
+					invalid={
+						!!(
+							validation?.touched?.[dropdown1name] &&
+							validation?.errors?.[dropdown1name]
+						)
+					}
+					disabled={disabled}
+				>
+					<option value="">{t("select_region")}</option>
+					<option value="1">Oromia</option>
+					{/* Add more regions as needed */}
+				</Input>
+				{validation?.touched?.[dropdown1name] &&
+				validation?.errors?.[dropdown1name] ? (
+					<FormFeedback>{validation?.errors?.[dropdown1name]}</FormFeedback>
+				) : null}
+			</FormGroup>
+
+			{/* Zone Dropdown */}
+			<FormGroup>
+				<Label for={dropdown2name}>
+					{t("zone")} {required && <span className="text-danger">*</span>}
+				</Label>
+				<Input
+					type="select"
+					name={dropdown2name}
+					id={dropdown2name}
+					value={validation?.values?.[dropdown2name] || ""}
+					onChange={handleZoneChange}
+					onBlur={validation?.handleBlur}
+					invalid={
+						!!(
+							validation?.touched?.[dropdown2name] &&
+							validation?.errors?.[dropdown2name]
+						)
+					}
+					disabled={loadingZones || zones.length === 0 || disabled}
+				>
+					<option value="">{t("select_zone")}</option>
+					{loadingZones ? (
+						<option disabled>{t("Loading...")}</option>
+					) : zones.length === 0 ? (
+						<option disabled>{t("no_zones_available")}</option>
+					) : (
+						zones.map((zone) => (
+							<option key={zone.id} value={zone.id}>
+								{zone.name}
+							</option>
+						))
+					)}
+				</Input>
+				{validation?.touched?.[dropdown2name] &&
+				validation?.errors?.[dropdown2name] ? (
+					<FormFeedback>{validation?.errors?.[dropdown2name]}</FormFeedback>
+				) : null}
+			</FormGroup>
+
+			{/* Woreda Dropdown */}
+			<FormGroup>
+				<Label for={dropdown3name}>
+					{t("woreda")} {required && <span className="text-danger">*</span>}
+				</Label>
+				<Input
+					type="select"
+					name={dropdown3name}
+					id={dropdown3name}
+					value={validation?.values?.[dropdown3name] || ""}
+					onChange={validation?.handleChange}
+					onBlur={validation?.handleBlur}
+					invalid={
+						!!(
+							validation?.touched?.[dropdown3name] &&
+							validation?.errors?.[dropdown3name]
+						)
+					}
+					disabled={loadingWoredas || woredas.length === 0 || disabled}
+				>
+					<option value="">{t("select_woreda")}</option>
+					{loadingWoredas ? (
+						<option disabled>{t("Loading...")}</option>
+					) : woredas.length === 0 ? (
+						<option disabled>{t("no_woredas_available")}</option>
+					) : (
+						woredas.map((woreda) => (
+							<option key={woreda.id} value={woreda.id}>
+								{woreda.name}
+							</option>
+						))
+					)}
+				</Input>
+				{validation?.touched?.[dropdown3name] &&
+				validation?.errors?.[dropdown3name] ? (
+					<FormFeedback>{validation?.errors?.[dropdown3name]}</FormFeedback>
+				) : null}
+			</FormGroup>
+		</>
+	);
+
+	// Render horizontal layout
+	const renderHorizontalLayout = () => (
+		<Row>
+			{/* Region */}
+			<Col {...colSizes}>
+				<FormGroup>
+					<Label for={dropdown1name}>
+						{t("region")} {required && <span className="text-danger">*</span>}
+					</Label>
+					<Input
+						type="select"
+						name={dropdown1name}
+						id={dropdown1name}
+						value={validation?.values?.[dropdown1name] || ""}
+						onChange={handleRegionChange}
+						onBlur={validation?.handleBlur}
+						invalid={
+							!!(
+								validation?.touched?.[dropdown1name] &&
+								validation?.errors?.[dropdown1name]
+							)
+						}
+						disabled={disabled}
+					>
+						<option value="">{t("select_region")}</option>
+						<option value="1">Oromia</option>
+					</Input>
+					{validation?.touched?.[dropdown1name] &&
+					validation?.errors?.[dropdown1name] ? (
+						<FormFeedback>{validation?.errors?.[dropdown1name]}</FormFeedback>
+					) : null}
+				</FormGroup>
+			</Col>
+
+			{/* Zone */}
+			<Col {...colSizes}>
+				<FormGroup>
+					<Label for={dropdown2name}>
+						{t("zone")} {required && <span className="text-danger">*</span>}
+					</Label>
+					<Input
+						type="select"
+						name={dropdown2name}
+						id={dropdown2name}
+						value={validation?.values?.[dropdown2name] || ""}
+						onChange={handleZoneChange}
+						onBlur={validation?.handleBlur}
+						invalid={
+							!!(
+								validation?.touched?.[dropdown2name] &&
+								validation?.errors?.[dropdown2name]
+							)
+						}
+						disabled={loadingZones || zones.length === 0 || disabled}
+					>
+						<option value="">{t("select_zone")}</option>
+						{loadingZones ? (
+							<option disabled>{t("Loading...")}</option>
+						) : zones.length === 0 ? (
+							<option disabled>{t("no_zones_available")}</option>
+						) : (
+							zones.map((zone) => (
+								<option key={zone.id} value={zone.id}>
+									{zone.name}
+								</option>
+							))
+						)}
+					</Input>
+					{validation?.touched?.[dropdown2name] &&
+					validation?.errors?.[dropdown2name] ? (
+						<FormFeedback>{validation?.errors?.[dropdown2name]}</FormFeedback>
+					) : null}
+				</FormGroup>
+			</Col>
+
+			{/* Woreda */}
+			<Col {...colSizes}>
+				<FormGroup>
+					<Label for={dropdown3name}>
+						{t("woreda")} {required && <span className="text-danger">*</span>}
+					</Label>
+					<Input
+						type="select"
+						name={dropdown3name}
+						id={dropdown3name}
+						value={validation?.values?.[dropdown3name] || ""}
+						onChange={validation?.handleChange}
+						onBlur={validation?.handleBlur}
+						invalid={
+							!!(
+								validation?.touched?.[dropdown3name] &&
+								validation?.errors?.[dropdown3name]
+							)
+						}
+						disabled={loadingWoredas || woredas.length === 0 || disabled}
+					>
+						<option value="">{t("select_woreda")}</option>
+						{loadingWoredas ? (
+							<option disabled>{t("Loading...")}</option>
+						) : woredas.length === 0 ? (
+							<option disabled>{t("no_woredas_available")}</option>
+						) : (
+							woredas.map((woreda) => (
+								<option key={woreda.id} value={woreda.id}>
+									{woreda.name}
+								</option>
+							))
+						)}
+					</Input>
+					{validation?.touched?.[dropdown3name] &&
+					validation?.errors?.[dropdown3name] ? (
+						<FormFeedback>{validation?.errors?.[dropdown3name]}</FormFeedback>
+					) : null}
+				</FormGroup>
+			</Col>
+		</Row>
+	);
+
+	return layout === "horizontal"
+		? renderHorizontalLayout()
+		: renderDropdownGroup();
 };
 
 export default CascadingDropdowns;

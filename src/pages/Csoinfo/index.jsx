@@ -56,6 +56,7 @@ import FileModal from "./FileModal";
 import Conversation from "../Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import AgGridContainer from "../../components/Common/AgGridContainer";
+import { csoExportColumns } from "../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -94,29 +95,29 @@ const CsoInfoModel = () => {
 		try {
 			await addCsoInfo.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleUpdateCsoInfo = async (data) => {
 		try {
 			await updateCsoInfo.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteCsoInfo = async () => {
 		if (csoInfo && csoInfo.cso_id) {
@@ -124,11 +125,11 @@ const CsoInfoModel = () => {
 				const id = csoInfo.cso_id;
 				await deleteCsoInfo.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -293,7 +294,7 @@ const CsoInfoModel = () => {
 
 		const StatusBadge = ({ status }) => {
 			return (
-				<Badge color={status === 1 ? "success" : "danger"}>
+				<Badge color={status === 1 ? "success" : "primary"}>
 					{status === 1 ? t("Approved") : t("Requested")}
 				</Badge>
 			);
@@ -474,6 +475,7 @@ const CsoInfoModel = () => {
 		toggleFileModal,
 		toggleConvModal,
 		t,
+		data,
 	]);
 
 	if (isError) {
@@ -515,11 +517,7 @@ const CsoInfoModel = () => {
 								<Card>
 									<CardBody>
 										<AgGridContainer
-											rowData={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											rowData={data?.data || []}
 											columnDefs={columnDefs}
 											isPagination={true}
 											paginationPageSize={20}
@@ -531,16 +529,15 @@ const CsoInfoModel = () => {
 											isPdfExport={true}
 											isPrint={true}
 											tableName="CSO List"
-											includeKey={[
-												"cso_name",
-												"cso_code",
-												"cso_email",
-												"cso_phone",
-												"cso_website",
-												"cso_address",
-												"cso_status",
+											exportColumns={[
+												...csoExportColumns,
+												{
+													key: "cso_type",
+													label: "cso_type",
+													format: (val) => csoTypesMap[val] || "-",
+													width: 20,
+												},
 											]}
-											excludeKey={["is_editable", "is_deletable"]}
 										/>
 									</CardBody>
 								</Card>

@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,10 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
+  width: "100%",
 };
 
 const ProjectPlanModal = (props) => {
@@ -35,23 +35,27 @@ const ProjectPlanModal = (props) => {
           <table className="table table-bordered">
             <tbody>
               <tr>
-                <td>{t('pld_name')}</td>
+                <td>{t("pld_name")}</td>
                 <td className="text-primary">{transaction.pld_name}</td>
               </tr>
               <tr>
-                <td>{t('pld_budget_year_id')}</td>
-                <td className="text-primary">{transaction.pld_budget_year_id}</td>
+                <td>{t("pld_budget_year_id")}</td>
+                <td className="text-primary">
+                  {transaction.pld_budget_year_id}
+                </td>
               </tr>
               <tr>
-                <td>{t('pld_start_date_gc')}</td>
-                <td className="text-primary">{transaction.pld_start_date_gc}</td>
+                <td>{t("pld_start_date_gc")}</td>
+                <td className="text-primary">
+                  {transaction.pld_start_date_gc}
+                </td>
               </tr>
               <tr>
-                <td>{t('pld_end_date_gc')}</td>
+                <td>{t("pld_end_date_gc")}</td>
                 <td className="text-primary">{transaction.pld_end_date_gc}</td>
               </tr>
               <tr>
-                <td>{t('pld_description')}</td>
+                <td>{t("pld_description")}</td>
                 <td className="text-primary">{transaction.pld_description}</td>
               </tr>
             </tbody>
@@ -59,7 +63,7 @@ const ProjectPlanModal = (props) => {
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

@@ -69,30 +69,28 @@ const FormModal = ({
 		try {
 			await addProgramInfo.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
-		} finally {
-			toggle();
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
 	};
 	const handleUpdateProgramInfo = async (data) => {
 		try {
 			await updateProgramInfo.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
-		} finally {
-			toggle();
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
 	};
 	const handleDeleteProgramInfo = async () => {
@@ -101,14 +99,15 @@ const FormModal = ({
 				const id = selectedRow.p_id;
 				await deleteProgramInfo.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
-			} catch (error) {
-				toast.error(t("delete_failure"), {
-					autoClose: 2000,
-				});
-			} finally {
 				toggleDelete();
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("delete_failure"), {
+						autoClose: 3000,
+					});
+				}
 			}
 		}
 	};
@@ -129,15 +128,14 @@ const FormModal = ({
 	};
 
 	const validationSchema = Yup.object({
-		pri_name_or: Yup.string()
-			.required(t("Field is required."))
-			.test("unique", t("Already exists"), function (value) {
-				if (action === "add") {
-					return !checkNameExists(data, value);
-				} else {
-					return !checkNameExists(data, value, selectedRow?.id);
-				}
-			}),
+		pri_name_or: Yup.string().required(t("Field is required.")),
+		// .test("unique", t("Already exists"), function (value) {
+		// 	if (action === "add") {
+		// 		return !checkNameExists(data, value);
+		// 	} else {
+		// 		return !checkNameExists(data, value, selectedRow?.id);
+		// 	}
+		// }),
 		pri_name_am: onlyAmharicValidation(3, 200, false),
 		pri_name_en: Yup.string().required(t("Field is required.")),
 		pri_program_code: Yup.string().required(t("Field is required.")),
@@ -228,7 +226,7 @@ const FormModal = ({
 									selectedRow?.sci_name_or
 										? ` ${nextLevel} under ${selectedRow.sci_name_or}`
 										: ""
-							  }`
+								}`
 							: `${t("edit")} - ${selectedRow?.name || ""}`}
 					</ModalHeader>
 					<ModalBody className="">

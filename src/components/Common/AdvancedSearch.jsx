@@ -1,530 +1,589 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {
+	useState,
+	useEffect,
+	forwardRef,
+	useImperativeHandle,
+} from "react";
 import {
-  Card,
-  CardBody,
-  Col,
-  Row,
-  Collapse,
-  Label,
-  Input,
-  FormGroup,
-  InputGroup,
-  Button,
-  Tooltip,
-  UncontrolledTooltip,
+	Card,
+	CardBody,
+	Col,
+	Row,
+	Collapse,
+	Label,
+	Input,
+	InputGroup,
+	UncontrolledTooltip,
 } from "reactstrap";
 import { useTranslation } from "react-i18next";
 import { useFormik } from "formik";
-import "flatpickr/dist/themes/material_blue.css";
-import Flatpickr from "react-flatpickr";
-import { formatDateHyphen } from "../../utils/commonMethods";
-import FetchErrorHandler from "./FetchErrorHandler"
+import FetchErrorHandler from "./FetchErrorHandler";
+import { formatDate } from "./DatePicker";
+import { parseDateString } from "../../utils/commonMethods";
+import { EtCalendar } from "react-ethiopian-calendar";
+import "react-ethiopian-calendar/dist/index.css";
+import { useAuthUser } from "../../hooks/useAuthUser";
+import { useFetchAddressStructures } from "../../queries/address_structure_query";
 
-const AdvancedSearch = ({
-  searchHook,
-  textSearchKeys,
-  dropdownSearchKeys,
-  checkboxSearchKeys,
-  dateSearchKeys,
-  Component,
-  component_params = {},
-  additionalParams,
-  setAdditionalParams,
-  onSearchResult,
-  setIsSearchLoading,
-  setSearchResults,
-  setShowSearchResult,
-  children
-}) => {
-	const { t } = useTranslation();
-	const [isOpen, setIsOpen] = useState(false);
-	const toggle = () => setIsOpen(!isOpen);
-	const [params, setParams] = useState({});
-	const [searchParams, setSearchParams] = useState({});
-	const {
-		data = [],
-		isLoading,
-		isFetching,
-		refetch,
-		isError,
-		error,
-	} = searchHook(searchParams);
+const AdvancedSearch = forwardRef(
+	(
+		{
+			searchHook,
+			textSearchKeys,
+			dropdownSearchKeys,
+			checkboxSearchKeys,
+			dateSearchKeys,
+			Component,
+			component_params = {},
+			additionalParams,
+			setAdditionalParams,
+			onSearchResult,
+			onSearchLabels,
+			setIsSearchLoading,
+			setSearchResults,
+			setShowSearchResult,
+			children,
+		},
+		ref
+	) => {
+		const { t } = useTranslation();
+		const [isOpen, setIsOpen] = useState(false);
+		const toggle = () => setIsOpen(!isOpen);
+		const [params, setParams] = useState({});
+		const [searchParams, setSearchParams] = useState({});
+		const [paramsWithLabels, setParamsWithLabels] = useState({});
 
-	const flatpickrStartRef = useRef(null);
-	const flatpickrEndRef = useRef(null);
+		const { userId } = useAuthUser();
+		const { regions, zones, woredas } = useFetchAddressStructures(userId);
 
-	const initialValues = component_params
-		? Object.keys(component_params).reduce((acc, key) => {
-				acc[component_params[key]] = ""; // Default value for form fields
-				return acc;
-		  }, {})
-		: {};
-	// Initialize useFormik with dynamically generated initialValues
-	const validation = useFormik({
-		initialValues,
-		onSubmit: (values) => {},
-	});
-	// Handle updates for all input types
-	const handleSearchKey = (key, value, type = "text") => {
-		setParams((prevParams) => {
-			if (type === "checkbox") {
-				const currentValues = prevParams[key] || [];
-				const updatedValues = Array.isArray(currentValues)
-					? currentValues.includes(value)
-						? currentValues.filter((v) => v !== value)
-						: [...currentValues, value]
-					: [value];
-				return { ...prevParams, [key]: updatedValues };
+		const {
+			data = [],
+			isLoading,
+			isFetching,
+			refetch,
+			isError,
+			error,
+		} = searchHook(searchParams);
+
+		// Create initial values for ALL search fields including component fields
+		const createInitialValues = () => {
+			const values = {};
+
+			// Add component field values
+			if (component_params) {
+				Object.values(component_params).forEach((fieldName) => {
+					values[fieldName] = "";
+				});
 			}
 
-			if (value === "") {
-				const updatedParams = { ...prevParams };
-				delete updatedParams[key];
-				return updatedParams;
+			// Add text search fields
+			if (textSearchKeys) {
+				textSearchKeys.forEach((key) => {
+					values[key] = "";
+				});
 			}
 
-			return { ...prevParams, [key]: value };
+			// Add dropdown search fields
+			if (dropdownSearchKeys) {
+				dropdownSearchKeys.forEach(({ key }) => {
+					values[key] = "";
+				});
+			}
+
+			// Add date search fields
+			if (dateSearchKeys) {
+				dateSearchKeys.forEach((key) => {
+					values[`${key}_start`] = "";
+					values[`${key}_end`] = "";
+				});
+			}
+
+			return values;
+		};
+
+		const validation = useFormik({
+			initialValues: createInitialValues(),
+			onSubmit: (values) => {
+				// Handle form submission if needed
+			},
 		});
-	};
 
-	const handleSearch = () => {
-		validation.handleSubmit();
-		const transformedValues = Object.fromEntries(
-			Object.entries(validation.values)
-				.filter(([key, value]) => value !== "") // Exclude entries with empty string values
-				.map(([key, value]) => [
-					key,
-					/^\d+$/.test(value) ? parseInt(value, 10) : value,
-				])
-		);
+		// Handle updates for all input types
+		const handleSearchKey = (key, value, type = "text", label = "") => {
+			// Also update the formik values
+			validation.setFieldValue(key, value);
 
-		const combinedParams = {
-			...params,
-			...(additionalParams && additionalParams),
-			...transformedValues,
-		};
+			// Update params (values)
+			setParams((prevParams) => {
+				if (type === "checkbox") {
+					const currentValues = prevParams[key] || [];
+					const updatedValues = Array.isArray(currentValues)
+						? currentValues.includes(value)
+							? currentValues.filter((v) => v !== value)
+							: [...currentValues, value]
+						: [value];
 
-		setSearchParams(combinedParams);
-	};
-
-	// Refetch whenever searchParams changes
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				setIsSearchLoading(true);
-				const result = await refetch();
-				const { data, error } = result;
-				onSearchResult({ data, error });
-			} catch (error) {
-				console.error("Error during search:", error);
-			} finally {
-				setIsSearchLoading(false);
-			}
-		};
-
-		if (Object.keys(searchParams).length > 0) {
-			fetchData();
-		}
-	}, [searchParams]);
-
-	useEffect(() => {
-		if (dropdownSearchKeys) {
-			const defaultParams = {};
-			dropdownSearchKeys.forEach(({ key, defaultValue }) => {
-				if (defaultValue !== undefined) {
-					defaultParams[key] = defaultValue;
+					return { ...prevParams, [key]: updatedValues };
 				}
+
+				if (value === "") {
+					const updatedParams = { ...prevParams };
+					delete updatedParams[key];
+					return updatedParams;
+				}
+
+				return { ...prevParams, [key]: value };
 			});
-			setParams((prev) => ({ ...defaultParams, ...prev }));
-		}
-	}, []);
 
-	const handleClear = () => {
-		setParams({});
-		setSearchParams({});
-		setSearchResults([]);
-		setShowSearchResult(false);
-		validation.resetForm();
-
-		if (flatpickrStartRef.current) {
-			flatpickrStartRef.current.flatpickr.clear();
-		}
-		if (flatpickrEndRef.current) {
-			flatpickrEndRef.current.flatpickr.clear();
-		}
-		if (setAdditionalParams) {
-			setAdditionalParams({});
-		}
-	};
-
-	const isButtonDisabled = () => {
-		// Check if params have any valid values
-		const hasParamsValue = Object.values(params).some((value) => {
-			if (Array.isArray(value)) {
-				return value?.length > 0;
-			}
-			return value != null && value !== "";
-		});
-
-		const hasComponentValue = () => {
-			if (!validation?.values || !component_params) return false;
-			const secondPropKey = Object.values(component_params)[1];
-			if (!secondPropKey) return false;
-			const value = validation.values[secondPropKey];
-			return value != null && value !== "";
-		};
-
-		const hasAdditionalParamsValue = () => {
-			if (additionalParams) {
-				const keys = Object.keys(additionalParams);
-
-				if (keys.length === 1 && keys[0] === "include") {
-					return false;
+			// Update labels in a separate state
+			setParamsWithLabels((prevLabels) => {
+				if (value === "") {
+					const updatedLabels = { ...prevLabels };
+					delete updatedLabels[key];
+					return updatedLabels;
 				}
-
-				return keys.some(
-					(key) => additionalParams[key] != null && additionalParams[key] !== ""
-				);
-			}
-			return false;
+				return { ...prevLabels, [key]: label };
+			});
 		};
 
-		return !(
-			hasParamsValue ||
-			hasComponentValue() ||
-			hasAdditionalParamsValue()
-		);
-	};
+		const handleSearch = () => {
+			// Get ALL form values including component values
+			const allValues = validation.values;
 
-	// Calculate responsive sizes
-	const calculateTotalInputs = () => {
-		const textCount = textSearchKeys?.length || 0;
-		const dropdownCount = dropdownSearchKeys?.length || 0;
-		const dateCount = dateSearchKeys?.length || 0;
-		return textCount + dropdownCount + dateCount;
-	};
+			// Filter out empty values and convert numbers
+			const transformedValues = Object.fromEntries(
+				Object.entries(allValues)
+					.filter(([key, value]) => value !== "" && value != null)
+					.map(([key, value]) => [
+						key,
+						/^\d+$/.test(value) ? parseInt(value, 10) : value,
+					])
+			);
 
-	const getResponsiveColSize = () => {
-		const totalInputs = calculateTotalInputs();
+			// Combine values (IDs)
+			const combinedParams = {
+				...params,
+				...transformedValues,
+				...(additionalParams || {}),
+			};
 
-		if (totalInputs <= 2) return 6;
-		if (totalInputs <= 4) return 4;
-		if (totalInputs <= 6) return 3;
-		return 2;
-	};
+			// Map helper
+			const findLabel = (list, id) => {
+				const match = list?.find((item) => String(item.id) === String(id));
+				return match ? match.name : id; // fallback to ID if not found
+			};
 
-	const totalInputs = calculateTotalInputs();
-	const responsiveColSize = getResponsiveColSize();
-	const inputStyles = { width: "100%", maxWidth: "100%" }; // Let grid control sizing
+			// Build labels
+			const combinedParamsLabels = {
+				...paramsWithLabels,
+				...(additionalParams?.prj_location_region_id && {
+					prj_location_region_id: findLabel(
+						regions,
+						additionalParams.prj_location_region_id
+					),
+				}),
+				...(additionalParams?.prj_location_zone_id && {
+					prj_location_zone_id: findLabel(
+						zones,
+						additionalParams.prj_location_zone_id
+					),
+				}),
+				...(additionalParams?.prj_location_woreda_id && {
+					prj_location_woreda_id: findLabel(
+						woredas,
+						additionalParams.prj_location_woreda_id
+					),
+				}),
+			};
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
-	return (
-		<React.Fragment>
-			<Card className="p-0 m-0 mb-3">
-				<CardBody className="p-1">
-					<form action="#">
-						<Row
-							xxl={12}
-							lg={12}
-							className="pt-2 d-flex flex-row flex-wrap justify-content-center align-items-center gap-1"
-						>
-							<Row xxl={12} lg={12}>
-								<Col xxl={10} lg={10}>
-									<div
-										className="d-grid gap-2 mb-1"
-										style={{
-											display: "grid",
-											gridTemplateColumns:
-												"repeat(auto-fill, minmax(220px, 1fr))",
-											gap: "1rem",
-										}}
-									>
-										{/* Text Inputs */}
-										{dateSearchKeys &&
-											dateSearchKeys.map((key) => (
-												<div
-													xxl={
-														totalInputs <= 2
-															? responsiveColSize
-															: responsiveColSize * 2
-													}
-													lg={
-														totalInputs <= 2
-															? responsiveColSize
-															: responsiveColSize * 2
-													}
-													md={
-														totalInputs <= 2
-															? responsiveColSize
-															: responsiveColSize * 2
-													}
-													sm={12}
-													key={key}
-													className=""
-												>
-													<div className="">
-														<InputGroup style={inputStyles} className="rounded">
-															<Flatpickr
-																ref={flatpickrStartRef}
-																id={`${key}Start`}
-																name={`${key}Start`}
-																className={`rounded`}
+			// Update states
+			setSearchParams(combinedParams);
+			if (onSearchLabels) {
+				onSearchLabels(combinedParamsLabels);
+			}
+		};
+
+		// Refetch whenever searchParams changes
+		useEffect(() => {
+			const fetchData = async () => {
+				try {
+					setIsSearchLoading(true);
+					const result = await refetch();
+					const { data, error } = result;
+					onSearchResult({ data, error });
+				} catch (error) {
+					console.error("Error during search:", error);
+				} finally {
+					setIsSearchLoading(false);
+				}
+			};
+
+			if (Object.keys(searchParams).length > 0) {
+				fetchData();
+			}
+		}, [searchParams]);
+
+		useEffect(() => {
+			if (dropdownSearchKeys) {
+				const defaultParams = {};
+				dropdownSearchKeys.forEach(({ key, defaultValue }) => {
+					if (defaultValue !== undefined) {
+						defaultParams[key] = defaultValue;
+						validation.setFieldValue(key, defaultValue);
+					}
+				});
+				setParams((prev) => ({ ...defaultParams, ...prev }));
+			}
+		}, []);
+
+		const handleClear = () => {
+			setParams({});
+			setSearchParams({});
+			setParamsWithLabels({});
+			setSearchResults([]);
+			setShowSearchResult(false);
+			validation.resetForm();
+
+			// Clear date range parameters
+			if (dateSearchKeys) {
+				dateSearchKeys.forEach((key) => {
+					handleSearchKey(`${key}_start`, "");
+					handleSearchKey(`${key}_end`, "");
+				});
+			}
+			if (setAdditionalParams) {
+				setAdditionalParams({});
+			}
+		};
+
+		const isButtonDisabled = () => {
+			// Check if any search parameter has a value
+			const hasAnyValue = Object.values({
+				...params,
+				...validation.values,
+				...additionalParams,
+			}).some((value) => {
+				if (Array.isArray(value)) {
+					return value.length > 0;
+				}
+				return value != null && value !== "";
+			});
+
+			return !hasAnyValue;
+		};
+
+		// Expose method to get search values
+		useImperativeHandle(ref, () => ({
+			refreshSearch: async () => refetch(),
+		}));
+
+		const inputStyles = { width: "100%", maxWidth: "100%" };
+
+		if (isError) {
+			return <FetchErrorHandler error={error} refetch={refetch} />;
+		}
+
+		return (
+			<React.Fragment>
+				<Card className="p-0 m-0 mb-3">
+					<CardBody className="p-1">
+						<form action="#">
+							<Row
+								xxl={12}
+								lg={12}
+								className="pt-2 d-flex flex-row flex-wrap justify-content-center align-items-center gap-1"
+							>
+								<Row xxl={12} lg={12}>
+									<Col xxl={10} lg={10}>
+										<div
+											className="d-grid gap-2 mb-1"
+											style={{
+												display: "grid",
+												gridTemplateColumns:
+													"repeat(auto-fill, minmax(220px, 1fr))",
+												gap: "1rem",
+											}}
+										>
+											{/* Text Inputs */}
+											{dateSearchKeys &&
+												dateSearchKeys.map((key) => (
+													<div key={key}>
+														<div className="">
+															<InputGroup
+																style={inputStyles}
+																className="rounded"
+															>
+																<EtCalendar
+																	calendarType={true}
+																	lang="en"
+																	dateRange={true}
+																	placeholder={t(key)}
+																	onChange={(dateRange) => {
+																		if (
+																			dateRange &&
+																			dateRange.startDate &&
+																			dateRange.endDate
+																		) {
+																			const start = formatDate(
+																				dateRange.startDate
+																			);
+																			const end = formatDate(dateRange.endDate);
+																			handleSearchKey(
+																				`${key}_start`,
+																				start,
+																				"date",
+																				start
+																			);
+																			handleSearchKey(
+																				`${key}_end`,
+																				end,
+																				"date",
+																				end
+																			);
+																		} else {
+																			handleSearchKey(
+																				`${key}_start`,
+																				"",
+																				"date",
+																				""
+																			);
+																			handleSearchKey(
+																				`${key}_end`,
+																				"",
+																				"date",
+																				""
+																			);
+																		}
+																	}}
+																	value={
+																		params[`${key}_start`] &&
+																		params[`${key}_end`]
+																			? {
+																					startDate: parseDateString(
+																						params[`${key}_start`]
+																					),
+																					endDate: parseDateString(
+																						params[`${key}_end`]
+																					),
+																				}
+																			: null
+																	}
+																	style={inputStyles}
+																/>
+															</InputGroup>
+														</div>
+													</div>
+												))}
+
+											{textSearchKeys &&
+												textSearchKeys.map((key) => (
+													<div key={key}>
+														<div className="">
+															<Input
 																type="text"
-																placeholder={t(`${key}_start`)}
+																id={key}
+																name={key}
 																autoComplete="off"
-																options={{
-																	altInput: true,
-																	altFormat: "Y-m-d",
-																	dateFormat: "Y-m-d",
-																	enableTime: false,
-																}}
-																value={params[key] || null}
+																placeholder={t(key)}
+																value={params[key] || ""}
 																onChange={(e) => {
 																	handleSearchKey(
-																		`${key}Start`,
-																		formatDateHyphen(e[0])
+																		key,
+																		e.target.value,
+																		"text",
+																		e.target.value
 																	);
 																}}
+																style={inputStyles}
 															/>
-															<Flatpickr
-																ref={flatpickrEndRef}
-																id={`${key}End`}
-																name={`${key}End`}
-																className={``}
-																type="text"
-																placeholder={t(`${key}_end`)}
-																autoComplete="off"
-																options={{
-																	altInput: true,
-																	altFormat: "Y-m-d",
-																	dateFormat: "Y-m-d",
-																	enableTime: false,
-																}}
-																value={params[key] || null}
-																onChange={(date) => {
-																	handleSearchKey(
-																		`${key}End`,
-																		formatDateHyphen(date[0])
-																	);
-																}}
-															/>
-														</InputGroup>
+														</div>
 													</div>
-												</div>
-											))}
-
-										{textSearchKeys &&
-											textSearchKeys.map((key) => (
-												<div
-													xxl={responsiveColSize}
-													lg={responsiveColSize}
-													md={6}
-													sm={12}
-													key={key}
-													className=""
-												>
-													<div className="">
-														<Input
-															type="text"
-															id={key}
-															name={key}
-															autoComplete="off"
-															placeholder={t(key)}
-															value={params[key] || ""}
-															onChange={(e) => {
-																handleSearchKey(key, e.target.value);
-															}}
-															style={inputStyles}
-														/>
-													</div>
-												</div>
-											))}
-										{/* Dropdown Inputs */}
-										{dropdownSearchKeys &&
-											dropdownSearchKeys.map(({ key, options }) => (
-												<div
-													xxl={responsiveColSize}
-													lg={responsiveColSize}
-													md={6}
-													sm={12}
-													key={key}
-													className=""
-												>
-													<div className="">
-														<Input
-															name={key}
-															id={key}
-															type="select"
-															className="form-select"
-															onChange={(event) =>
-																handleSearchKey(key, event.target.value)
-															}
-															value={params[key] || ""}
-															style={inputStyles}
-														>
-															<option value={""}>
-																{t("Select") + " " + t(`${key}`)}
-															</option>
-															{options.map((option) => (
-																<option
-																	key={`${option.value}-${key}`}
-																	value={option.value}
-																>
-																	{t(`${option.label}`)}
+												))}
+											{/* Dropdown Inputs */}
+											{dropdownSearchKeys &&
+												dropdownSearchKeys.map(({ key, options }) => (
+													<div key={key}>
+														<div className="">
+															<Input
+																name={key}
+																id={key}
+																type="select"
+																className="form-select"
+																onChange={(event) => {
+																	const value = event.target.value;
+																	const label =
+																		event.target.options[
+																			event.target.selectedIndex
+																		].text;
+																	handleSearchKey(key, value, "text", label);
+																}}
+																value={params[key] || ""}
+																style={inputStyles}
+															>
+																<option value={""}>
+																	{t("Select") + " " + t(`${key}`)}
 																</option>
-															))}
-														</Input>
+																{options.map((option) => (
+																	<option
+																		key={`${option.value}-${key}`}
+																		value={option.value}
+																	>
+																		{t(`${option.label}`)}
+																	</option>
+																))}
+															</Input>
+														</div>
 													</div>
-												</div>
-											))}
-									</div>
-								</Col>
-								<Col
-									xxl={2}
-									lg={2}
-									md={2}
-									sm={12}
-									className="d-flex flex-row flex-wrap justify-content-center align-items-start gap-1"
-								>
-									<div
-										id="search-icon-wrapper"
-										className=" flex-grow-1 mb-2"
-										style={{ display: "flex" }}
+												))}
+										</div>
+									</Col>
+									<Col
+										xxl={2}
+										lg={2}
+										md={2}
+										sm={12}
+										className="d-flex flex-row flex-wrap justify-content-center align-items-start gap-1"
 									>
-										<button
-											id="search-icon"
-											type="button"
-											className="btn btn-primary h-100 w-100 p-2"
-											onClick={handleSearch}
-											disabled={isButtonDisabled()}
+										<div
+											id="search-icon-wrapper"
+											className=" flex-grow-1 mb-2"
+											style={{ display: "flex" }}
 										>
-											<i className="bx bx-search-alt align-middle"></i>
-										</button>
-										<UncontrolledTooltip
-											placement="top"
-											target={"search-icon-wrapper"}
-										>
-											{t("srch_search")}
-										</UncontrolledTooltip>
-									</div>
-									<div className=" flex-grow-1 mb-2">
-										<button
-											type="button"
-											className="btn btn-outline-danger align-middle h-100 w-100 p-2"
-											onClick={handleClear}
-											id="clear-button"
-										>
-											<svg
-												xmlns="http://www.w3.org/2000/svg"
-												width="12"
-												height="12"
-												fill="currentColor"
-												className="bi bi-x-square"
-												viewBox="0 0 16 16"
+											<button
+												id="search-icon"
+												type="button"
+												className="btn btn-primary h-100 w-100 p-2"
+												onClick={handleSearch}
+												disabled={isButtonDisabled()}
 											>
-												<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
-												<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
-											</svg>
-										</button>
-										<UncontrolledTooltip
-											placement="top"
-											target={"clear-button"}
-										>
-											{t("srch_clear")}
-										</UncontrolledTooltip>
-									</div>
-
-									{(checkboxSearchKeys?.length > 0 || Component) && (
-										<div className=" flex-grow-1 mb-2">
-											<a
-												id="more-filter-icon"
-												onClick={toggle}
-												className="btn btn-secondary h-100 w-100 p-2"
-											>
-												<i className="bx bx-filter-alt align-middle"></i>
-											</a>
+												<i className="bx bx-search-alt align-middle"></i>
+											</button>
 											<UncontrolledTooltip
 												placement="top"
-												target={"more-filter-icon"}
+												target={"search-icon-wrapper"}
 											>
-												{t("srch_more")}
+												{t("srch_search")}
 											</UncontrolledTooltip>
 										</div>
-									)}
-								</Col>
-							</Row>
+										<div className=" flex-grow-1 mb-2">
+											<button
+												type="button"
+												className="btn btn-outline-danger align-middle h-100 w-100 p-2"
+												onClick={handleClear}
+												id="clear-button"
+											>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="12"
+													height="12"
+													fill="currentColor"
+													className="bi bi-x-square"
+													viewBox="0 0 16 16"
+												>
+													<path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z" />
+													<path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708" />
+												</svg>
+											</button>
+											<UncontrolledTooltip
+												placement="top"
+												target={"clear-button"}
+											>
+												{t("srch_clear")}
+											</UncontrolledTooltip>
+										</div>
 
-							<Collapse isOpen={isOpen} id="collapseExample">
-								<div>
-									<Row className="">
-										<Col>
-											{Component && (
-												<Component
-													{...component_params}
-													validation={validation}
-													isEdit={false}
-												/>
-											)}
-										</Col>
-									</Row>
-									<Row className="g-3">
-										{checkboxSearchKeys &&
-											checkboxSearchKeys.map(({ key, options }) => (
-												<Col key={key} xxl={4} lg={6}>
-													<div>
-														<Label
-															htmlFor={key}
-															className="form-label fw-semibold"
-														>
-															{key}
-														</Label>
-													</div>
-													{(options || []).map((item, index) => (
-														<div
-															className="form-check form-check-inline"
-															key={index}
-														>
-															<Input
-																className="form-check-input"
-																type="checkbox"
-																id={`inlineCheckbox${index}`}
-																value={item.value}
-																checked={(params[key] || []).includes(
-																	item.value
-																)} // Controlled checkbox
-																onChange={(e) =>
-																	handleSearchKey(
-																		key,
-																		e.target.checked ? item.value : null,
-																		"checkbox"
-																	)
-																}
-															/>
+										{(checkboxSearchKeys?.length > 0 || Component) && (
+											<div className=" flex-grow-1 mb-2">
+												<button
+													type="button"
+													id="more-filter-icon"
+													onClick={toggle}
+													className="btn btn-secondary h-100 w-100 p-2"
+												>
+													<i className="bx bx-filter-alt align-middle"></i>
+												</button>
+												<UncontrolledTooltip
+													placement="top"
+													target={"more-filter-icon"}
+												>
+													{t("srch_more")}
+												</UncontrolledTooltip>
+											</div>
+										)}
+									</Col>
+								</Row>
+
+								<Collapse isOpen={isOpen} id="collapseExample">
+									<div>
+										<Row className="">
+											<Col>
+												{Component && validation && (
+													<Component
+														{...component_params}
+														validation={validation}
+														isEdit={false}
+													/>
+												)}
+											</Col>
+										</Row>
+										<Row className="g-3">
+											{checkboxSearchKeys &&
+												checkboxSearchKeys.map(({ key, options }) => (
+													<Col key={key} xxl={4} lg={6}>
+														<div>
 															<Label
-																className="form-check-label"
-																htmlFor={`inlineCheckbox${index}`}
+																htmlFor={key}
+																className="form-label fw-semibold"
 															>
-																{item.label}
+																{key}
 															</Label>
 														</div>
-													))}
-												</Col>
-											))}
-									</Row>
-								</div>
-							</Collapse>
-						</Row>
-					</form>
-				</CardBody>
-			</Card>
-			<div>
-				{children &&
-					React.cloneElement(children, { data, isLoading: isFetching })}
-			</div>
-		</React.Fragment>
-	);
-};
+														{(options || []).map((item, index) => (
+															<div
+																className="form-check form-check-inline"
+																key={index}
+															>
+																<Input
+																	className="form-check-input"
+																	type="checkbox"
+																	id={`inlineCheckbox${index}`}
+																	value={item.value}
+																	checked={(params[key] || []).includes(
+																		item.value
+																	)}
+																	onChange={(e) =>
+																		handleSearchKey(
+																			key,
+																			e.target.checked ? item.value : null,
+																			"checkbox",
+																			item.label
+																		)
+																	}
+																/>
+																<Label
+																	className="form-check-label"
+																	htmlFor={`inlineCheckbox${index}`}
+																>
+																	{item.label}
+																</Label>
+															</div>
+														))}
+													</Col>
+												))}
+										</Row>
+									</div>
+								</Collapse>
+							</Row>
+						</form>
+					</CardBody>
+				</Card>
+				<div>
+					{children &&
+						React.cloneElement(children, { data, isLoading: isFetching })}
+				</div>
+			</React.Fragment>
+		);
+	}
+);
 
 export default AdvancedSearch;

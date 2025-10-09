@@ -61,20 +61,20 @@ const ProjectPerformanceAnalysis = ({
   const calculateSingleProjectTotals = (data) => {
     const totalPlannedPhysical = months.reduce(
       (sum, month) => sum + (data[`prp_pyhsical_planned_month_${month}`] || 0),
-      0
+      0,
     );
     const totalActualPhysical = months.reduce(
       (sum, month) => sum + (data[`prp_pyhsical_actual_month_${month}`] || 0),
-      0
+      0,
     );
 
     const totalPlannedFinancial = months.reduce(
       (sum, month) => sum + (data[`prp_finan_planned_month_${month}`] || 0),
-      0
+      0,
     );
     const totalActualFinancial = months.reduce(
       (sum, month) => sum + (data[`prp_finan_actual_month_${month}`] || 0),
-      0
+      0,
     );
 
     return {
@@ -84,7 +84,7 @@ const ProjectPerformanceAnalysis = ({
         variance: (totalActualPhysical - totalPlannedPhysical) / 12,
         variancePercentage: calculatePercentage(
           totalActualPhysical,
-          totalPlannedPhysical
+          totalPlannedPhysical,
         ),
       },
       financial: {
@@ -93,7 +93,7 @@ const ProjectPerformanceAnalysis = ({
         variance: totalActualFinancial - totalPlannedFinancial,
         variancePercentage: calculatePercentage(
           totalActualFinancial,
-          totalPlannedFinancial
+          totalPlannedFinancial,
         ),
       },
       baseline: {
@@ -123,14 +123,14 @@ const ProjectPerformanceAnalysis = ({
         months.reduce(
           (sum, month) =>
             sum + (project[`prp_pyhsical_planned_month_${month}`] || 0),
-          0
+          0,
         ) / 12;
 
       const projectPhysicalActual =
         months.reduce(
           (sum, month) =>
             sum + (project[`prp_pyhsical_actual_month_${month}`] || 0),
-          0
+          0,
         ) / 12;
 
       totals.physical.planned += projectPhysicalPlanned;
@@ -142,11 +142,11 @@ const ProjectPerformanceAnalysis = ({
       const projectFinancialPlanned = months.reduce(
         (sum, month) =>
           sum + (project[`prp_finan_planned_month_${month}`] || 0),
-        0
+        0,
       );
       const projectFinancialActual = months.reduce(
         (sum, month) => sum + (project[`prp_finan_actual_month_${month}`] || 0),
-        0
+        0,
       );
 
       totals.financial.planned += projectFinancialPlanned;
@@ -156,11 +156,11 @@ const ProjectPerformanceAnalysis = ({
 
       const projectBaseline = Math.min(
         project?.prp_physical_baseline || 0,
-        100
+        100,
       );
       const projectPerformance = Math.min(
         project?.prp_physical_performance || 0,
-        100
+        100,
       );
 
       totals.baseline.physical += projectBaseline;
@@ -188,11 +188,11 @@ const ProjectPerformanceAnalysis = ({
     // Calculate percentages
     totals.physical.variancePercentage = calculatePercentage(
       totals.physical.actual,
-      totals.physical.planned
+      totals.physical.planned,
     );
     totals.financial.variancePercentage = calculatePercentage(
       totals.financial.actual,
-      totals.financial.planned
+      totals.financial.planned,
     );
 
     return totals;
@@ -265,7 +265,7 @@ const ProjectPerformanceAnalysis = ({
             }, Array(12).fill(0))
           : months.map(
               (month) =>
-                performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0
+                performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0,
             );
 
         // For overall view, calculate average physical progress per month
@@ -289,7 +289,7 @@ const ProjectPerformanceAnalysis = ({
           : months.map(
               (month) =>
                 (performanceData?.[`prp_finan_actual_month_${month}`] || 0) /
-                1000000
+                1000000,
             );
 
         series = data;
@@ -364,7 +364,7 @@ const ProjectPerformanceAnalysis = ({
             }, Array(12).fill(0))
           : months.map(
               (month) =>
-                performanceData?.[`prp_pyhsical_planned_month_${month}`] || 0
+                performanceData?.[`prp_pyhsical_planned_month_${month}`] || 0,
             );
 
         const actual = isOverallView
@@ -378,7 +378,7 @@ const ProjectPerformanceAnalysis = ({
             }, Array(12).fill(0))
           : months.map(
               (month) =>
-                performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0
+                performanceData?.[`prp_pyhsical_actual_month_${month}`] || 0,
             );
 
         // For overall view, calculate average physical progress per month
@@ -416,7 +416,7 @@ const ProjectPerformanceAnalysis = ({
           : months.map(
               (month) =>
                 (performanceData?.[`prp_finan_planned_month_${month}`] || 0) /
-                1000000
+                1000000,
             );
 
         const actual = isOverallView
@@ -431,7 +431,7 @@ const ProjectPerformanceAnalysis = ({
           : months.map(
               (month) =>
                 (performanceData?.[`prp_finan_actual_month_${month}`] || 0) /
-                1000000
+                1000000,
             );
 
         series = [
@@ -454,24 +454,24 @@ const ProjectPerformanceAnalysis = ({
     const calculatedTotals = isOverallView
       ? calculateOverallTotals(allData)
       : performanceData
-      ? calculateSingleProjectTotals(performanceData)
-      : {
-          physical: {
-            planned: 0,
-            actual: 0,
-            variance: 0,
-            variancePercentage: 0,
-          },
-          financial: {
-            planned: 0,
-            actual: 0,
-            variance: 0,
-            variancePercentage: 0,
-          },
-          baseline: { physical: 0, financial: 0 },
-          performance: { physical: 0, financial: 0 },
-          projectCount: 0,
-        };
+        ? calculateSingleProjectTotals(performanceData)
+        : {
+            physical: {
+              planned: 0,
+              actual: 0,
+              variance: 0,
+              variancePercentage: 0,
+            },
+            financial: {
+              planned: 0,
+              actual: 0,
+              variance: 0,
+              variancePercentage: 0,
+            },
+            baseline: { physical: 0, financial: 0 },
+            performance: { physical: 0, financial: 0 },
+            projectCount: 0,
+          };
 
     return {
       chartOptions: options,
@@ -619,10 +619,10 @@ const ProjectPerformanceAnalysis = ({
                             <h4>
                               {selectedView === "physical"
                                 ? `${formatNumber(
-                                    totals?.physical?.planned || 0
+                                    totals?.physical?.planned || 0,
                                   )}%`
                                 : `${formatNumber(
-                                    totals?.financial?.planned || 0
+                                    totals?.financial?.planned || 0,
                                   )} ${t("birr")}`}
                             </h4>
                           </div>
@@ -635,10 +635,10 @@ const ProjectPerformanceAnalysis = ({
                             <h4>
                               {selectedView === "physical"
                                 ? `${formatNumber(
-                                    totals?.physical?.actual || 0
+                                    totals?.physical?.actual || 0,
                                   )}%`
                                 : `${formatNumber(
-                                    totals?.financial?.actual || 0
+                                    totals?.financial?.actual || 0,
                                   )} ${t("birr")}`}
                             </h4>
                           </div>
@@ -656,18 +656,18 @@ const ProjectPerformanceAnalysis = ({
                         >
                           {selectedView === "physical"
                             ? `${formatNumber(
-                                Math.abs(totals?.physical?.variance || 0)
+                                Math.abs(totals?.physical?.variance || 0),
                               )}%`
                             : `${formatNumber(
-                                Math.abs(totals?.financial?.variance || 0)
+                                Math.abs(totals?.financial?.variance || 0),
                               )} ${t("birr")}`}
                           {getStatusIndicator(
-                            totals?.[selectedView]?.variance || 0
+                            totals?.[selectedView]?.variance || 0,
                           )}
                           <span className="text-muted font-size-14 ms-2">
                             (
                             {formatNumber(
-                              totals?.[selectedView]?.variancePercentage || 0
+                              totals?.[selectedView]?.variancePercentage || 0,
                             )}
                             %)
                           </span>
@@ -721,23 +721,23 @@ const ProjectPerformanceAnalysis = ({
                                     (project[
                                       `prp_pyhsical_planned_month_${month}`
                                     ] || 0),
-                                  0
+                                  0,
                                 ) / allData.length
                               : performanceData?.[
                                   `prp_pyhsical_planned_month_${month}`
                                 ] || 0
                             : isOverallView
-                            ? allData.reduce(
-                                (sum, project) =>
-                                  sum +
-                                  (project[
-                                    `prp_finan_planned_month_${month}`
-                                  ] || 0),
-                                0
-                              ) / 1000000
-                            : (performanceData?.[
-                                `prp_finan_planned_month_${month}`
-                              ] || 0) / 1000000;
+                              ? allData.reduce(
+                                  (sum, project) =>
+                                    sum +
+                                    (project[
+                                      `prp_finan_planned_month_${month}`
+                                    ] || 0),
+                                  0,
+                                ) / 1000000
+                              : (performanceData?.[
+                                  `prp_finan_planned_month_${month}`
+                                ] || 0) / 1000000;
 
                         const actual =
                           selectedView === "physical"
@@ -748,22 +748,23 @@ const ProjectPerformanceAnalysis = ({
                                     (project[
                                       `prp_pyhsical_actual_month_${month}`
                                     ] || 0),
-                                  0
+                                  0,
                                 ) / allData.length
                               : performanceData?.[
                                   `prp_pyhsical_actual_month_${month}`
                                 ] || 0
                             : isOverallView
-                            ? allData.reduce(
-                                (sum, project) =>
-                                  sum +
-                                  (project[`prp_finan_actual_month_${month}`] ||
-                                    0),
-                                0
-                              ) / 1000000
-                            : (performanceData?.[
-                                `prp_finan_actual_month_${month}`
-                              ] || 0) / 1000000;
+                              ? allData.reduce(
+                                  (sum, project) =>
+                                    sum +
+                                    (project[
+                                      `prp_finan_actual_month_${month}`
+                                    ] || 0),
+                                  0,
+                                ) / 1000000
+                              : (performanceData?.[
+                                  `prp_finan_actual_month_${month}`
+                                ] || 0) / 1000000;
 
                         const variance = actual - planned;
 
@@ -774,14 +775,14 @@ const ProjectPerformanceAnalysis = ({
                               {selectedView === "physical"
                                 ? `${formatNumber(planned)}%`
                                 : `${formatNumber(planned)} ${t("m")} ${t(
-                                    "birr"
+                                    "birr",
                                   )}`}
                             </td>
                             <td>
                               {selectedView === "physical"
                                 ? `${formatNumber(actual)}%`
                                 : `${formatNumber(actual)} ${t("m")} ${t(
-                                    "birr"
+                                    "birr",
                                   )}`}
                             </td>
                             <td
@@ -792,7 +793,7 @@ const ProjectPerformanceAnalysis = ({
                               {selectedView === "physical"
                                 ? `${formatNumber(Math.abs(variance))}%`
                                 : `${formatNumber(Math.abs(variance))} ${t(
-                                    "m"
+                                    "m",
                                   )} ${t("birr")}`}
                               {getStatusIndicator(variance)}
                             </td>
@@ -825,10 +826,10 @@ const ProjectPerformanceAnalysis = ({
                       </thead>
                       <tbody>
                         {Array.from(
-                          new Set(allData?.map((item) => item.year_name))
+                          new Set(allData?.map((item) => item.year_name)),
                         ).map((year) => {
                           const yearData = allData.filter(
-                            (item) => item.year_name === year
+                            (item) => item.year_name === year,
                           );
                           const yearTotals = calculateOverallTotals(yearData);
 
@@ -838,19 +839,19 @@ const ProjectPerformanceAnalysis = ({
                               <td>
                                 {selectedView === "physical"
                                   ? `${formatNumber(
-                                      yearTotals.physical.planned
+                                      yearTotals.physical.planned,
                                     )}%`
                                   : `${formatNumber(
-                                      yearTotals.financial.planned
+                                      yearTotals.financial.planned,
                                     )} ${t("birr")}`}
                               </td>
                               <td>
                                 {selectedView === "physical"
                                   ? `${formatNumber(
-                                      yearTotals.physical.actual
+                                      yearTotals.physical.actual,
                                     )}%`
                                   : `${formatNumber(
-                                      yearTotals.financial.actual
+                                      yearTotals.financial.actual,
                                     )} ${t("birr")}`}
                               </td>
                               <td
@@ -862,13 +863,13 @@ const ProjectPerformanceAnalysis = ({
                               >
                                 {selectedView === "physical"
                                   ? `${formatNumber(
-                                      Math.abs(yearTotals.physical.variance)
+                                      Math.abs(yearTotals.physical.variance),
                                     )}%`
                                   : `${formatNumber(
-                                      Math.abs(yearTotals.financial.variance)
+                                      Math.abs(yearTotals.financial.variance),
                                     )} ${t("birr")}`}
                                 {getStatusIndicator(
-                                  yearTotals[selectedView].variance
+                                  yearTotals[selectedView].variance,
                                 )}
                               </td>
                             </tr>
@@ -932,7 +933,7 @@ const ProjectPerformanceAnalysis = ({
                             </p>
                             <h4>
                               {formatNumber(
-                                totals?.performance?.financial || 0
+                                totals?.performance?.financial || 0,
                               )}{" "}
                               {t("birr")}
                             </h4>

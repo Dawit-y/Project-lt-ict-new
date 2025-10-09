@@ -17,7 +17,6 @@ File: Main Css File
 @import "variables-dark";
 @import "./node_modules/bootstrap/scss/mixins.scss";
 
-
 // Structure
 @import "custom/structure/general";
 @import "custom/structure/topbar";
@@ -71,7 +70,6 @@ File: Main Css File
 @import "custom/plugins/google-map";
 @import "custom/plugins/vector-maps";
 @import "custom/plugins/leaflet-maps";
-
 
 // Pages
 @import "custom/pages/authentication";

@@ -1,10 +1,10 @@
-import i18n from "i18next"
-import detector from "i18next-browser-languagedetector"
-import { initReactI18next } from "react-i18next"
+import i18n from "i18next";
+import detector from "i18next-browser-languagedetector";
+import { initReactI18next } from "react-i18next";
 
-import translationGr from "./locales/or/translation.json"
-import translationIT from "./locales/am/translation.json"
-import translationENG from "./locales/eng/translation.json"
+import translationGr from "./locales/or/translation.json";
+import translationIT from "./locales/am/translation.json";
+import translationENG from "./locales/eng/translation.json";
 
 // the translations
 const resources = {
@@ -17,12 +17,11 @@ const resources = {
   am: {
     translation: translationIT,
   },
- 
-}
+};
 
-const language = localStorage.getItem("I18N_LANGUAGE")
+const language = localStorage.getItem("I18N_LANGUAGE");
 if (!language) {
-  localStorage.setItem("I18N_LANGUAGE", "eng")
+  localStorage.setItem("I18N_LANGUAGE", "eng");
 }
 
 i18n
@@ -38,6 +37,6 @@ i18n
     interpolation: {
       escapeValue: false, // react already safes from xss
     },
-  })
+  });
 
-export default i18n
+export default i18n;

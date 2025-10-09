@@ -33,7 +33,7 @@ const Layout = (props) => {
       isPreloader: layout.isPreloader,
       showRightSidebar: layout.showRightSidebar,
       layoutModeType: layout.layoutModeType,
-    })
+    }),
   );
   const {
     topbarTheme,

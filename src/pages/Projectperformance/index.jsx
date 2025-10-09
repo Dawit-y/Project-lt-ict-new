@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState, lazy, Suspense } from "react";
 import PropTypes from "prop-types";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -47,14 +46,15 @@ import { toast } from "react-toastify";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-const AttachFileModal = lazy(() =>
-	import("../../components/Common/AttachFileModal")
+const AttachFileModal = lazy(
+	() => import("../../components/Common/AttachFileModal")
 );
-const ConvInfoModal = lazy(() =>
-	import("../../pages/Conversationinformation/ConvInfoModal")
+const ConvInfoModal = lazy(
+	() => import("../../pages/Conversationinformation/ConvInfoModal")
 );
 import DatePicker from "../../components/Common/DatePicker";
 import { projectPerformanceExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -69,11 +69,10 @@ const LazyLoader = ({ children }) => (
 
 const ProjectPerformanceModel = (props) => {
 	document.title = "Project Performance";
-	const { passedId, isActive, endDate, totalActualBudget } = props;
+	const { passedId, isActive, endDate, totalActualBudget, unit, value } = props;
 	const param = {
 		prp_project_id: passedId,
 		request_type: "single",
-		prj_total_actual_budget: totalActualBudget,
 	};
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
@@ -141,8 +140,8 @@ const ProjectPerformanceModel = (props) => {
 					lang === "en"
 						? status.prs_status_name_en
 						: lang === "am"
-						? status.prs_status_name_am
-						: status.prs_status_name_or;
+							? status.prs_status_name_am
+							: status.prs_status_name_or;
 				return acc;
 			}, {}) || {}
 		);
@@ -154,29 +153,22 @@ const ProjectPerformanceModel = (props) => {
 	const validateUniqueYear = (yearId) => {
 		if (!yearId) return true; // Skip if no year selected
 
-		// Ensure we have data and it's an array
 		if (!data?.data || !Array.isArray(data.data)) return true;
 
-		// Convert yearId to number for consistent comparison
 		const numericYearId = Number(yearId);
 
-		// Check if this year already exists in the data
 		const existingEntries = data.data.filter(
 			(item) => Number(item.prp_budget_year_id) === numericYearId
 		);
 
-		// If editing, we should have exactly 0 or 1 matching entries (the current one)
 		if (isEdit && projectPerformance) {
 			const currentEntryYear = Number(projectPerformance.prp_budget_year_id);
 			if (currentEntryYear === numericYearId) {
-				// If editing the same year, it's valid
 				return existingEntries.length <= 1;
 			}
-			// If changing to a different year, check if it exists
 			return existingEntries.length === 0;
 		}
 
-		// For new entries, just check if the year exists
 		return existingEntries.length === 0;
 	};
 
@@ -195,10 +187,7 @@ const ProjectPerformanceModel = (props) => {
 				projectPerformance?.prp_record_date_gc &&
 				projectPerformance.prp_record_date_gc !==
 					new Date().toISOString().split("T")[0],
-			prp_record_date_gc:
-				projectPerformance?.prp_record_date_gc ||
-				new Date().toISOString().split("T")[0],
-
+			prp_record_date_gc: projectPerformance?.prp_record_date_gc,
 			prp_description: projectPerformance?.prp_description || "",
 			prp_physical_performance:
 				projectPerformance?.prp_physical_performance ||
@@ -209,56 +198,48 @@ const ProjectPerformanceModel = (props) => {
 				[`prp_pyhsical_planned_month_${i + 1}`]: projectPerformance?.[
 					`prp_pyhsical_planned_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_pyhsical_planned_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_pyhsical_planned_month_${i + 1}`])
 					: "0",
 				[`prp_pyhsical_actual_month_${i + 1}`]: projectPerformance?.[
 					`prp_pyhsical_actual_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_pyhsical_actual_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_pyhsical_actual_month_${i + 1}`])
 					: "0",
 				[`prp_finan_planned_month_${i + 1}`]: projectPerformance?.[
 					`prp_finan_planned_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_finan_planned_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_finan_planned_month_${i + 1}`])
 					: "0",
 				[`prp_finan_actual_month_${i + 1}`]: projectPerformance?.[
 					`prp_finan_actual_month_${i + 1}`
 				]
-					? Number(
-							projectPerformance[`prp_finan_actual_month_${i + 1}`]
-					  ).toLocaleString()
+					? Number(projectPerformance[`prp_finan_actual_month_${i + 1}`])
 					: "0",
 				[`prp_status_month_${i + 1}`]:
 					projectPerformance?.[`prp_status_month_${i + 1}`] || "",
 			})).reduce((acc, curr) => ({ ...acc, ...curr })),
 			// Summary fields
 			prp_physical_planned: projectPerformance?.prp_physical_planned
-				? Number(projectPerformance.prp_physical_planned).toLocaleString()
-				: DEFAULT_PHYSICAL_PLANNED.toString(),
+				? Number(projectPerformance.prp_physical_planned)
+				: DEFAULT_PHYSICAL_PLANNED,
 			prp_budget_planned: projectPerformance?.prp_budget_planned
-				? Number(projectPerformance.prp_budget_planned).toLocaleString()
-				: DEFAULT_BUDGET_PLANNED.toString(),
+				? Number(projectPerformance.prp_budget_planned)
+				: DEFAULT_BUDGET_PLANNED,
 			prp_budget_by_region: projectPerformance?.prp_budget_by_region
-				? Number(projectPerformance.prp_budget_by_region).toLocaleString()
-				: DEFAULT_REGION_BUDGET.toString(),
+				? Number(projectPerformance.prp_budget_by_region)
+				: DEFAULT_REGION_BUDGET,
 			prp_physical_by_region: projectPerformance?.prp_physical_by_region
-				? Number(projectPerformance.prp_physical_by_region).toLocaleString()
-				: DEFAULT_REGION_PHYSICAL.toString(),
+				? Number(projectPerformance.prp_physical_by_region)
+				: DEFAULT_REGION_PHYSICAL,
 			prp_budget_baseline: projectPerformance?.prp_budget_baseline
-				? Number(projectPerformance.prp_budget_baseline).toLocaleString()
+				? Number(projectPerformance.prp_budget_baseline)
 				: "0",
 			prp_physical_baseline: projectPerformance?.prp_physical_baseline
-				? Number(projectPerformance.prp_physical_baseline).toLocaleString()
+				? Number(projectPerformance.prp_physical_baseline)
 				: "0",
 			prp_total_budget_used: projectPerformance?.prp_total_budget_used
-				? Number(projectPerformance.prp_total_budget_used).toLocaleString()
-				: DEFAULT_TOTAL_BUDGET_USED.toString(),
+				? Number(projectPerformance.prp_total_budget_used)
+				: DEFAULT_TOTAL_BUDGET_USED,
 			completion_date: endDate,
 		},
 
@@ -295,7 +276,7 @@ const ProjectPerformanceModel = (props) => {
 								}
 								return !!value;
 							}
-					  )
+						)
 					: Yup.number().notRequired(),
 			})).reduce((acc, curr) => ({ ...acc, ...curr })),
 
@@ -350,14 +331,14 @@ const ProjectPerformanceModel = (props) => {
 								this.parent[`prp_finan_planned_month_${i + 1}`] || "0"
 							)
 						).reduce((a, b) => a + b, 0);
-						const totalBudget = convertToNumericValue(totalActualBudget || "0");
-						if (totalBudget <= 0) {
-							return this.createError({
-								message: t("Total project budget is not available or invalid"),
-							});
-						}
+						const totalBudget = convertToNumericValue(totalActualBudget || 0);
+						// if (totalBudget <= 0) {
+						// 	return this.createError({
+						// 		message: t("Total project budget is not available or invalid"),
+						// 	});
+						// }
 
-						if (sum > totalBudget) {
+						if (totalBudget > 0 && sum > totalBudget) {
 							return this.createError({
 								message: t(
 									`Sum of financial planned values (${sum.toLocaleString()}) exceeds total project budget (${totalBudget.toLocaleString()})`
@@ -417,7 +398,7 @@ const ProjectPerformanceModel = (props) => {
 
 		validateOnBlur: true,
 		validateOnChange: true,
-
+		validateOnMount: true,
 		onSubmit: (values) => {
 			const projectPayload = {
 				prj_id: passedId,
@@ -498,10 +479,10 @@ const ProjectPerformanceModel = (props) => {
 			if (entryMode === "actual") {
 				await updateProject.mutateAsync(projectData);
 			}
-			toast.success(t("add_success"), { autoClose: 2000 });
+			toast.success(t("add_success"), { autoClose: 3000 });
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), { autoClose: 2000 });
+			toast.error(t("add_failure"), { autoClose: 3000 });
 		}
 		toggle();
 	};
@@ -512,10 +493,10 @@ const ProjectPerformanceModel = (props) => {
 			if (entryMode === "actual") {
 				await updateProject.mutateAsync(projectData);
 			}
-			toast.success(t("update_success"), { autoClose: 2000 });
+			toast.success(t("update_success"), { autoClose: 3000 });
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), { autoClose: 2000 });
+			toast.error(t("update_failure"), { autoClose: 3000 });
 		}
 		toggle();
 	};
@@ -524,9 +505,9 @@ const ProjectPerformanceModel = (props) => {
 		if (projectPerformance?.prp_id) {
 			try {
 				await deleteProjectPerformance.mutateAsync(projectPerformance.prp_id);
-				toast.success(t("delete_success"), { autoClose: 2000 });
+				toast.success(t("delete_success"), { autoClose: 3000 });
 			} catch (error) {
-				toast.error(t("delete_failure"), { autoClose: 2000 });
+				toast.error(t("delete_failure"), { autoClose: 3000 });
 			}
 			setDeleteModal(false);
 		}
@@ -599,37 +580,37 @@ const ProjectPerformanceModel = (props) => {
 				[`prp_pyhsical_planned_month_${i + 1}`]: data[
 					`prp_pyhsical_planned_month_${i + 1}`
 				]
-					? Number(data[`prp_pyhsical_planned_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_pyhsical_planned_month_${i + 1}`])
 					: "0",
 				[`prp_pyhsical_actual_month_${i + 1}`]: data[
 					`prp_pyhsical_actual_month_${i + 1}`
 				]
-					? Number(data[`prp_pyhsical_actual_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_pyhsical_actual_month_${i + 1}`])
 					: "0",
 				[`prp_finan_planned_month_${i + 1}`]: data[
 					`prp_finan_planned_month_${i + 1}`
 				]
-					? Number(data[`prp_finan_planned_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_finan_planned_month_${i + 1}`])
 					: "0",
 				[`prp_finan_actual_month_${i + 1}`]: data[
 					`prp_finan_actual_month_${i + 1}`
 				]
-					? Number(data[`prp_finan_actual_month_${i + 1}`]).toLocaleString()
+					? Number(data[`prp_finan_actual_month_${i + 1}`])
 					: "0",
 				[`prp_status_month_${i + 1}`]: data[`prp_status_month_${i + 1}`] || "",
 			})).reduce((acc, curr) => ({ ...acc, ...curr })),
 			// Summary fields
-			prp_physical_planned: DEFAULT_PHYSICAL_PLANNED.toString(),
-			prp_budget_planned: DEFAULT_BUDGET_PLANNED.toString(),
-			prp_budget_by_region: DEFAULT_REGION_BUDGET.toString(),
-			prp_physical_by_region: DEFAULT_REGION_PHYSICAL.toString(),
+			prp_physical_planned: DEFAULT_PHYSICAL_PLANNED,
+			prp_budget_planned: DEFAULT_BUDGET_PLANNED,
+			prp_budget_by_region: DEFAULT_REGION_BUDGET,
+			prp_physical_by_region: DEFAULT_REGION_PHYSICAL,
 			prp_budget_baseline: data.prp_budget_baseline
-				? Number(data.prp_budget_baseline).toLocaleString()
-				: "0",
+				? Number(data.prp_budget_baseline)
+				: 0,
 			prp_physical_baseline: data.prp_physical_baseline
-				? Number(data.prp_physical_baseline).toLocaleString()
-				: "0",
-			prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED.toString(),
+				? Number(data.prp_physical_baseline)
+				: 0,
+			prp_total_budget_used: DEFAULT_TOTAL_BUDGET_USED,
 			completion_date: endDate,
 		};
 		validation.setValues(values);
@@ -642,7 +623,111 @@ const ProjectPerformanceModel = (props) => {
 		}
 	}, [projectPerformance]);
 
-	// Columns configuration - Simplified to show only relevant fields
+	const calculatePercentage = (fieldId) => {
+		const fieldValue = validation.values[fieldId];
+
+		if (
+			fieldValue === null ||
+			fieldValue === undefined ||
+			fieldValue === "" ||
+			isNaN(fieldValue)
+		) {
+			return "";
+		}
+
+		const numericFieldValue = Number(fieldValue);
+
+		if (numericFieldValue > 100 || numericFieldValue < 0) {
+			return "";
+		}
+
+		if (!value || value <= 0 || isNaN(value)) {
+			return "";
+		}
+
+		const numericValue = Number(value);
+		const percentValue = (numericFieldValue / 100) * numericValue;
+
+		let formattedValue;
+		if (Number.isInteger(percentValue)) {
+			formattedValue = percentValue.toString();
+		} else {
+			formattedValue = percentValue.toFixed(2);
+		}
+
+		if (unit && unit.trim() !== "") {
+			return `${formattedValue} ${unit}`;
+		} else {
+			return `${formattedValue} (no unit)`;
+		}
+	};
+
+	const customSummaryFunction = (tableData) => {
+		const summary = {
+			// Planned financial values
+			q1_planned_financial: 0,
+			q2_planned_financial: 0,
+			q3_planned_financial: 0,
+			q4_planned_financial: 0,
+
+			// Actual financial values
+			q1_actual_financial: 0,
+			q2_actual_financial: 0,
+			q3_actual_financial: 0,
+			q4_actual_financial: 0,
+		};
+
+		// Define quarter month mappings for both planned and actual
+		const quarterMappings = {
+			// Planned financial mappings
+			q1_planned_financial: {
+				months: [11, 12, 1],
+				field: "prp_finan_planned_month_",
+			},
+			q2_planned_financial: {
+				months: [2, 3, 4],
+				field: "prp_finan_planned_month_",
+			},
+			q3_planned_financial: {
+				months: [5, 6, 7],
+				field: "prp_finan_planned_month_",
+			},
+			q4_planned_financial: {
+				months: [8, 9, 10],
+				field: "prp_finan_planned_month_",
+			},
+
+			// Actual financial mappings
+			q1_actual_financial: {
+				months: [11, 12, 1],
+				field: "prp_finan_actual_month_",
+			},
+			q2_actual_financial: {
+				months: [2, 3, 4],
+				field: "prp_finan_actual_month_",
+			},
+			q3_actual_financial: {
+				months: [5, 6, 7],
+				field: "prp_finan_actual_month_",
+			},
+			q4_actual_financial: {
+				months: [8, 9, 10],
+				field: "prp_finan_actual_month_",
+			},
+		};
+
+		// Calculate sums for each quarter
+		tableData.forEach((item) => {
+			Object.entries(quarterMappings).forEach(([quarterKey, mapping]) => {
+				const quarterSum = mapping.months.reduce((total, month) => {
+					return total + (Number(item[`${mapping.field}${month}`]) || 0);
+				}, 0);
+				summary[quarterKey] += quarterSum;
+			});
+		});
+
+		return summary;
+	};
 
 	const columns = useMemo(() => {
 		const baseColumns = [
@@ -657,7 +742,7 @@ const ProjectPerformanceModel = (props) => {
 				header: t("prp_record_date_gc"),
 				accessorKey: "prp_record_date_gc",
 				enableColumnFilter: false,
-				cell: (cellProps) => cellProps.row.original.prp_record_date_gc || "-",
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 		];
 
@@ -677,13 +762,14 @@ const ProjectPerformanceModel = (props) => {
 						{
 							header: t("physical"),
 							enableColumnFilter: false,
+							id: `q${qIndex + 1}_planned_physical`,
 							accessorKey: `q${qIndex + 1}_planned_physical`,
 							cell: ({ row }) => {
 								const sum = months.reduce(
 									(total, m) =>
 										total +
 										Number(
-											row.original[`prp_physical_planned_month_${m}`] || 0
+											row.original[`prp_pyhsical_planned_month_${m}`] || 0
 										),
 									0
 								);
@@ -691,6 +777,7 @@ const ProjectPerformanceModel = (props) => {
 							},
 						},
 						{
+							id: `q${qIndex + 1}_planned_financial`,
 							header: t("financial"),
 							enableColumnFilter: false,
 							accessorKey: `q${qIndex + 1}_planned_financial`,
@@ -717,7 +804,7 @@ const ProjectPerformanceModel = (props) => {
 								const sum = months.reduce(
 									(total, m) =>
 										total +
-										Number(row.original[`prp_physical_actual_month_${m}`] || 0),
+										Number(row.original[`prp_pyhsical_actual_month_${m}`] || 0),
 									0
 								);
 								return sum ? truncateText(sum.toLocaleString(), 15) : "-";
@@ -884,7 +971,7 @@ const ProjectPerformanceModel = (props) => {
 		onClickDelete,
 		handleEditPlanned,
 	]);
-
+	
 	if (isError) return <FetchErrorHandler error={error} refetch={refetch} />;
 
 	return (
@@ -916,14 +1003,12 @@ const ProjectPerformanceModel = (props) => {
 				budgetMonthMap={budgetMonthMap}
 				projectStatusMap={projectStatusMap}
 			/>
-
 			<DeleteModal
 				show={deleteModal}
 				onDeleteClick={handleDeleteProjectPerformance}
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteProjectPerformance.isPending}
 			/>
-
 			{isLoading ? (
 				<Spinners />
 			) : (
@@ -945,9 +1030,20 @@ const ProjectPerformanceModel = (props) => {
 					refetch={refetch}
 					isFetching={isFetching}
 					exportColumns={projectPerformanceExportColumns}
+					isSummaryRow={true}
+					summaryColumns={[
+						"q1_planned_financial",
+						"q2_planned_financial",
+						"q3_planned_financial",
+						"q4_planned_financial",
+						"q1_actual_financial",
+						"q2_actual_financial",
+						"q3_actual_financial",
+						"q4_actual_financial",
+					]}
+					customSummaryFunction={customSummaryFunction}
 				/>
 			)}
-
 			<Modal isOpen={modal} toggle={toggle} size="xl">
 				<ModalHeader toggle={toggle} className="border-0 pb-0">
 					<h4 className="mb-0">
@@ -956,7 +1052,7 @@ const ProjectPerformanceModel = (props) => {
 									entryMode === "planned"
 										? `${t("edit_planned")}`
 										: `${t("enter_actuals")}`
-							  )}`
+								)}`
 							: `${t("add_planned")}`}
 						<Badge
 							color={entryMode === "planned" ? "info" : "success"}
@@ -1020,12 +1116,13 @@ const ProjectPerformanceModel = (props) => {
 											fieldId="prp_budget_baseline"
 											label={t("prp_budget_baseline")}
 											isRequired={true}
+											allowDecimals={true}
 										/>
 									</Col>
 								</Row>
 
 								{/* New Actual Entry Checkbox and Date Picker - Only show in actual mode */}
-								{entryMode === "actual" && (
+								{entryMode === "planned" && (
 									<Row className="mt-3">
 										<Col md={4}>
 											<div className="form-check">
@@ -1062,7 +1159,7 @@ const ProjectPerformanceModel = (props) => {
 													isRequired={false}
 													validation={validation}
 													componentId={"prp_record_date_gc"}
-													label={t("entry_date")}
+													label={t("Actual Project Start Date")}
 												/>
 											</Col>
 										)}
@@ -1200,13 +1297,15 @@ const ProjectPerformanceModel = (props) => {
 																					fieldId={`prp_pyhsical_planned_month_${month}`}
 																					label={t("physical_planned_%")}
 																					isRequired={true}
-																					max={100}
+																					className={"col-md-12 mb-3"}
+																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_planned_month_${month}`)}`}
 																				/>
 																				<FormattedAmountField
 																					validation={validation}
 																					fieldId={`prp_finan_planned_month_${month}`}
 																					label={t("financial_planned")}
 																					isRequired={true}
+																					className={"col-md-12 mb-3"}
 																				/>
 																			</>
 																		) : (
@@ -1216,13 +1315,16 @@ const ProjectPerformanceModel = (props) => {
 																					fieldId={`prp_pyhsical_actual_month_${month}`}
 																					label={t("physical_actual_%")}
 																					isRequired={true}
-																					max={100}
+																					className={"col-md-12 mb-3"}
+																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_actual_month_${month}`)} , ${t("physical_planned")}: ${projectPerformance[`prp_pyhsical_planned_month_${month}`]}%`}
 																				/>
 																				<FormattedAmountField
 																					validation={validation}
 																					fieldId={`prp_finan_actual_month_${month}`}
 																					label={t("financial_actual")}
 																					isRequired={true}
+																					className={"col-md-12 mb-3"}
+																					infoText={`${t("financial_planned")}: ${parseFloat(projectPerformance[`prp_finan_planned_month_${month}`]).toLocaleString()}`}
 																				/>
 
 																				<div className="mb-3">
@@ -1337,8 +1439,8 @@ const ProjectPerformanceModel = (props) => {
 																									{lang === "en"
 																										? status.prs_status_name_en
 																										: lang === "am"
-																										? status.prs_status_name_am
-																										: status.prs_status_name_or}
+																											? status.prs_status_name_am
+																											: status.prs_status_name_or}
 																								</option>
 																							))}
 																					</Input>

@@ -1,7 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -10,18 +8,14 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
 	alphanumericValidation,
-	amountValidation,
-	numberValidation,
 	phoneValidation,
 } from "../../utils/Validation/validation";
 import {
 	useFetchProjectEmployees,
-	useSearchProjectEmployees,
 	useAddProjectEmployee,
 	useDeleteProjectEmployee,
 	useUpdateProjectEmployee,
 } from "../../queries/projectemployee_query";
-import ProjectEmployeeModal from "./ProjectEmployeeModal";
 import { useTranslation } from "react-i18next";
 import DynamicDetailsModal from "../../components/Common/DynamicDetailsModal";
 import {
@@ -45,6 +39,7 @@ import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import DatePicker from "../../components/Common/DatePicker";
 import { projectEmployeeExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -63,46 +58,40 @@ const ProjectEmployeeModel = (props) => {
 	const [isEdit, setIsEdit] = useState(false);
 	const [projectEmployee, setProjectEmployee] = useState(null);
 
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-
 	const { data, isLoading, isFetching, error, isError, refetch } =
 		useFetchProjectEmployees(param, isActive);
-
 	const addProjectEmployee = useAddProjectEmployee();
 	const updateProjectEmployee = useUpdateProjectEmployee();
 	const deleteProjectEmployee = useDeleteProjectEmployee();
-	//START CRUD
+
 	const handleAddProjectEmployee = async (data) => {
 		try {
 			await addProjectEmployee.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateProjectEmployee = async (data) => {
 		try {
 			await updateProjectEmployee.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteProjectEmployee = async () => {
 		if (projectEmployee && projectEmployee.emp_id) {
@@ -110,17 +99,17 @@ const ProjectEmployeeModel = (props) => {
 				const id = projectEmployee.emp_id;
 				await deleteProjectEmployee.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
 		}
 	};
-	// validation
+
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
@@ -150,23 +139,23 @@ const ProjectEmployeeModel = (props) => {
 			is_editable: (projectEmployee && projectEmployee.is_editable) || 1,
 		},
 		validationSchema: Yup.object({
-			emp_id_no: alphanumericValidation(3, 10, true).test(
-				"unique-role-id",
-				t("Already exists"),
-				(value) => {
+			emp_id_no: Yup.string()
+				.min(3)
+				.max(10)
+				.test("unique-role-id", t("Already exists"), (value) => {
 					return !data?.data.some(
 						(item) =>
 							item.emp_id_no == value && item.emp_id !== projectEmployee?.emp_id
 					);
-				}
-			),
+				})
+				.required("ID is required"),
 			emp_full_name: alphanumericValidation(3, 200, true),
-			emp_email: alphanumericValidation(5, 50, false).email(
-				"ivalid email address"
+			emp_email: alphanumericValidation(5, 50, false).matches(
+				/^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+				"Must be a valid email"
 			),
-
 			emp_phone_num: phoneValidation(true),
-			emp_role: alphanumericValidation(3, 425, true),
+			emp_role: alphanumericValidation(2, 425, true),
 			emp_nationality: alphanumericValidation(3, 100, false),
 			emp_sex: Yup.string().required(t("Sex is required")),
 			//emp_project_id: Yup.string().required(t("emp_project_id")),
@@ -244,17 +233,6 @@ const ProjectEmployeeModel = (props) => {
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
 
-	useEffect(() => {
-		setProjectEmployee(data);
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setProjectEmployee(data);
-			setIsEdit(false);
-		}
-	}, [data]);
-
 	const toggle = () => {
 		if (modal) {
 			setModal(false);
@@ -266,7 +244,6 @@ const ProjectEmployeeModel = (props) => {
 
 	const handleProjectEmployeeClick = (arg) => {
 		const projectEmployee = arg;
-		// console.log("handleProjectEmployeeClick", projectEmployee);
 		setProjectEmployee({
 			emp_id: projectEmployee.emp_id,
 			emp_id_no: projectEmployee.emp_id_no,
@@ -291,7 +268,6 @@ const ProjectEmployeeModel = (props) => {
 		toggle();
 	};
 
-	//delete projects
 	const [deleteModal, setDeleteModal] = useState(false);
 	const onClickDelete = (projectEmployee) => {
 		setProjectEmployee(projectEmployee);
@@ -303,12 +279,7 @@ const ProjectEmployeeModel = (props) => {
 		setProjectEmployee("");
 		toggle();
 	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
-	//START UNCHANGED
+
 	const columns = useMemo(() => {
 		const baseColumns = [
 			{
@@ -407,27 +378,14 @@ const ProjectEmployeeModel = (props) => {
 				accessorKey: "emp_start_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.emp_start_date_gc, 30) ||
-								"-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: "",
 				accessorKey: "emp_end_date_gc",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.emp_end_date_gc, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("view_detail"),
@@ -459,10 +417,10 @@ const ProjectEmployeeModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{data?.previledge?.is_role_editable == 1 &&
 								cellProps.row.original?.is_editable == 1 && (
 									<Button
@@ -483,10 +441,11 @@ const ProjectEmployeeModel = (props) => {
 										</UncontrolledTooltip>
 									</Button>
 								)}
-							{data?.previledge?.is_role_deletable == 9 &&
-								cellProps.row.original?.is_deletable == 9 && (
-									<Link
-										to="#"
+							{data?.previledge?.is_role_deletable == 1 &&
+								cellProps.row.original?.is_deletable == 1 && (
+									<Button
+										size="sm"
+										color="none"
 										className="text-danger"
 										onClick={() => {
 											const data = cellProps.row.original;
@@ -500,7 +459,7 @@ const ProjectEmployeeModel = (props) => {
 										<UncontrolledTooltip placement="top" target="deletetooltip">
 											Delete
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 						</div>
 					);
@@ -509,7 +468,7 @@ const ProjectEmployeeModel = (props) => {
 		}
 
 		return baseColumns;
-	}, [handleProjectEmployeeClick, toggleViewModal, onClickDelete]);
+	}, [handleProjectEmployeeClick, toggleViewModal, onClickDelete, data, t]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -546,7 +505,7 @@ const ProjectEmployeeModel = (props) => {
 			/>
 			<>
 				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners top={isActive ? "top-70" : ""} />
 					) : (
 						<Row>
@@ -555,17 +514,12 @@ const ProjectEmployeeModel = (props) => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											isCustomPageSize={true}
 											handleUserClick={handleProjectEmployeeClicks}
 											isPagination={true}
-											// SearchPlaceholder="26 records..."
 											SearchPlaceholder={t("filter_placeholder")}
 											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
 											buttonName={t("add")}
@@ -613,7 +567,7 @@ const ProjectEmployeeModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={10}
 										/>
 										{validation.touched.emp_id_no &&
 										validation.errors.emp_id_no ? (
@@ -640,7 +594,7 @@ const ProjectEmployeeModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={50}
 										/>
 										{validation.touched.emp_full_name &&
 										validation.errors.emp_full_name ? (
@@ -664,7 +618,7 @@ const ProjectEmployeeModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={50}
 										/>
 										{validation.touched.emp_email &&
 										validation.errors.emp_email ? (
@@ -774,7 +728,7 @@ const ProjectEmployeeModel = (props) => {
 													? true
 													: false
 											}
-											maxLength={20}
+											maxLength={50}
 										/>
 										{validation.touched.emp_role &&
 										validation.errors.emp_role ? (
@@ -888,7 +842,6 @@ const ProjectEmployeeModel = (props) => {
 					</Modal>
 				</div>
 			</>
-			{/*   */}
 		</React.Fragment>
 	);
 };

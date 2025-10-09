@@ -1,427 +1,849 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Card, CardBody, Input, Dropdown, DropdownToggle, DropdownMenu, DropdownItem, Button } from "reactstrap";
-import { FaSearch, FaEye, FaEyeSlash, FaColumns, FaChevronDown, FaChevronRight } from "react-icons/fa";
+import {
+	Card,
+	CardBody,
+	Input,
+	Dropdown,
+	DropdownToggle,
+	DropdownMenu,
+	DropdownItem,
+	Button,
+} from "reactstrap";
+import {
+	FaSearch,
+	FaEye,
+	FaEyeSlash,
+	FaColumns,
+	FaChevronDown,
+	FaChevronRight,
+} from "react-icons/fa";
 import ExportToExcel from "../../components/Common/ExportToExcel";
+import { financialReportOneExportColumns } from "../../utils/exportColumnsForReport";
 
 const FinancialProjectsTable = ({
-  data = [],
-  t = (key) => key,
-  tableClass = "",
-  theadClass = "",
+	data = [],
+	exportSearchParams,
+	t = (key) => key,
+	tableClass = "",
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(50);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [hiddenColumns, setHiddenColumns] = useState([]);
-  const [columnWidths, setColumnWidths] = useState({});
-  const [isResizing, setIsResizing] = useState(false);
-  const [resizingColumn, setResizingColumn] = useState(null);
-  const [startX, setStartX] = useState(0);
-  const [startWidth, setStartWidth] = useState(0);
-  const [expandedSectors, setExpandedSectors] = useState({});
+	const [currentPage, setCurrentPage] = useState(1);
+	const [rowsPerPage, setRowsPerPage] = useState(50);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [hiddenColumns, setHiddenColumns] = useState([]);
+	const [columnWidths, setColumnWidths] = useState({});
+	const [isResizing, setIsResizing] = useState(false);
+	const [resizingColumn, setResizingColumn] = useState(null);
+	const [startX, setStartX] = useState(0);
+	const [startWidth, setStartWidth] = useState(0);
+	const [expandedSectors, setExpandedSectors] = useState({});
 
-  const tableRef = useRef(null);
-  const headerRowRef = useRef(null);
+	const tableRef = useRef(null);
+	const headerRowRef = useRef(null);
 
-  const columnsConfig = useMemo(() => [
-    { id: "projectSN", label: t("SN"), visible: false, minWidth: 50, sticky: true },
-    { id: "prj_code", label: t("Project Code"), visible: true, minWidth: 50, sticky: true },
-    { id: "prj_name", label: t("Project Name"), visible: true, minWidth: 100, sticky: true },
-    { id: "prj_measurement_unit", label: t("Unit"), visible: true, minWidth: 30 },
-    { id: "weight", label: t("Weight"), visible: true, minWidth: 30 },
-    { id: "zone", label: t("Location Zone"), visible: true, minWidth: 100 },
-    { id: "woreda", label: t("Location Woreda"), visible: true, minWidth: 100 },
-    { id: "prj_location_description", label: t("Specific Site"), visible: true, minWidth: 150 },
-    { id: "start_year", label: t("Start Year"), visible: true, minWidth: 50 },
-    { id: "end_year", label: t("End Year"), visible: true, minWidth: 50 },
-    { id: "cni_name", label: t("Contractor"), visible: true, minWidth: 100 },
-    { id: "beneficiery", label: t("Beneficiaries"), visible: true, minWidth: 50 },
-    { id: "prj_measured_figure", label: t("Measured Figure"), visible: true, minWidth: 50 },
-    { id: "budgetyear", label: t("Budget Year"), visible: true, minWidth: 50 },
-    { id: "prp_physical_performance", label: t("Physical Performance"), visible: true, minWidth: 100 },
-    { id: "prp_physical_planned", label: t("Physical Planned"), visible: true, minWidth: 100 },
-    { id: "prj_total_estimate_budget", label: t("Total Budget"), visible: true, minWidth: 100 },
-    { id: "prp_budget_baseline", label: t("Budget Baseline"), visible: true, minWidth: 100 },
-    { id: "bdr_released_amount", label: t("Released Amount"), visible: true, minWidth: 100 },
-  ], [t]);
+	const columnsConfig = useMemo(
+		() => [
+			{
+				id: "sector",
+				label: t("Sector"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
+				id: "prj_name",
+				label: t("Project Name"),
+				visible: true,
+				minWidth: 150,
+				sticky: true,
+			},
+			{
+				id: "prj_measurement_unit",
+				label: t("Unit"),
+				visible: true,
+				minWidth: 60,
+			},
+			{
+				id: "prj_measured_figure",
+				label: t("Measured Figure"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "prj_status",
+				label: t("Status"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "project_category",
+				label: t("Category"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
+				id: "prj_code",
+				label: t("Project Code"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "prj_location_description",
+				label: t("Specific Site"),
+				visible: true,
+				minWidth: 120,
+			},
+			{
+				id: "zone",
+				label: t("Zone"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
+				id: "woreda",
+				label: t("Woreda"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
+				id: "start_year",
+				label: t("Start Year"),
+				visible: true,
+				minWidth: 60,
+			},
+			{
+				id: "end_year",
+				label: t("End Year"),
+				visible: true,
+				minWidth: 60,
+			},
+			{
+				id: "bdr_before_previous_year_physical",
+				label: t("Before Previous Year"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_previous_year_physical",
+				label: t("Previous Year"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_physical_baseline",
+				label: t("Physical Baseline"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_physical_planned",
+				label: t("Physical Planned"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_physical_approved",
+				label: t("Physical Approved"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "prj_total_estimate_budget",
+				label: t("Total Estimated Budget"),
+				visible: true,
+				minWidth: 100,
+			},
+			{
+				id: "bdr_before_previous_year_financial",
+				label: t("Before Previous Year"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_previous_year_financial",
+				label: t("Previous Year"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_financial_baseline",
+				label: t("Financial Baseline"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_requested_amount",
+				label: t("Requested Amount"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_released_amount",
+				label: t("Released Amount"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_source_government_approved",
+				label: t("Government Approved"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_source_internal_requested",
+				label: t("Internal Requested"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "bdr_source_other_approved",
+				label: t("Other Approved"),
+				visible: true,
+				minWidth: 80,
+			},
+			{
+				id: "budget_sources_total",
+				label: t("Total"),
+				visible: true,
+				minWidth: 80,
+			},
+		],
+		[t]
+	);
 
-  useEffect(() => {
-    const initialWidths = {};
-    columnsConfig.forEach(col => {
-      initialWidths[col.id] = col.minWidth;
-    });
-    setColumnWidths(initialWidths);
-  }, [columnsConfig]);
+	// Initialize column widths
+	useEffect(() => {
+		const initialWidths = {};
+		columnsConfig.forEach((col) => {
+			initialWidths[col.id] = col.minWidth;
+		});
+		setColumnWidths(initialWidths);
+	}, [columnsConfig]);
 
-  const toggleColumn = (columnId) => {
-    setHiddenColumns(prev =>
-      prev.includes(columnId)
-        ? prev.filter(id => id !== columnId)
-        : [...prev, columnId]
-    );
-  };
+	// Column visibility toggle
+	const toggleColumn = (columnId) => {
+		setHiddenColumns((prev) =>
+			prev.includes(columnId)
+				? prev.filter((id) => id !== columnId)
+				: [...prev, columnId]
+		);
+	};
 
-  const filteredData = useMemo(() => {
-    if (!searchTerm) return data;
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    return data.filter((project) =>
-      (project.sector && project.sector.toLowerCase().includes(lowerSearchTerm)) ||
-      (project.prj_name && project.prj_name.toLowerCase().includes(lowerSearchTerm)) ||
-      (project.prj_code && project.prj_code.toLowerCase().includes(lowerSearchTerm))
-    );
-  }, [data, searchTerm]);
+	// Filter data based on search term
+	const filteredData = useMemo(() => {
+		if (!searchTerm) return data;
+		const lowerSearchTerm = searchTerm.toLowerCase();
+		return data.filter(
+			(project) =>
+				(project.sector &&
+					project.sector.toLowerCase().includes(lowerSearchTerm)) ||
+				(project.prj_name &&
+					project.prj_name.toLowerCase().includes(lowerSearchTerm)) ||
+				(project.prj_code &&
+					project.prj_code.toLowerCase().includes(lowerSearchTerm))
+		);
+	}, [data, searchTerm]);
 
-  const groupedData = useMemo(() => {
-    if (!filteredData) return {};
-    return filteredData.reduce((acc, project) => {
-      const sector = project.sector || t("Other Sector");
-      const projectName = project.prj_name || t("Unnamed Project");
-      if (!acc[sector]) acc[sector] = {};
-      if (!acc[sector][projectName]) acc[sector][projectName] = { entries: [] };
-      acc[sector][projectName].entries.push(project);
-      return acc;
-    }, {});
-  }, [filteredData, t]);
+	// Prepare data for export with calculated totals
+	const exportData = useMemo(() => {
+		return filteredData.map((item) => ({
+			...item,
+			budget_sources_total:
+				(Number(item.bdr_source_government_approved) || 0) +
+				(Number(item.bdr_source_internal_requested) || 0) +
+				(Number(item.bdr_source_other_approved) || 0),
+		}));
+	}, [filteredData]);
 
-  const toggleSector = (sectorName) => {
-    setExpandedSectors(prev => ({
-      ...prev,
-      [sectorName]: !prev[sectorName]
-    }));
-  };
+	// Filter export columns based on visibility
+	const visibleExportColumns = useMemo(() => {
+		return financialReportOneExportColumns.filter(
+			(col) => !hiddenColumns.includes(col.key || col.id)
+		);
+	}, [hiddenColumns]);
 
-  const allRows = useMemo(() => {
-    const rows = [];
-    let projectCounter = 1;
+	// Group data by sector and project name
+	const groupedData = useMemo(() => {
+		if (!filteredData) return {};
+		return filteredData.reduce((acc, project) => {
+			const sector = project.sector || t("Other Sector");
+			const projectName = project.prj_name || t("Unnamed Project");
+			if (!acc[sector]) acc[sector] = {};
+			if (!acc[sector][projectName]) acc[sector][projectName] = { entries: [] };
+			acc[sector][projectName].entries.push(project);
+			return acc;
+		}, {});
+	}, [filteredData, t]);
 
-    Object.entries(groupedData || {}).forEach(([sectorName, projects]) => {
-      const isExpanded = expandedSectors[sectorName] !== false;
+	// Toggle sector expansion
+	const toggleSector = (sectorName) => {
+		setExpandedSectors((prev) => ({
+			...prev,
+			[sectorName]: !prev[sectorName],
+		}));
+	};
 
-      rows.push({
-        type: "sector",
-        sectorName,
-        projectCount: Object.keys(projects).length,
-        isExpanded
-      });
+	// Prepare all rows for rendering
+	const allRows = useMemo(() => {
+		const rows = [];
+		let projectCounter = 1;
 
-      if (isExpanded) {
-        Object.entries(projects || {}).forEach(([projectName, projectData]) => {
-          const projectList = Array.isArray(projectData.entries) ? projectData.entries : [projectData];
-          const rowSpan = projectList.length;
+		Object.entries(groupedData || {}).forEach(([sectorName, projects]) => {
+			const isExpanded = expandedSectors[sectorName] !== false;
 
-          const commonValues = {
-            start_year: projectList[0]?.start_year || " ",
-            zone: projectList[0]?.zone || " ",
-            woreda: projectList[0]?.woreda || " ",
-            prj_location_description: projectList[0]?.prj_location_description || " ",
-            end_year: projectList[0]?.end_year || " ",
-            cni_name: projectList[0]?.cni_name || " ",
-            beneficiery: projectList[0]?.beneficiery || " ",
-            prj_total_estimate_budget: projectList[0]?.prj_total_estimate_budget || " ",
-            prj_measured_figure: projectList[0]?.prj_measured_figure || " ",
-            prj_measurement_unit: projectList[0]?.prj_measurement_unit || " ",
-            rowSpan,
-          };
+			rows.push({
+				type: "sector",
+				sectorName,
+				projectCount: Object.keys(projects).length,
+				isExpanded,
+			});
 
-          projectList.forEach((proj, index) => {
-            rows.push({
-              type: "project",
-              ...proj,
-              projectSN: index === 0 ? projectCounter : null,
-              showMergedCells: index === 0,
-              commonValues,
-              sectorName,
-              projectName
-            });
-          });
+			if (isExpanded) {
+				Object.entries(projects || {}).forEach(([projectName, projectData]) => {
+					const projectList = Array.isArray(projectData.entries)
+						? projectData.entries
+						: [projectData];
+					const rowSpan = projectList.length;
 
-          projectCounter++;
-        });
-      }
-    });
+					const commonValues = {
+						prj_measurement_unit: projectList[0]?.prj_measurement_unit || " ",
+						prj_status: projectList[0]?.prj_status || " ",
+						sector: sectorName,
+						project_category: projectList[0]?.project_category || " ",
+						prj_location_description:
+							projectList[0]?.prj_location_description || " ",
+						zone: projectList[0]?.zone || " ",
+						woreda: projectList[0]?.woreda || " ",
+						start_year: projectList[0]?.start_year || " ",
+						end_year: projectList[0]?.end_year || " ",
+						prj_total_estimate_budget:
+							projectList[0]?.prj_total_estimate_budget || " ",
+						rowSpan,
+					};
 
-    return rows;
-  }, [groupedData, expandedSectors, t]);
+					projectList.forEach((proj, index) => {
+						rows.push({
+							type: "project",
+							...proj,
+							projectSN: index === 0 ? projectCounter : null,
+							showMergedCells: index === 0,
+							commonValues,
+							sectorName,
+							projectName,
+						});
+					});
 
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = allRows.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(allRows.length / rowsPerPage);
+					projectCounter++;
+				});
+			}
+		});
 
-  const uniqueProjectNamesCount = useMemo(() => {
-    const projectNames = new Set();
-    currentRows.forEach(row => {
-      if (row.type === "project" && row.showMergedCells) {
-        projectNames.add(row.projectName);
-      }
-    });
-    return projectNames.size;
-  }, [currentRows]);
+		return rows;
+	}, [groupedData, expandedSectors, t]);
 
-  const totalUniqueProjectNames = useMemo(() => {
-    const projectNames = new Set();
-    Object.values(groupedData || {}).forEach(projects => {
-      Object.keys(projects || {}).forEach(projectName => {
-        projectNames.add(projectName);
-      });
-    });
-    return projectNames.size;
-  }, [groupedData]);
+	// Pagination
+	const indexOfLastRow = currentPage * rowsPerPage;
+	const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+	const currentRows = allRows.slice(indexOfFirstRow, indexOfLastRow);
+	const totalPages = Math.ceil(allRows.length / rowsPerPage);
 
-  const exportData = useMemo(() => {
-    const exportRows = [];
-    let projectCounter = 1;
+	// Count unique projects for display
+	const uniqueProjectNamesCount = useMemo(() => {
+		const projectNames = new Set();
+		currentRows.forEach((row) => {
+			if (row.type === "project" && row.showMergedCells) {
+				projectNames.add(row.projectName);
+			}
+		});
+		return projectNames.size;
+	}, [currentRows]);
 
-    // Filter columns to include only visible ones for export
-    const visibleColumns = columnsConfig.filter(col => !hiddenColumns.includes(col.id));
-    const headerMapping = visibleColumns.reduce((acc, col) => {
-      acc[col.id] = col.label;
-      return acc;
-    }, {});
+	const totalUniqueProjectNames = useMemo(() => {
+		const projectNames = new Set();
+		Object.values(groupedData || {}).forEach((projects) => {
+			Object.keys(projects || {}).forEach((projectName) => {
+				projectNames.add(projectName);
+			});
+		});
+		return projectNames.size;
+	}, [groupedData]);
 
-    Object.entries(groupedData || {}).forEach(([sectorName, projects]) => {
-      Object.entries(projects || {}).forEach(([projectName, projectData]) => {
-        const projectList = Array.isArray(projectData.entries) ? projectData.entries : [projectData];
+	// Event handlers
+	const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-        projectList.forEach((proj, index) => {
-          const rowToExport = {};
-          visibleColumns.forEach(col => {
-            let value;
-            if (col.id === "projectSN") {
-              value = index === 0 ? projectCounter : '';
-            } else if (col.id === "sector") {
-              value = sectorName;
-            } else if (col.id === "prj_name") {
-              value = projectName || t("Unnamed Project");
-            } else if (["beneficiery", "prj_total_estimate_budget", "prp_budget_baseline", "bdr_released_amount"].includes(col.id)) {
-              value = Number(proj[col.id])?.toLocaleString() || '';
-            } else {
-              value = proj[col.id] || '';
-            }
-            rowToExport[headerMapping[col.id]] = value; // Use the label as the key for export
-          });
-          exportRows.push(rowToExport);
-        });
+	const handleSearchChange = (e) => {
+		setSearchTerm(e.target.value);
+		setCurrentPage(1);
+	};
 
-        projectCounter++;
-      });
-    });
+	const toggleDropdown = () => setDropdownOpen((prev) => !prev);
 
-    return exportRows;
-  }, [groupedData, t, hiddenColumns, columnsConfig]); // Added hiddenColumns and columnsConfig as dependencies
+	// Column resizing handlers
+	const startResizing = (columnId, e) => {
+		setIsResizing(true);
+		setResizingColumn(columnId);
+		setStartX(e.clientX);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
+		const headerCells = headerRowRef.current?.querySelectorAll("th") || [];
+		let currentWidth = 0;
+		headerCells.forEach((cell) => {
+			if (cell.dataset.column === columnId) {
+				currentWidth = cell.offsetWidth;
+			}
+		});
+		setStartWidth(currentWidth);
 
-  useEffect(() => {
-    if (tableRef.current) {
-      columnsConfig.forEach(col => {
-        const cells = tableRef.current.querySelectorAll(`th[data-column="${col.id}"], td[data-column="${col.id}"]`);
-        cells.forEach(cell => {
-          cell.style.display = hiddenColumns.includes(col.id) ? 'none' : '';
-          if (columnWidths[col.id]) {
-            cell.style.minWidth = `${columnWidths[col.id]}px`;
-            cell.style.width = `${columnWidths[col.id]}px`;
-          }
-        });
-      });
-    }
-  }, [hiddenColumns, columnsConfig, columnWidths]);
+		document.body.style.cursor = "col-resize";
+		document.body.style.userSelect = "none";
+	};
 
-  const toggleDropdown = () => setDropdownOpen(prev => !prev);
+	const resizeColumn = (e) => {
+		if (isResizing && resizingColumn) {
+			const width = startWidth + (e.clientX - startX);
+			const minWidth =
+				columnsConfig.find((col) => col.id === resizingColumn)?.minWidth || 50;
 
-  const startResizing = (columnId, e) => {
-    setIsResizing(true);
-    setResizingColumn(columnId);
-    setStartX(e.clientX);
+			if (width >= minWidth) {
+				setColumnWidths((prev) => ({
+					...prev,
+					[resizingColumn]: width,
+				}));
+			}
+		}
+	};
 
-    const headerCells = headerRowRef.current.querySelectorAll('th');
-    let currentWidth = 0;
-    headerCells.forEach(cell => {
-      if (cell.dataset.column === columnId) {
-        currentWidth = cell.offsetWidth;
-      }
-    });
-    setStartWidth(currentWidth);
+	const stopResizing = () => {
+		if (isResizing) {
+			setIsResizing(false);
+			setResizingColumn(null);
+			document.body.style.cursor = "";
+			document.body.style.userSelect = "";
+		}
+	};
 
-    document.body.style.cursor = 'col-resize';
-    document.body.style.userSelect = 'none';
-  };
+	// Apply column visibility and widths
+	useEffect(() => {
+		if (tableRef.current) {
+			columnsConfig.forEach((col) => {
+				const cells = tableRef.current.querySelectorAll(
+					`th[data-column="${col.id}"], td[data-column="${col.id}"]`
+				);
+				cells.forEach((cell) => {
+					cell.style.display = hiddenColumns.includes(col.id) ? "none" : "";
+					if (columnWidths[col.id]) {
+						cell.style.minWidth = `${columnWidths[col.id]}px`;
+						cell.style.width = `${columnWidths[col.id]}px`;
+					}
+				});
+			});
+		}
+	}, [hiddenColumns, columnsConfig, columnWidths]);
 
-  const resizeColumn = (e) => {
-    if (isResizing && resizingColumn) {
-      const width = startWidth + (e.clientX - startX);
-      const minWidth = columnsConfig.find(col => col.id === resizingColumn)?.minWidth || 50;
+	// Event listeners for resizing
+	useEffect(() => {
+		document.addEventListener("mousemove", resizeColumn);
+		document.addEventListener("mouseup", stopResizing);
 
-      if (width >= minWidth) {
-        setColumnWidths(prev => ({
-          ...prev,
-          [resizingColumn]: width
-        }));
-      }
-    }
-  };
+		return () => {
+			document.removeEventListener("mousemove", resizeColumn);
+			document.removeEventListener("mouseup", stopResizing);
+		};
+	}, [isResizing, resizingColumn, startX, startWidth]);
 
-  const stopResizing = () => {
-    if (isResizing) {
-      setIsResizing(false);
-      setResizingColumn(null);
-      document.body.style.cursor = '';
-      document.body.style.userSelect = '';
-    }
-  };
+	// Pagination items generator
+	const getPaginationItems = () => {
+		const items = [];
+		const maxVisiblePages = 5;
 
-  useEffect(() => {
-    document.addEventListener('mousemove', resizeColumn);
-    document.addEventListener('mouseup', stopResizing);
+		if (totalPages <= maxVisiblePages) {
+			for (let i = 1; i <= totalPages; i++) {
+				items.push(
+					<li
+						key={i}
+						className={`page-item ${currentPage === i ? "active" : ""}`}
+					>
+						<button className="page-link" onClick={() => paginate(i)}>
+							{i}
+						</button>
+					</li>
+				);
+			}
+		} else {
+			let startPage, endPage;
 
-    return () => {
-      document.removeEventListener('mousemove', resizeColumn);
-      document.removeEventListener('mouseup', stopResizing);
-    };
-  }, [isResizing, resizingColumn, startX, startWidth]);
+			if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
+				startPage = 1;
+				endPage = maxVisiblePages;
+			} else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
+				startPage = totalPages - maxVisiblePages + 1;
+				endPage = totalPages;
+			} else {
+				startPage = currentPage - Math.floor(maxVisiblePages / 2);
+				endPage = currentPage + Math.floor(maxVisiblePages / 2);
+			}
 
-  const getPaginationItems = () => {
-    const items = [];
-    const maxVisiblePages = 5;
+			if (startPage > 1) {
+				items.push(
+					<li key={1} className="page-item">
+						<button className="page-link" onClick={() => paginate(1)}>
+							1
+						</button>
+					</li>
+				);
+				if (startPage > 2) {
+					items.push(
+						<li key="ellipsis-start" className="page-item disabled">
+							<span className="page-link">...</span>
+						</li>
+					);
+				}
+			}
 
-    if (totalPages <= maxVisiblePages) {
-      for (let i = 1; i <= totalPages; i++) {
-        items.push(
-          <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
-            <button className="page-link" onClick={() => paginate(i)}>{i}</button>
-          </li>
-        );
-      }
-    } else {
-      let startPage, endPage;
+			for (let i = startPage; i <= endPage; i++) {
+				items.push(
+					<li
+						key={i}
+						className={`page-item ${currentPage === i ? "active" : ""}`}
+					>
+						<button className="page-link" onClick={() => paginate(i)}>
+							{i}
+						</button>
+					</li>
+				);
+			}
 
-      if (currentPage <= Math.ceil(maxVisiblePages / 2)) {
-        startPage = 1;
-        endPage = maxVisiblePages;
-      } else if (currentPage + Math.floor(maxVisiblePages / 2) >= totalPages) {
-        startPage = totalPages - maxVisiblePages + 1;
-        endPage = totalPages;
-      } else {
-        startPage = currentPage - Math.floor(maxVisiblePages / 2);
-        endPage = currentPage + Math.floor(maxVisiblePages / 2);
-      }
+			if (endPage < totalPages) {
+				if (endPage < totalPages - 1) {
+					items.push(
+						<li key="ellipsis-end" className="page-item disabled">
+							<span className="page-link">...</span>
+						</li>
+					);
+				}
+				items.push(
+					<li key={totalPages} className="page-item">
+						<button className="page-link" onClick={() => paginate(totalPages)}>
+							{totalPages}
+						</button>
+					</li>
+				);
+			}
+		}
 
-      if (startPage > 1) {
-        items.push(
-          <li key={1} className="page-item">
-            <button className="page-link" onClick={() => paginate(1)}>1</button>
-          </li>
-        );
-        if (startPage > 2) {
-          items.push(
-            <li key="ellipsis-start" className="page-item disabled">
-              <span className="page-link">...</span>
-            </li>
-          );
-        }
-      }
+		return items;
+	};
 
-      for (let i = startPage; i <= endPage; i++) {
-        items.push(
-          <li key={i} className={`page-item ${currentPage === i ? "active" : ""}`}>
-            <button className="page-link" onClick={() => paginate(i)}>{i}</button>
-          </li>
-        );
-      }
+	// Get visible columns for table rendering
+	const visibleColumns = useMemo(() => {
+		return columnsConfig.filter((col) => !hiddenColumns.includes(col.id));
+	}, [columnsConfig, hiddenColumns]);
 
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-          items.push(
-            <li key="ellipsis-end" className="page-item disabled">
-              <span className="page-link">...</span>
-            </li>
-          );
-        }
-        items.push(
-          <li key={totalPages} className="page-item">
-            <button className="page-link" onClick={() => paginate(totalPages)}>{totalPages}</button>
-          </li>
-        );
-      }
-    }
+	// Render project row
+	const renderProjectRow = (row, index) => {
+		const hasNoProjectName = !row.prj_name || row.prj_name.trim() === "";
 
-    return items;
-  };
+		// Calculate totals
+		const governmentApproved = Number(row.bdr_source_government_approved) || 0;
+		const internalRequested = Number(row.bdr_source_internal_requested) || 0;
+		const otherApproved = Number(row.bdr_source_other_approved) || 0;
+		const budgetSourcesTotal =
+			governmentApproved + internalRequested + otherApproved;
 
-  return (
-    <div style={{ width: "100%", overflowX: "auto" }}>
-      <Card className="mb-3">
-        <CardBody className="d-flex justify-content-between align-items-center">
-          <div style={{ position: "relative", flex: 1, maxWidth: "400px" }}>
-            <Input
-              type="text"
-              placeholder={t("Search...")}
-              value={searchTerm}
-              onChange={handleSearchChange}
-              className="form-control"
-              style={{ paddingLeft: "35px" }}
-            />
-            <FaSearch
-              style={{
-                position: "absolute",
-                left: "12px",
-                top: "50%",
-                transform: "translateY(-50%)",
-                color: "#6c757d",
-                fontSize: "1rem",
-              }}
-            />
-          </div>
+		return (
+			<tr
+				key={row.id || index}
+				className={hasNoProjectName ? "no-project-name" : ""}
+				style={{ textAlign: "center" }}
+			>
+				{/* Sector */}
+				{!hiddenColumns.includes("sector") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="sector">
+						{row.commonValues.sector}
+					</td>
+				)}
+				{/* Project Name */}
+				{!hiddenColumns.includes("prj_name") && row.showMergedCells && (
+					<td
+						rowSpan={row.commonValues.rowSpan}
+						className="sticky-column"
+						style={{ left: 0 }}
+						data-column="prj_name"
+					>
+						<b>
+							{row.prj_name || (
+								<span style={{ color: "#6c757d", fontStyle: "italic" }}>
+									{t("Unnamed Project")}
+								</span>
+							)}
+						</b>
+					</td>
+				)}
 
-          <div className="d-flex align-items-center">
-            <ExportToExcel
-              data={exportData}
-              tableId="financial-projects-table"
-              filename="FinancialProjectsTable"
-              buttonText={t("Export to Excel")}
-              buttonClassName="btn btn-soft-primary mb-2 me-2"
-            />
+				{/* Unit */}
+				{!hiddenColumns.includes("prj_measurement_unit") &&
+					row.showMergedCells && (
+						<td
+							rowSpan={row.commonValues.rowSpan}
+							data-column="prj_measurement_unit"
+						>
+							{row.commonValues.prj_measurement_unit}
+						</td>
+					)}
 
-            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="ms-2">
-              <DropdownToggle
-                tag={Button}
-                color="secondary"
-                className="btn btn-soft-primary mb-2"
-                style={{
-                  padding: '0.375rem 0.75rem',
-                  fontSize: '0.875rem',
-                }}
-              >
-                <FaColumns className="me-1" />
-                {t("Columns")}
-              </DropdownToggle>
-              <DropdownMenu end style={{ maxHeight: "300px", overflowY: "auto" }}>
-                <DropdownItem header>{t("Toggle Columns")}</DropdownItem>
-                {columnsConfig.map(col => (
-                  <DropdownItem
-                    key={col.id}
-                    onClick={() => toggleColumn(col.id)}
-                    className="d-flex justify-content-between align-items-center"
-                  >
-                    <span>{col.label}</span>
-                    {hiddenColumns.includes(col.id) ? <FaEyeSlash /> : <FaEye />}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </CardBody>
-      </Card>
+				{/* Measured Figure */}
+				{!hiddenColumns.includes("prj_measured_figure") &&
+					row.showMergedCells && (
+						<td
+							rowSpan={row.commonValues.rowSpan}
+							data-column="prj_measured_figure"
+						>
+							{row.prj_measured_figure}
+						</td>
+					)}
 
-      <div style={{ overflowX: "auto", width: "100%", borderRadius: "4px",
-       marginBottom: "1rem" }}>
-        <style>{`
+				{/* Status */}
+				{!hiddenColumns.includes("prj_status") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="prj_status">
+						{row.commonValues.prj_status}
+					</td>
+				)}
+
+				{/* Category */}
+				{!hiddenColumns.includes("project_category") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="project_category">
+						{row.commonValues.project_category}
+					</td>
+				)}
+
+				{/* Project Code */}
+				{!hiddenColumns.includes("prj_code") && row.showMergedCells && (
+					<td
+						rowSpan={row.commonValues.rowSpan}
+						style={{ left: 150 }}
+						data-column="prj_code"
+					>
+						<b>{row.prj_code}</b>
+					</td>
+				)}
+
+				{/* Specific Site */}
+				{!hiddenColumns.includes("prj_location_description") &&
+					row.showMergedCells && (
+						<td
+							rowSpan={row.commonValues.rowSpan}
+							data-column="prj_location_description"
+						>
+							{row.commonValues.prj_location_description}
+						</td>
+					)}
+
+				{/* Zone */}
+				{!hiddenColumns.includes("zone") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="zone">
+						{row.commonValues.zone}
+					</td>
+				)}
+
+				{/* Woreda */}
+				{!hiddenColumns.includes("woreda") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="woreda">
+						{row.commonValues.woreda}
+					</td>
+				)}
+
+				{/* Start Year */}
+				{!hiddenColumns.includes("start_year") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="start_year">
+						{row.commonValues.start_year}
+					</td>
+				)}
+
+				{/* End Year */}
+				{!hiddenColumns.includes("end_year") && row.showMergedCells && (
+					<td rowSpan={row.commonValues.rowSpan} data-column="end_year">
+						{row.commonValues.end_year}
+					</td>
+				)}
+
+				{/* Physical Performance Data */}
+				{!hiddenColumns.includes("bdr_before_previous_year_physical") && (
+					<td data-column="bdr_before_previous_year_physical">
+						{Number(row.bdr_before_previous_year_physical)?.toLocaleString() ||
+							""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_previous_year_physical") && (
+					<td data-column="bdr_previous_year_physical">
+						{Number(row.bdr_previous_year_physical)?.toLocaleString() || ""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_physical_baseline") && (
+					<td data-column="bdr_physical_baseline">
+						{Number(row.bdr_physical_baseline)?.toLocaleString() || ""}
+					</td>
+				)}
+
+				{/* Physical Action Plan */}
+				{!hiddenColumns.includes("bdr_physical_planned") && (
+					<td data-column="bdr_physical_planned">
+						{Number(row.bdr_physical_planned)?.toLocaleString() || ""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_physical_approved") && (
+					<td data-column="bdr_physical_approved">
+						{Number(row.bdr_physical_approved)?.toLocaleString() || ""}
+					</td>
+				)}
+
+				{/* Budget Information */}
+				{!hiddenColumns.includes("prj_total_estimate_budget") &&
+					row.showMergedCells && (
+						<td
+							rowSpan={row.commonValues.rowSpan}
+							data-column="prj_total_estimate_budget"
+						>
+							{Number(
+								row.commonValues.prj_total_estimate_budget
+							)?.toLocaleString()}
+						</td>
+					)}
+				{!hiddenColumns.includes("bdr_before_previous_year_financial") && (
+					<td data-column="bdr_before_previous_year_financial">
+						{Number(row.bdr_before_previous_year_financial)?.toLocaleString() ||
+							""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_previous_year_financial") && (
+					<td data-column="bdr_previous_year_financial">
+						{Number(row.bdr_previous_year_financial)?.toLocaleString() || ""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_financial_baseline") && (
+					<td data-column="bdr_financial_baseline">
+						{Number(row.bdr_financial_baseline)?.toLocaleString() || ""}
+					</td>
+				)}
+
+				{/* Current Budget Plan */}
+				{!hiddenColumns.includes("bdr_requested_amount") && (
+					<td data-column="bdr_requested_amount">
+						{Number(row.bdr_requested_amount)?.toLocaleString() || ""}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_released_amount") && (
+					<td data-column="bdr_released_amount">
+						{Number(row.bdr_released_amount)?.toLocaleString() || ""}
+					</td>
+				)}
+
+				{/* Supported by budgetary sources */}
+				{!hiddenColumns.includes("bdr_source_government_approved") && (
+					<td data-column="bdr_source_government_approved">
+						{governmentApproved.toLocaleString()}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_source_internal_requested") && (
+					<td data-column="bdr_source_internal_requested">
+						{internalRequested.toLocaleString()}
+					</td>
+				)}
+				{!hiddenColumns.includes("bdr_source_other_approved") && (
+					<td data-column="bdr_source_other_approved">
+						{otherApproved.toLocaleString()}
+					</td>
+				)}
+				{!hiddenColumns.includes("budget_sources_total") && (
+					<td data-column="budget_sources_total">
+						{budgetSourcesTotal.toLocaleString()}
+					</td>
+				)}
+			</tr>
+		);
+	};
+
+	return (
+		<div style={{ width: "100%", overflowX: "auto" }}>
+			{/* Search and Controls Card */}
+			<Card className="mb-3">
+				<CardBody className="d-flex justify-content-between align-items-center">
+					<div style={{ position: "relative", flex: 1, maxWidth: "400px" }}>
+						<Input
+							type="text"
+							placeholder={t("Search...")}
+							value={searchTerm}
+							onChange={handleSearchChange}
+							className="form-control"
+							style={{ paddingLeft: "35px" }}
+						/>
+						<FaSearch
+							style={{
+								position: "absolute",
+								left: "12px",
+								top: "50%",
+								transform: "translateY(-50%)",
+								color: "#6c757d",
+								fontSize: "1rem",
+							}}
+						/>
+					</div>
+					<div className="d-flex align-items-center">
+						<ExportToExcel
+							tableData={exportData}
+							tableName="Financial Data"
+							exportColumns={visibleExportColumns}
+							exportSearchParams={exportSearchParams}
+						/>
+						<Dropdown
+							isOpen={dropdownOpen}
+							toggle={toggleDropdown}
+							className="ms-2"
+						>
+							<DropdownToggle
+								tag={Button}
+								color="secondary"
+								className="btn btn-soft-primary mb-2"
+								style={{
+									padding: "0.375rem 0.75rem",
+									fontSize: "0.875rem",
+								}}
+							>
+								<FaColumns className="me-1" />
+								{t("Columns")}
+							</DropdownToggle>
+							<DropdownMenu
+								end
+								style={{ maxHeight: "300px", overflowY: "auto" }}
+							>
+								<DropdownItem header>{t("Toggle Columns")}</DropdownItem>
+								{columnsConfig.map((col) => (
+									<DropdownItem
+										key={col.id}
+										onClick={() => toggleColumn(col.id)}
+										className="d-flex justify-content-between align-items-center"
+									>
+										<span>{col.label}</span>
+										{hiddenColumns.includes(col.id) ? (
+											<FaEyeSlash />
+										) : (
+											<FaEye />
+										)}
+									</DropdownItem>
+								))}
+							</DropdownMenu>
+						</Dropdown>
+					</div>
+				</CardBody>
+			</Card>
+
+			{/* Table Container */}
+			<div
+				style={{
+					overflowX: "auto",
+					width: "100%",
+					borderRadius: "4px",
+					marginBottom: "1rem",
+				}}
+			>
+				<style>{`
           table {
             border-collapse: collapse !important;
             border: 1px solid #000 !important;
@@ -488,319 +910,398 @@ const FinancialProjectsTable = ({
           }
           .sector-toggle {
             margin-right: 8px;
-            transition: transform 0.2s;
+                            transition: transform 0.2s;
           }
           .sector-collapsed .sector-toggle {
             transform: rotate(-90deg);
           }
           .sticky-column:nth-child(1) { left: 0; }
-          .sticky-column:nth-child(2) { left: 50px; }
-          .sticky-column:nth-child(3) { left: 150px; }
+          .sticky-column:nth-child(7) { left: 150px; }
           .sticky-header:nth-child(1) { left: 0; }
-          .sticky-header:nth-child(2) { left: 50px; }
-          .sticky-header:nth-child(3) { left: 150px; }
+          .sticky-header:nth-child(7) { left: 150px; }
         `}</style>
 
-        <table
-          id="financial-projects-table"
-          ref={tableRef}
-          className={`table ${tableClass}`}
-          style={{ width: "100%", fontSize: "0.85rem", minWidth: "1000px" }}
-        >
-          <thead className={theadClass} style={{ position: "sticky", top: 0, zIndex: 3 }}>
-            <tr ref={headerRowRef}>
-              <th
-                data-column="projectSN"
-                rowSpan="2"
-                className="sticky-header"
-                style={{ left: 0 }}
-              >
-                {t("SN")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("projectSN", e)}></div>
-              </th>
-              <th
-                data-column="prj_code"
-                rowSpan="2"
-                className="sticky-header"
-                style={{ left: 50 }}
-              >
-                {t("Project Code")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_code", e)}></div>
-              </th>
-              <th
-                data-column="prj_name"
-                rowSpan="2"
-                className="sticky-header"
-                style={{ left: 150 }}
-              >
-                {t("Project Name")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_name", e)}></div>
-              </th>
-              <th data-column="prj_measurement_unit" rowSpan="2">
-                {t("Unit")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_measurement_unit", e)}></div>
-              </th>
-              <th data-column="weight" rowSpan="2">
-                {t("Weight")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("weight", e)}></div>
-              </th>
-              <th data-column="zone" colSpan="3">
-                {t("prj_location")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("zone", e)}></div>
-              </th>
-              <th data-column="start_year" colSpan="2">
-                {t("prj_implementation_year")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("start_year", e)}></div>
-              </th>
-              <th data-column="budgetyear" colSpan="9">
-                {t("")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("budgetyear", e)}></div>
-              </th>
-            </tr>
-            <tr>
-              <th data-column="zone">
-                {t("Location Zone")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("zone", e)}></div>
-              </th>
-              <th data-column="woreda">
-                {t("Location Woreda")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("woreda", e)}></div>
-              </th>
-              <th data-column="prj_location_description">
-                {t("Specific Site")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_location_description", e)}></div>
-              </th>
-              <th data-column="start_year">
-                {t("Start Year")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("start_year", e)}></div>
-              </th>
-              <th data-column="end_year">
-                {t("End Year")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("end_year", e)}></div>
-              </th>
-              <th data-column="cni_name">
-                {t("Contractor")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("cni_name", e)}></div>
-              </th>
-              <th data-column="beneficiery">
-                {t("Beneficiaries")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("beneficiery", e)}></div>
-              </th>
-              <th data-column="prj_measured_figure">
-                {t("Measured Figure")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_measured_figure", e)}></div>
-              </th>
-              <th data-column="budgetyear">
-                {t("Budget Year")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("budgetyear", e)}></div>
-              </th>
-              <th data-column="prp_physical_performance">
-                {t("Physical Performance")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prp_physical_performance", e)}></div>
-              </th>
-              <th data-column="prp_physical_planned">
-                {t("Physical Planned")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prp_physical_planned", e)}></div>
-              </th>
-              <th data-column="prj_total_estimate_budget">
-                {t("Total Budget")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prj_total_estimate_budget", e)}></div>
-              </th>
-              <th data-column="prp_budget_baseline">
-                {t("Budget Baseline")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("prp_budget_baseline", e)}></div>
-              </th>
-              <th data-column="bdr_released_amount">
-                {t("Released Amount")}
-                <div className="resize-handle" onMouseDown={(e) => startResizing("bdr_released_amount", e)}></div>
-              </th>
-            </tr>
-          </thead>
+				{/* Table */}
+				<table
+					id="financial-projects-table"
+					ref={tableRef}
+					className={`table ${tableClass}`}
+					style={{ width: "100%", fontSize: "0.85rem", minWidth: "1200px" }}
+				>
+					<thead ref={headerRowRef}>
+						{/* Row 1: Main Groups */}
+						<tr>
+							{!hiddenColumns.includes("sector") && (
+								<th rowSpan={3} data-column="sector">
+									{t("Sector")}
+								</th>
+							)}
+							{!hiddenColumns.includes("prj_name") && (
+								<th
+									rowSpan={3}
+									data-column="prj_name"
+									className="sticky-header"
+								>
+									{t("Project Name")}
+								</th>
+							)}
+							{!hiddenColumns.includes("prj_measurement_unit") && (
+								<th rowSpan={3} data-column="prj_measurement_unit">
+									{t("Unit")}
+								</th>
+							)}
+							{!hiddenColumns.includes("prj_measured_figure") && (
+								<th rowSpan={3} data-column="prj_measured_figure">
+									{t("Measured Figure")}
+								</th>
+							)}
+							{!hiddenColumns.includes("prj_status") && (
+								<th rowSpan={3} data-column="prj_status">
+									{t("Status")}
+								</th>
+							)}
+							{!hiddenColumns.includes("project_category") && (
+								<th rowSpan={3} data-column="project_category">
+									{t("Category")}
+								</th>
+							)}
+							{!hiddenColumns.includes("prj_code") && (
+								<th rowSpan={3} data-column="prj_code">
+									{t("Project Code")}
+								</th>
+							)}
 
-          <tbody>
-            {currentRows.length > 0 ? (
-              currentRows.map((row, index) => {
-                if (row.type === "sector") {
-                  const isExpanded = row.isExpanded;
-                  return (
-                    <tr
-                      key={`sector-${row.sectorName}`}
-                      className={`sector-row ${isExpanded ? '' : 'sector-collapsed'}`}
-                      onClick={() => toggleSector(row.sectorName)}
-                    >
-                      <td
-                        colSpan={columnsConfig.length}
-                        style={{
-                          position: 'sticky',
-                          left: 0,
-                          zIndex: 1,
-                          background: '#e8f4f0'
-                        }}
-                      >
-                        <span className="sector-toggle">
-                          {isExpanded ? <FaChevronDown /> : <FaChevronRight />}
-                        </span>
-                        {row.sectorName} ({row.projectCount} {t("projects")})
-                      </td>
-                    </tr>
-                  );
-                }
+							{/* Location Information Group */}
+							{(!hiddenColumns.includes("prj_location_description") ||
+								!hiddenColumns.includes("zone") ||
+								!hiddenColumns.includes("woreda")) && (
+								<th colSpan={3} data-column="location_information">
+									{t("Location Information")}
+								</th>
+							)}
 
-                const hasNoProjectName = !row.prj_name || row.prj_name.trim() === "";
+							{!hiddenColumns.includes("start_year") && (
+								<th rowSpan={3} data-column="start_year">
+									{t("Start Year")}
+								</th>
+							)}
+							{!hiddenColumns.includes("end_year") && (
+								<th rowSpan={3} data-column="end_year">
+									{t("End Year")}
+								</th>
+							)}
 
-                return (
-                  <tr key={row.id || index} className={hasNoProjectName ? "no-project-name" : ""} style={{ textAlign: "center" }}>
-                    {row.showMergedCells && (
-                      <>
-                        <td
-                          data-column="projectSN"
-                          rowSpan={row.commonValues.rowSpan}
-                          className="sticky-column"
-                          style={{ left: 0 }}
-                        >
-                          {row.projectSN}
-                        </td>
-                        <td
-                          data-column="prj_code"
-                          rowSpan={row.commonValues.rowSpan}
-                          className="sticky-column"
-                          style={{ left: 50 }}
-                        >
-                          <b>{row.prj_code}</b>
-                        </td>
-                        <td
-                          data-column="prj_name"
-                          rowSpan={row.commonValues.rowSpan}
-                          className="sticky-column"
-                          style={{ left: 150 }}
-                        >
-                          <b>
-                            {row.prj_name || (
-                              <span style={{ color: "#6c757d", fontStyle: "italic" }}>{t("Unnamed Project")}</span>
-                            )}
-                          </b>
-                        </td>
-                        <td data-column="prj_measurement_unit" rowSpan={row.commonValues.rowSpan}>
-                          {row.commonValues.prj_measurement_unit}
-                        </td>
-                        <td data-column="weight" rowSpan={row.commonValues.rowSpan}></td>
-                        <td data-column="zone" rowSpan={row.commonValues.rowSpan}>{row.commonValues.zone}</td>
-                        <td data-column="woreda" rowSpan={row.commonValues.rowSpan}>{row.commonValues.woreda}</td>
-                        <td data-column="prj_location_description" rowSpan={row.commonValues.rowSpan}>
-                          {row.commonValues.prj_location_description}
-                        </td>
-                        <td data-column="start_year" rowSpan={row.commonValues.rowSpan}>{row.commonValues.start_year}</td>
-                        <td data-column="end_year" rowSpan={row.commonValues.rowSpan}>{row.commonValues.end_year}</td>
-                        <td data-column="cni_name" rowSpan={row.commonValues.rowSpan}>{row.commonValues.cni_name}</td>
-                        <td data-column="beneficiery" rowSpan={row.commonValues.rowSpan}>
-                          {Number(row.commonValues.beneficiery)?.toLocaleString() || ""}
-                        </td>
-                        <td data-column="prj_measured_figure" rowSpan={row.commonValues.rowSpan}>
-                          {row.commonValues.prj_measured_figure}
-                        </td>
-                      </>
-                    )}
-                    <td data-column="budgetyear">{row.budgetyear}</td>
-                    <td data-column="prp_physical_performance">{row.prp_physical_performance}</td>
-                    <td data-column="prp_physical_planned">{row.prp_physical_planned}</td>
-                    <td data-column="prj_total_estimate_budget">
-                      {row.showMergedCells ? Number(row.commonValues.prj_total_estimate_budget)?.toLocaleString() : ""}
-                    </td>
-                    <td data-column="prp_budget_baseline">
-                      {Number(row.prp_budget_baseline)?.toLocaleString() || ""}
-                    </td>
-                    <td data-column="bdr_released_amount">
-                      {Number(row.bdr_released_amount)?.toLocaleString() || ""}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr>
-                <td colSpan={columnsConfig.length} style={{ textAlign: "center", padding: "2rem" }}>
-                  {searchTerm
-                    ? t("No projects match your search criteria.")
-                    : t("No projects available.")}
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+							{/* Physical Performance */}
+							{(!hiddenColumns.includes("bdr_before_previous_year_physical") ||
+								!hiddenColumns.includes("bdr_previous_year_physical") ||
+								!hiddenColumns.includes("bdr_physical_baseline")) && (
+								<th colSpan={3} data-column="physical_performance">
+									{t("Physical Performance")}
+								</th>
+							)}
 
-      {totalUniqueProjectNames > 0 && (
-        <div className="d-flex justify-content-between align-items-center mt-3">
-          <div className="text-muted small">
-            <h6>{t("Showing")} {uniqueProjectNamesCount} {t("of")} {totalUniqueProjectNames} {t("projects")}</h6>
-          </div>
+							{/* Physical Action Plan */}
+							{(!hiddenColumns.includes("bdr_physical_planned") ||
+								!hiddenColumns.includes("bdr_physical_approved")) && (
+								<th colSpan={2} data-column="physical_action_plan">
+									{t("Physical Action Plan")}
+								</th>
+							)}
 
-          <div className="d-flex align-items-center ms-auto">
-            <nav aria-label="Table pagination">
-              <ul className="pagination mb-0" style={{ fontSize: "1rem" }}>
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => paginate(1)} disabled={currentPage === 1} style={{ padding: '0.5rem 0.75rem' }}>
-                    &laquo;
-                  </button>
-                </li>
-                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => paginate(currentPage - 1)} disabled={currentPage === 1} style={{ padding: '0.5rem 0.75rem' }}>
-                    &lsaquo;
-                  </button>
-                </li>
+							{/* Budget Information */}
+							{(!hiddenColumns.includes("prj_total_estimate_budget") ||
+								!hiddenColumns.includes("bdr_before_previous_year_financial") ||
+								!hiddenColumns.includes("bdr_previous_year_financial") ||
+								!hiddenColumns.includes("bdr_financial_baseline")) && (
+								<th colSpan={4} data-column="budget_information">
+									{t("Budget Information")}
+								</th>
+							)}
 
-                {getPaginationItems()}
+							{/* Current Budget Plan */}
+							{(!hiddenColumns.includes("bdr_requested_amount") ||
+								!hiddenColumns.includes("bdr_released_amount")) && (
+								<th colSpan={2} data-column="current_budget_plan">
+									{t("Current Budget Plan")}
+								</th>
+							)}
 
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => paginate(currentPage + 1)} disabled={currentPage === totalPages} style={{ padding: '0.5rem 0.75rem' }}>
-                    &rsaquo;
-                  </button>
-                </li>
-                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
-                  <button className="page-link" onClick={() => paginate(totalPages)} disabled={currentPage === totalPages} style={{ padding: '0.5rem 0.75rem' }}>
-                    &raquo;
-                  </button>
-                </li>
-              </ul>
-            </nav>
+							{/* Supported by budgetary sources */}
+							{(!hiddenColumns.includes("bdr_source_government_approved") ||
+								!hiddenColumns.includes("bdr_source_internal_requested") ||
+								!hiddenColumns.includes("bdr_source_other_approved") ||
+								!hiddenColumns.includes("budget_sources_total")) && (
+								<th colSpan={4} data-column="budget_sources">
+									{t("Supported by budgetary sources")}
+								</th>
+							)}
+						</tr>
 
-            <div className="ms-3 position-relative" style={{ width: "80px" }}>
-              <select
-                className="form-control form-control-sm"
-                value={rowsPerPage}
-                onChange={(e) => {
-                  setRowsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                style={{
-                  appearance: 'none',
-                  background: 'transparent',
-                  paddingRight: '25px',
-                  width: '100%'
-                }}
-              >
-                {[ 50,100,200,300,500].map(option => (
-                  <option key={option} value={option}>{option}</option>
-                ))}
-                <option value={-1}>{t("All")}</option>
-              </select>
-              <span
-                style={{
-                  position: "absolute",
-                  top: "50%",
-                  right: "10px",
-                  pointerEvents: "none",
-                  transform: "translateY(-50%)",
-                  fontSize: "1rem"
-                }}
-              >
-                ▼
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+						{/* Row 2: Subgroups */}
+						<tr>
+							{/* Location Information subgroups */}
+							{!hiddenColumns.includes("prj_location_description") && (
+								<th rowSpan={2} data-column="prj_location_description">
+									{t("Specific Site")}
+								</th>
+							)}
+							{!hiddenColumns.includes("zone") && (
+								<th rowSpan={2} data-column="zone">
+									{t("Zone")}
+								</th>
+							)}
+							{!hiddenColumns.includes("woreda") && (
+								<th rowSpan={2} data-column="woreda">
+									{t("Woreda")}
+								</th>
+							)}
+
+							{/* Physical Performance subgroups */}
+							{!hiddenColumns.includes("bdr_before_previous_year_physical") && (
+								<th rowSpan={2} data-column="bdr_before_previous_year_physical">
+									{t("Before Previous Year")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_previous_year_physical") && (
+								<th rowSpan={2} data-column="bdr_previous_year_physical">
+									{t("Previous Year")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_physical_baseline") && (
+								<th rowSpan={2} data-column="bdr_physical_baseline">
+									{t("Physical Baseline")}
+								</th>
+							)}
+
+							{/* Physical Action Plan subgroups */}
+							{!hiddenColumns.includes("bdr_physical_planned") && (
+								<th rowSpan={2} data-column="bdr_physical_planned">
+									{t("Physical Planned")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_physical_approved") && (
+								<th rowSpan={2} data-column="bdr_physical_approved">
+									{t("Physical Approved")}
+								</th>
+							)}
+
+							{/* Budget Information subgroups */}
+							{!hiddenColumns.includes("prj_total_estimate_budget") && (
+								<th rowSpan={2} data-column="prj_total_estimate_budget">
+									{t("Total Estimate Budget")}
+								</th>
+							)}
+							{!hiddenColumns.includes(
+								"bdr_before_previous_year_financial"
+							) && (
+								<th
+									rowSpan={2}
+									data-column="bdr_before_previous_year_financial"
+								>
+									{t("Before Previous Year")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_previous_year_financial") && (
+								<th rowSpan={2} data-column="bdr_previous_year_financial">
+									{t("Previous Year")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_financial_baseline") && (
+								<th rowSpan={2} data-column="bdr_financial_baseline">
+									{t("Financial Baseline")}
+								</th>
+							)}
+
+							{/* Current Budget Plan subgroups */}
+							{!hiddenColumns.includes("bdr_requested_amount") && (
+								<th rowSpan={2} data-column="bdr_requested_amount">
+									{t("Requested Amount")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_released_amount") && (
+								<th rowSpan={2} data-column="bdr_released_amount">
+									{t("Released Amount")}
+								</th>
+							)}
+
+							{/* Supported by budgetary sources subgroups */}
+							{!hiddenColumns.includes("bdr_source_government_approved") && (
+								<th rowSpan={2} data-column="bdr_source_government_approved">
+									{t("Government Approved")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_source_internal_requested") && (
+								<th rowSpan={2} data-column="bdr_source_internal_requested">
+									{t("Internal Requested")}
+								</th>
+							)}
+							{!hiddenColumns.includes("bdr_source_other_approved") && (
+								<th rowSpan={2} data-column="bdr_source_other_approved">
+									{t("Other Approved")}
+								</th>
+							)}
+							{!hiddenColumns.includes("budget_sources_total") && (
+								<th rowSpan={2} data-column="budget_sources_total">
+									{t("Total")}
+								</th>
+							)}
+						</tr>
+					</thead>
+
+					<tbody>
+						{currentRows.length > 0 ? (
+							currentRows.map((row, index) => {
+								if (row.type === "sector") {
+									const isExpanded = row.isExpanded;
+									return (
+										<tr
+											key={`sector-${row.sectorName}`}
+											className={`sector-row ${isExpanded ? "" : "sector-collapsed"}`}
+											onClick={() => toggleSector(row.sectorName)}
+										>
+											<td
+												colSpan={visibleColumns.length}
+												style={{
+													position: "sticky",
+													left: 0,
+													zIndex: 1,
+													background: "#e8f4f0",
+												}}
+											>
+												<span className="sector-toggle">
+													{isExpanded ? <FaChevronDown /> : <FaChevronRight />}
+												</span>
+												{row.sectorName} ({row.projectCount} {t("projects")})
+											</td>
+										</tr>
+									);
+								}
+
+								return renderProjectRow(row, index);
+							})
+						) : (
+							<tr>
+								<td
+									colSpan={visibleColumns.length}
+									style={{ textAlign: "center", padding: "2rem" }}
+								>
+									{searchTerm
+										? t("No projects match your search criteria.")
+										: t("No projects available.")}
+								</td>
+							</tr>
+						)}
+					</tbody>
+				</table>
+			</div>
+
+			{/* Pagination */}
+			{totalUniqueProjectNames > 0 && (
+				<div className="d-flex justify-content-between align-items-center mt-3">
+					<div className="text-muted small">
+						<h6>
+							{t("Showing")} {uniqueProjectNamesCount} {t("of")}{" "}
+							{totalUniqueProjectNames} {t("projects")}
+						</h6>
+					</div>
+
+					<div className="d-flex align-items-center ms-auto">
+						<nav aria-label="Table pagination">
+							<ul className="pagination mb-0" style={{ fontSize: "1rem" }}>
+								<li
+									className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+								>
+									<button
+										className="page-link"
+										onClick={() => paginate(1)}
+										disabled={currentPage === 1}
+										style={{ padding: "0.5rem 0.75rem" }}
+									>
+										&laquo;
+									</button>
+								</li>
+								<li
+									className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+								>
+									<button
+										className="page-link"
+										onClick={() => paginate(currentPage - 1)}
+										disabled={currentPage === 1}
+										style={{ padding: "0.5rem 0.75rem" }}
+									>
+										&lsaquo;
+									</button>
+								</li>
+
+								{getPaginationItems()}
+
+								<li
+									className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+								>
+									<button
+										className="page-link"
+										onClick={() => paginate(currentPage + 1)}
+										disabled={currentPage === totalPages}
+										style={{ padding: "0.5rem 0.75rem" }}
+									>
+										&rsaquo;
+									</button>
+								</li>
+								<li
+									className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}
+								>
+									<button
+										className="page-link"
+										onClick={() => paginate(totalPages)}
+										disabled={currentPage === totalPages}
+										style={{ padding: "0.5rem 0.75rem" }}
+									>
+										&raquo;
+									</button>
+								</li>
+							</ul>
+						</nav>
+
+						<div className="ms-3 position-relative" style={{ width: "80px" }}>
+							<select
+								className="form-control form-control-sm"
+								value={rowsPerPage}
+								onChange={(e) => {
+									setRowsPerPage(Number(e.target.value));
+									setCurrentPage(1);
+								}}
+								style={{
+									appearance: "none",
+									background: "transparent",
+									paddingRight: "25px",
+									width: "100%",
+								}}
+							>
+								{[50, 100, 200, 300, 500].map((option) => (
+									<option key={option} value={option}>
+										{option}
+									</option>
+								))}
+								<option value={-1}>{t("All")}</option>
+							</select>
+							<span
+								style={{
+									position: "absolute",
+									top: "50%",
+									right: "10px",
+									pointerEvents: "none",
+									transform: "translateY(-50%)",
+									fontSize: "1rem",
+								}}
+							>
+								▼
+							</span>
+						</div>
+					</div>
+				</div>
+			)}
+		</div>
+	);
 };
 
 export default FinancialProjectsTable;

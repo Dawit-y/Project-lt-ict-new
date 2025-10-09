@@ -17,7 +17,7 @@ export const getUsers = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -29,7 +29,7 @@ export const getUser = async (params = {}) => {
     const response = await post(url);
     return response;
   } catch (error) {
-    throw error
+    throw error;
   }
 };
 
@@ -72,5 +72,4 @@ export const changePassword = (data) =>
   post(CHANGE_PASSWORD + `?usr_id=${data?.user_id}`, data);
 
 // delete  users
-export const deleteUsers = (data) =>
-  post(DELETE_USERS + `?usr_id=${data}`);
+export const deleteUsers = (data) => post(DELETE_USERS + `?usr_id=${data}`);

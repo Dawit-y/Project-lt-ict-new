@@ -13,21 +13,21 @@ import { useSearchProjects } from "../../queries/cso_project_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useTranslation } from "react-i18next";
+import { Button, Badge } from "reactstrap";
 import {
-  Button,
-  Badge
-} from "reactstrap";
-import { createSelectOptions, createMultiSelectOptions } from "../../utils/commonMethods";
+  createSelectOptions,
+  createMultiSelectOptions,
+} from "../../utils/commonMethods";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForLists from "../../components/Common/TreeForLists";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import AgGridContainer from "../../components/Common/AgGridContainer"
+import AgGridContainer from "../../components/Common/AgGridContainer";
 
 const ActivityList = () => {
   document.title = "CSO Activity List";
   const [projectMetaData, setProjectMetaData] = useState([]);
   const { t, i18n } = useTranslation();
-  const lang = i18n.language
+  const lang = i18n.language;
   const [isEdit, setIsEdit] = useState(false);
   const [project, setProject] = useState(null);
 
@@ -55,7 +55,7 @@ const ActivityList = () => {
         prj_location_woreda_id: prjLocationWoredaId,
       }),
       ...(include === 1 && { include: include }),
-      object_type_id: 5
+      object_type_id: 5,
     });
   }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
@@ -67,19 +67,21 @@ const ActivityList = () => {
     pct_name_en: projectCategoryOptionsEn,
     pct_name_or: projectCategoryOptionsOr,
     pct_name_am: projectCategoryOptionsAm,
-  } = createMultiSelectOptions(
-    projectCategoryData?.data || [],
-    "pct_id",
-    ["pct_name_en", "pct_name_or", "pct_name_am"]
-  );
+  } = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+    "pct_name_en",
+    "pct_name_or",
+    "pct_name_am",
+  ]);
   const { data: sectorInformationData } = useFetchSectorInformations();
   const sectorInformationOptions = createSelectOptions(
     sectorInformationData?.data || [],
     "sci_id",
-    "sci_name_en"
+    "sci_name_en",
   );
-  const [allowedTabs, setAllowedTabs] = useState(searchResults?.allowedTabs || []);
-  const allowedLinks = searchResults?.allowedLinks || []
+  const [allowedTabs, setAllowedTabs] = useState(
+    searchResults?.allowedTabs || [],
+  );
+  const allowedLinks = searchResults?.allowedLinks || [];
 
   useEffect(() => {
     if (projectMetaData?.prj_project_status_id <= 4) {
@@ -123,7 +125,7 @@ const ActivityList = () => {
       setPrjLocationWoredaId,
       showSearchResult,
       setShowSearchResult,
-    ]
+    ],
   );
 
   //delete projects
@@ -154,35 +156,36 @@ const ActivityList = () => {
         headerName: t("Activity Title"),
         sortable: true,
         filter: "agTextColumnFilter",
-
       },
       {
         field: "prj_code",
         headerName: t("prj_code"),
         sortable: true,
         filter: "agTextColumnFilter",
-
       },
       {
         field: "cso_name",
         headerName: "CSO Name",
         sortable: true,
         filter: "agTextColumnFilter",
-
       },
       {
         field: "zone_name",
         headerName: t("prj_owner_zone_id"),
         sortable: true,
         filter: "agTextColumnFilter",
-
       },
       {
         field: "sector_name",
         headerName: t("prj_sector_id"),
         sortable: true,
         filter: "agTextColumnFilter",
-        cellStyle: { 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap', 'overflow': 'hidden', 'padding': 0 }
+        cellStyle: {
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          padding: 0,
+        },
       },
       // {
       //   headerName: t("prs_status"),
@@ -204,9 +207,7 @@ const ActivityList = () => {
         headerName: t("prj_total_estimate_budget"),
         valueFormatter: (params) => {
           if (params.node.footer) {
-            return params.value
-              ? `$${params.value.toLocaleString()}`
-              : "";
+            return params.value ? `$${params.value.toLocaleString()}` : "";
           }
           return params.value ? `${params.value.toLocaleString()}` : "";
         },
@@ -242,7 +243,10 @@ const ActivityList = () => {
       <div className="page-content">
         <div className="w-100">
           <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div className="d-flex gap-2" style={{ display: "flex", flexWrap: "nowrap" }}>
+          <div
+            className="d-flex gap-2"
+            style={{ display: "flex", flexWrap: "nowrap" }}
+          >
             {/* Sidebar - Tree */}
             <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
               <TreeForLists
@@ -260,11 +264,12 @@ const ActivityList = () => {
                 dropdownSearchKeys={[
                   {
                     key: "prj_project_category_id",
-                    options: lang === "en"
-                      ? projectCategoryOptionsEn
-                      : lang === "am"
-                        ? projectCategoryOptionsAm
-                        : projectCategoryOptionsOr,
+                    options:
+                      lang === "en"
+                        ? projectCategoryOptionsEn
+                        : lang === "am"
+                          ? projectCategoryOptionsAm
+                          : projectCategoryOptionsOr,
                   },
                 ]}
                 checkboxSearchKeys={[]}

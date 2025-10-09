@@ -20,7 +20,7 @@ import RightSidebar from "../CommonForBoth/RightSidebar";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
-import { createSelector } from 'reselect';
+import { createSelector } from "reselect";
 
 const Layout = (props) => {
   const dispatch = useDispatch();
@@ -36,7 +36,8 @@ const Layout = (props) => {
       topbarTheme: layout.topbarTheme,
       showRightSidebar: layout.showRightSidebar,
       leftSideBarTheme: layout.leftSideBarTheme,
-    }));
+    }),
+  );
 
   const {
     isPreloader,
@@ -46,7 +47,7 @@ const Layout = (props) => {
     topbarTheme,
     showRightSidebar,
     leftSideBarTheme,
-    layoutModeType
+    layoutModeType,
   } = useSelector(selectLayoutProperties);
 
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);

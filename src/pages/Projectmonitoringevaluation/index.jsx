@@ -45,14 +45,15 @@ import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-const AttachFileModal = lazy(() =>
-	import("../../components/Common/AttachFileModal")
+const AttachFileModal = lazy(
+	() => import("../../components/Common/AttachFileModal")
 );
-const ConvInfoModal = lazy(() =>
-	import("../../pages/Conversationinformation/ConvInfoModal")
+const ConvInfoModal = lazy(
+	() => import("../../pages/Conversationinformation/ConvInfoModal")
 );
 import { PAGE_ID } from "../../constants/constantFile";
 import { monitoringExportColumns } from "../../utils/exportColumnsForDetails";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -126,29 +127,29 @@ const ProjectMonitoringEvaluationModel = (props) => {
 		try {
 			await addProjectMonitoringEvaluation.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleUpdateProjectMonitoringEvaluation = async (data) => {
 		try {
 			await updateProjectMonitoringEvaluation.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.error(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 	const handleDeleteProjectMonitoringEvaluation = async () => {
 		if (projectMonitoringEvaluation && projectMonitoringEvaluation.mne_id) {
@@ -156,11 +157,11 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				const id = projectMonitoringEvaluation.mne_id;
 				await deleteProjectMonitoringEvaluation.mutateAsync(id);
 				toast.success(t("delete_success"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(t("delete_failure"), {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -323,12 +324,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 			mne_visit_type: Yup.string().required(t("mne_visit_type")),
 			mne_project_id: Yup.string().required(t("mne_project_id")),
 			mne_type_id: Yup.string().required(t("mne_type_id")),
-			mne_physical: formattedAmountValidation(1, 100, true),
-			mne_financial: formattedAmountValidation(1, 10000000000, true),
-			mne_physical_region: formattedAmountValidation(1, 100, true),
-			mne_financial_region: formattedAmountValidation(1, 10000000000, true),
-			mne_physical_zone: formattedAmountValidation(1, 100, true),
-			mne_financial_zone: formattedAmountValidation(1, 10000000000, true),
+			mne_physical: formattedAmountValidation(1, 100, false),
+			mne_financial: formattedAmountValidation(1, 10000000000, false),
+			mne_physical_region: formattedAmountValidation(1, 100, false),
+			mne_financial_region: formattedAmountValidation(1, 10000000000, false),
+			mne_physical_zone: formattedAmountValidation(1, 100, false),
+			mne_financial_zone: formattedAmountValidation(1, 10000000000, false),
 			mne_team_members: Yup.string().required(t("mne_team_members")),
 			mne_record_date: Yup.string().required(t("mne_record_date")),
 			mne_start_date: Yup.string().required(t("mne_start_date")),
@@ -344,16 +345,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 					mne_visit_type: values.mne_visit_type,
 					mne_project_id: passedId,
 					mne_type_id: values.mne_type_id,
-					mne_physical: convertToNumericValue(values.mne_physical),
-					mne_financial: convertToNumericValue(values.mne_financial),
-					mne_physical_region: convertToNumericValue(
-						values.mne_physical_region
-					),
-					mne_financial_region: convertToNumericValue(
-						values.mne_financial_region
-					),
-					mne_physical_zone: convertToNumericValue(values.mne_physical_zone),
-					mne_financial_zone: convertToNumericValue(values.mne_financial_zone),
+					mne_physical: values.mne_physical,
+					mne_financial: values.mne_financial,
+					mne_physical_region: values.mne_physical_region,
+					mne_financial_region: values.mne_financial_region,
+					mne_physical_zone: values.mne_physical_zone,
+					mne_financial_zone: values.mne_financial_zone,
 					mne_team_members: values.mne_team_members,
 					mne_feedback: values.mne_feedback,
 					mne_weakness: values.mne_weakness,
@@ -377,16 +374,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 					mne_visit_type: values.mne_visit_type,
 					mne_project_id: passedId,
 					mne_type_id: values.mne_type_id,
-					mne_physical: convertToNumericValue(values.mne_physical),
-					mne_financial: convertToNumericValue(values.mne_financial),
-					mne_physical_region: convertToNumericValue(
-						values.mne_physical_region
-					),
-					mne_financial_region: convertToNumericValue(
-						values.mne_financial_region
-					),
-					mne_physical_zone: convertToNumericValue(values.mne_physical_zone),
-					mne_financial_zone: convertToNumericValue(values.mne_financial_zone),
+					mne_physical: values.mne_physical,
+					mne_financial: values.mne_financial,
+					mne_physical_region: values.mne_physical_region,
+					mne_financial_region: values.mne_financial_region,
+					mne_physical_zone: values.mne_physical_zone,
+					mne_financial_zone: values.mne_financial_zone,
 					mne_team_members: values.mne_team_members,
 					mne_feedback: values.mne_feedback,
 					mne_weakness: values.mne_weakness,
@@ -425,24 +418,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 			mne_visit_type: projectMonitoringEvaluation.mne_visit_type,
 			mne_project_id: projectMonitoringEvaluation.mne_project_id,
 			mne_type_id: projectMonitoringEvaluation.mne_type_id,
-			mne_physical: Number(
-				projectMonitoringEvaluation.mne_physical
-			).toLocaleString(),
-			mne_financial: Number(
-				projectMonitoringEvaluation.mne_financial
-			).toLocaleString(),
-			mne_physical_region: Number(
-				projectMonitoringEvaluation.mne_physical_region
-			).toLocaleString(),
-			mne_financial_region: Number(
-				projectMonitoringEvaluation.mne_financial_region
-			).toLocaleString(),
-			mne_physical_zone: Number(
-				projectMonitoringEvaluation.mne_physical_zone
-			).toLocaleString(),
-			mne_financial_zone: Number(
-				projectMonitoringEvaluation.mne_financial_zone
-			).toLocaleString(),
+			mne_physical: projectMonitoringEvaluation.mne_physical,
+			mne_financial: projectMonitoringEvaluation.mne_financial,
+			mne_physical_region: projectMonitoringEvaluation.mne_physical_region,
+			mne_financial_region: projectMonitoringEvaluation.mne_financial_region,
+			mne_physical_zone: projectMonitoringEvaluation.mne_physical_zone,
+			mne_financial_zone: projectMonitoringEvaluation.mne_financial_zone,
 			mne_team_members: projectMonitoringEvaluation.mne_team_members,
 			mne_feedback: projectMonitoringEvaluation.mne_feedback,
 			mne_weakness: projectMonitoringEvaluation.mne_weakness,
@@ -483,7 +464,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 			// woreda
 			1: touched.mne_physical || touched.mne_financial,
 		};
-	}, [validation.touched]);
+	}, [validation.touched, validation.dirty, validation.errors]);
 
 	const navLinkClass = (tabId) =>
 		classnames("nav-link", {
@@ -496,12 +477,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 		const baseColumns = [
 			{
 				header: t("mne_transaction_type"),
-				accessorKey: "mne_transaction_type",
+				accessorKey: "mne_transaction_type_id",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					const labelKey =
-						transactionTypeMap[cellProps.row.original.mne_transaction_type_id];
+				cell: ({ getValue }) => {
+					const val = getValue();
+					const labelKey = transactionTypeMap[val] ?? "-";
 					return <span>{t(labelKey)}</span>;
 				},
 			},
@@ -510,28 +491,21 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				accessorKey: "mne_visit_type",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					const labelKey = visitTypeMap[cellProps.row.original.mne_visit_type];
+				cell: ({ getValue }) => {
+					const labelKey = visitTypeMap[getValue()] ?? "-";
 					return <span>{t(labelKey)}</span>;
 				},
 			},
-
 			{
 				header: t("mne_physical_region"),
 				accessorKey: "mne_physical_region",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(
-									cellProps.row.original.mne_physical_region
-								).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return value !== null && value !== undefined && value !== ""
+						? `${value}%`
+						: "-";
 				},
 			},
 			{
@@ -539,35 +513,18 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				accessorKey: "mne_financial_region",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(
-									cellProps.row.original.mne_financial_region
-								).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
 			},
 			{
 				header: t("mne_physical_zone"),
 				accessorKey: "mne_physical_zone",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(
-									cellProps.row.original.mne_physical_zone
-								).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return value !== null && value !== undefined && value !== ""
+						? `${value}%`
+						: "-";
 				},
 			},
 			{
@@ -575,18 +532,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				accessorKey: "mne_financial_zone",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(
-									cellProps.row.original.mne_financial_zone
-								).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
 			},
 
 			{
@@ -594,15 +540,11 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				accessorKey: "mne_physical",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(cellProps.row.original.mne_physical).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
+				cell: ({ getValue }) => {
+					const value = getValue();
+					return value !== null && value !== undefined && value !== ""
+						? `${value}%`
+						: "-";
 				},
 			},
 			{
@@ -610,55 +552,28 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				accessorKey: "mne_financial",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(
-								Number(cellProps.row.original.mne_financial).toLocaleString(),
-								30
-							) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => parseFloat(getValue()).toLocaleString() ?? "-",
 			},
 			{
 				header: t("mne_record_date"),
 				accessorKey: "mne_record_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.mne_record_date, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("mne_start_date"),
 				accessorKey: "mne_start_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.mne_start_date, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("mne_end_date"),
 				accessorKey: "mne_end_date",
 				enableColumnFilter: false,
 				enableSorting: true,
-				cell: (cellProps) => {
-					return (
-						<span>
-							{truncateText(cellProps.row.original.mne_end_date, 30) || "-"}
-						</span>
-					);
-				},
+				cell: ({ getValue }) => <span>{toEthiopian(getValue()) || "-"}</span>,
 			},
 			{
 				header: t("view_detail"),
@@ -732,13 +647,13 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{cellProps.row.original.is_editable == 1 && (
 								<Button
-									color="none"
+									color="Link"
 									className="text-success"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -752,8 +667,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
 								</Button>
 							)}
 							{cellProps.row.original.is_deletable == 9 && (
-								<Link
-									to="#"
+								<Button
+									color="Link"
 									className="text-danger"
 									onClick={() => {
 										const data = cellProps.row.original;
@@ -767,7 +682,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									<UncontrolledTooltip placement="top" target="deletetooltip">
 										Delete
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 						</div>
 					);
@@ -775,7 +690,13 @@ const ProjectMonitoringEvaluationModel = (props) => {
 			});
 		}
 		return baseColumns;
-	}, [handleProjectMonitoringEvaluationClick, toggleViewModal, onClickDelete]);
+	}, [
+		handleProjectMonitoringEvaluationClick,
+		toggleViewModal,
+		onClickDelete,
+		transactionTypeMap,
+		visitTypeMap,
+	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
@@ -820,7 +741,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 				) : (
 					<TableContainer
 						columns={columns}
-						data={showSearchResult ? searchResults?.data : data?.data || []}
+						data={data?.data || []}
 						isGlobalFilter={true}
 						isAddButton={data?.previledge?.is_role_can_add == 1}
 						isCustomPageSize={true}
@@ -857,6 +778,12 @@ const ProjectMonitoringEvaluationModel = (props) => {
 								},
 							},
 							...monitoringExportColumns,
+						]}
+						isSummaryRow={true}
+						summaryColumns={[
+							"mne_financial",
+							"mne_financial_zone",
+							"mne_financial_region",
 						]}
 					/>
 				)}
@@ -969,7 +896,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 								>
 									<NavItem>
 										<NavLink
-											className={navLinkClass("2")}
+											className={`nav-link ${activeTab === "2" ? "active" : ""}`}
 											onClick={() => toggleTab("2")}
 										>
 											<i className="mdi mdi-map-marker-multiple me-1"></i>
@@ -978,7 +905,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									</NavItem>
 									<NavItem>
 										<NavLink
-											className={navLinkClass("3")}
+											className={`nav-link ${activeTab === "3" ? "active" : ""}`}
 											onClick={() => toggleTab("3")}
 										>
 											<i className="mdi mdi-map-marker-outline me-1"></i>
@@ -987,7 +914,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									</NavItem>
 									<NavItem>
 										<NavLink
-											className={navLinkClass("1")}
+											className={`nav-link ${activeTab === "1" ? "active" : ""}`}
 											onClick={() => toggleTab("1")}
 										>
 											<i className="mdi mdi-map-marker-radius me-1"></i>
@@ -1005,7 +932,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_physical_region"}
-														isRequired={true}
+														isRequired={false}
 														label={t("regional_physical")}
 													/>
 												</div>
@@ -1015,7 +942,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_financial_region"}
-														isRequired={true}
+														isRequired={false}
 														label={t("regional_financial")}
 													/>
 												</div>
@@ -1031,7 +958,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_physical_zone"}
-														isRequired={true}
+														isRequired={false}
 														label={t("zonal_physical")}
 													/>
 												</div>
@@ -1041,7 +968,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_financial_zone"}
-														isRequired={true}
+														isRequired={false}
 														label={t("zonal_financial")}
 													/>
 												</div>
@@ -1057,7 +984,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_physical"}
-														isRequired={true}
+														isRequired={false}
 														label={t("woreda_physical")}
 													/>
 												</div>
@@ -1067,7 +994,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 													<FormattedAmountField
 														validation={validation}
 														fieldId={"mne_financial"}
-														isRequired={true}
+														isRequired={false}
 														label={t("woreda_financial")}
 													/>
 												</div>
@@ -1342,7 +1269,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 									{addProjectMonitoringEvaluation.isPending ||
 									updateProjectMonitoringEvaluation.isPending ? (
 										<Button
-											color="primary"
+											color="success"
 											type="submit"
 											className="save-user"
 											disabled={

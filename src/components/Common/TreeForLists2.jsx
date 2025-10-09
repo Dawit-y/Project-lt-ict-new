@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef, memo } from "react";
+import { useState, useCallback, useRef, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { useFetchAddressStructures } from "../../queries/address_structure_query";
 import { Tree } from "react-arborist";
@@ -22,14 +22,12 @@ import {
 	Spinner,
 } from "reactstrap";
 import useResizeObserver from "use-resize-observer";
-import { v4 as uuidv4 } from "uuid";
 import { useAuthUser } from "../../hooks/useAuthUser";
 import { useDragDropManager } from "react-dnd";
 import FetchErrorHandler from "./FetchErrorHandler";
 
 const TreeForLists = ({
 	onNodeSelect,
-	setIsAddressLoading,
 	setInclude,
 	isCollapsed,
 	setIsCollapsed,
@@ -40,38 +38,18 @@ const TreeForLists = ({
 	const treeRef = useRef();
 	const searchInputRef = useRef();
 	const { userId } = useAuthUser();
-	const { data, isLoading, isError, error, refetch } =
-		useFetchAddressStructures(userId);
-	const [treeData, setTreeData] = useState([]);
+	const {
+		tree: treeData,
+		isLoading,
+		isError,
+		error,
+		refetch,
+	} = useFetchAddressStructures(userId);
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const [selectedNode, setSelectedNode] = useState({});
 	const [includeChecked, setIncludeChecked] = useState(false);
 	const { ref, width, height } = useResizeObserver();
-
-	useEffect(() => {
-		setIsAddressLoading(isLoading);
-	}, [isLoading]);
-
-	useEffect(() => {
-		if (data) {
-			const transformData = (regions) =>
-				regions.map((region) => ({
-					...region,
-					id: region.id?.toString() || uuidv4(),
-					children:
-						region.children?.map((zone) => ({
-							...zone,
-							id: zone.id?.toString() || uuidv4(),
-							children:
-								zone.children?.map((woreda) => ({
-									...woreda,
-									id: woreda.id?.toString() || uuidv4(),
-								})) || [],
-						})) || [],
-				}));
-			setTreeData(transformData(data));
-		}
-	}, [data]);
 
 	const handleCheckboxChange = (e) => {
 		const checked = e.target.checked;
@@ -133,7 +111,7 @@ const TreeForLists = ({
 			<div
 				style={{
 					position: "relative",
-					flex: isCollapsed ? "0 0 60px" : "0 0 25%",
+					flex: isCollapsed ? "0 0 60px" : `0 0 ${widthInPercent}%`,
 					minWidth: isCollapsed ? "60px" : "250px",
 					transition: "all 0.3s ease",
 				}}
@@ -162,7 +140,7 @@ const TreeForLists = ({
 					<h5>{t("address_tree_Search")}</h5>
 				)}
 				<hr />
-				<p className="text-center">
+				<div className="text-center">
 					{isLoading ? (
 						<Spinner size={"sm"} color="primary" />
 					) : (
@@ -170,7 +148,7 @@ const TreeForLists = ({
 							<FetchErrorHandler error={error} refetch={refetch} onTree />
 						</div>
 					)}
-				</p>
+				</div>
 			</div>
 		);
 	}
@@ -294,8 +272,8 @@ const TreeForLists = ({
 												{lang === "en" && selectedNode.add_name_en
 													? selectedNode.add_name_en
 													: lang === "am" && selectedNode.add_name_am
-													? selectedNode.add_name_am
-													: selectedNode.name}
+														? selectedNode.add_name_am
+														: selectedNode.name}
 											</UncontrolledTooltip>
 										</>
 									)}
@@ -443,8 +421,8 @@ const Node = ({ node, style, dragHandle, onNodeSelect }) => {
 				{lang === "en" && node.data.add_name_en
 					? node.data.add_name_en
 					: lang === "am" && node.data.add_name_am
-					? node.data.add_name_am
-					: node.data.name}
+						? node.data.add_name_am
+						: node.data.name}
 			</span>
 		</div>
 	);

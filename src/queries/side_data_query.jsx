@@ -23,17 +23,19 @@ const buildGroupedSideData = (data) => {
 
 export const useFetchSideData = (userId) => {
   return useQuery({
-    queryKey: ["sideData", userId],
-    queryFn: async () => {
-      const { data } = await post(`menus`);
-      return data;
-    },
-    select: (data) => buildGroupedSideData(data),
-    staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 62,
-    meta: { persist: true },
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
-    enabled: !!userId
-  });
+		queryKey: ["sideData", userId],
+		queryFn: async () => {
+			const { data } = await post(`menus`);
+			return data;
+		},
+		select: (data) => buildGroupedSideData(data),
+		staleTime: 1000 * 60 * 60,
+		gcTime: 1000 * 60 * 62,
+		retry: 3, // Retry up to 3 times
+		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
+		meta: { persist: true },
+		refetchOnMount: true,
+		refetchOnWindowFocus: false,
+		enabled: !!userId,
+	});
 };

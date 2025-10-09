@@ -2,19 +2,19 @@
 import { all, call, fork, takeEvery, put } from "redux-saga/effects";
 
 import {
-	CHANGE_LAYOUT,
-	CHANGE_LAYOUT_WIDTH,
-	CHANGE_SIDEBAR_THEME,
-	CHANGE_SIDEBAR_THEME_IMAGE,
-	CHANGE_SIDEBAR_TYPE,
-	CHANGE_TOPBAR_THEME,
-	SHOW_RIGHT_SIDEBAR,
-	CHANGE_LAYOUT_MODE,
+  CHANGE_LAYOUT,
+  CHANGE_LAYOUT_WIDTH,
+  CHANGE_SIDEBAR_THEME,
+  CHANGE_SIDEBAR_THEME_IMAGE,
+  CHANGE_SIDEBAR_TYPE,
+  CHANGE_TOPBAR_THEME,
+  SHOW_RIGHT_SIDEBAR,
+  CHANGE_LAYOUT_MODE,
 } from "./actionTypes";
 
 import {
-	changeSidebarType as changeSidebarTypeAction,
-	changeTopbarTheme as changeTopbarThemeAction,
+  changeSidebarType as changeSidebarTypeAction,
+  changeTopbarTheme as changeTopbarThemeAction,
 } from "./actions";
 import { getLayout } from "../../utils/layoutStorage";
 
@@ -22,14 +22,14 @@ import { getLayout } from "../../utils/layoutStorage";
  * Changes the body attribute
  */
 function changeBodyAttribute(attribute, value) {
-	if (document.body) document.body.setAttribute(attribute, value);
-	return true;
+  if (document.body) document.body.setAttribute(attribute, value);
+  return true;
 }
 
 const changeHtmlAttribute = (attribute, value) => {
-	if (document.documentElement)
-		document.documentElement.setAttribute(attribute, value);
-	return true;
+  if (document.documentElement)
+    document.documentElement.setAttribute(attribute, value);
+  return true;
 };
 
 /**
@@ -37,19 +37,19 @@ const changeHtmlAttribute = (attribute, value) => {
  * @param {*} cssClass
  */
 function manageBodyClass(cssClass, action = "toggle") {
-	switch (action) {
-		case "add":
-			if (document.body) document.body.classList.add(cssClass);
-			break;
-		case "remove":
-			if (document.body) document.body.classList.remove(cssClass);
-			break;
-		default:
-			if (document.body) document.body.classList.toggle(cssClass);
-			break;
-	}
+  switch (action) {
+    case "add":
+      if (document.body) document.body.classList.add(cssClass);
+      break;
+    case "remove":
+      if (document.body) document.body.classList.remove(cssClass);
+      break;
+    default:
+      if (document.body) document.body.classList.toggle(cssClass);
+      break;
+  }
 
-	return true;
+  return true;
 }
 
 /**
@@ -57,17 +57,17 @@ function manageBodyClass(cssClass, action = "toggle") {
  * @param {*} param0
  */
 function* changeLayout({ payload: layout }) {
-	try {
-		if (layout === "horizontal") {
-			// yield put(changeTopbarThemeAction("dark"))
-			document.body.removeAttribute("data-sidebar");
-			document.body.removeAttribute("data-sidebar-image");
-			document.body.removeAttribute("data-sidebar-size");
-		} else {
-			// yield put(changeTopbarThemeAction("light"))
-		}
-		yield call(changeBodyAttribute, "data-layout", layout);
-	} catch (error) {}
+  try {
+    if (layout === "horizontal") {
+      // yield put(changeTopbarThemeAction("dark"))
+      document.body.removeAttribute("data-sidebar");
+      document.body.removeAttribute("data-sidebar-image");
+      document.body.removeAttribute("data-sidebar-size");
+    } else {
+      // yield put(changeTopbarThemeAction("light"))
+    }
+    yield call(changeBodyAttribute, "data-layout", layout);
+  } catch (error) {}
 }
 
 /**
@@ -75,12 +75,12 @@ function* changeLayout({ payload: layout }) {
  * @param {*} param0
  */
 function* changeLayoutMode({ payload: mode }) {
-	try {
-		// yield call(changeBodyAttribute, "data-layout-mode", mode);
-		yield call(changeHtmlAttribute, "data-bs-theme", mode);
-	} catch (error) {
-		// console.log(error);
-	}
+  try {
+    // yield call(changeBodyAttribute, "data-layout-mode", mode);
+    yield call(changeHtmlAttribute, "data-bs-theme", mode);
+  } catch (error) {
+    // console.log(error);
+  }
 }
 
 /**
@@ -88,20 +88,20 @@ function* changeLayoutMode({ payload: mode }) {
  * @param {*} param0
  */
 function* changeLayoutWidth({ payload: width }) {
-	try {
-		if (width === "boxed") {
-			yield put(changeSidebarTypeAction("icon"));
-			yield call(changeBodyAttribute, "data-layout-size", width);
-			yield call(changeBodyAttribute, "data-layout-scrollable", false);
-		} else if (width === "scrollable") {
-			yield put(changeSidebarTypeAction("default"));
-			yield call(changeBodyAttribute, "data-layout-scrollable", true);
-		} else {
-			yield put(changeSidebarTypeAction("default"));
-			yield call(changeBodyAttribute, "data-layout-size", width);
-			yield call(changeBodyAttribute, "data-layout-scrollable", false);
-		}
-	} catch (error) {}
+  try {
+    if (width === "boxed") {
+      yield put(changeSidebarTypeAction("icon"));
+      yield call(changeBodyAttribute, "data-layout-size", width);
+      yield call(changeBodyAttribute, "data-layout-scrollable", false);
+    } else if (width === "scrollable") {
+      yield put(changeSidebarTypeAction("default"));
+      yield call(changeBodyAttribute, "data-layout-scrollable", true);
+    } else {
+      yield put(changeSidebarTypeAction("default"));
+      yield call(changeBodyAttribute, "data-layout-size", width);
+      yield call(changeBodyAttribute, "data-layout-scrollable", false);
+    }
+  } catch (error) {}
 }
 
 /**
@@ -109,9 +109,9 @@ function* changeLayoutWidth({ payload: width }) {
  * @param {*} param0
  */
 function* changeLeftSidebarTheme({ payload: theme }) {
-	try {
-		yield call(changeBodyAttribute, "data-sidebar", theme);
-	} catch (error) {}
+  try {
+    yield call(changeBodyAttribute, "data-sidebar", theme);
+  } catch (error) {}
 }
 
 /**
@@ -119,9 +119,9 @@ function* changeLeftSidebarTheme({ payload: theme }) {
  * @param {*} param0
  */
 function* changeLeftSidebarThemeImage({ payload: theme }) {
-	try {
-		yield call(changeBodyAttribute, "data-sidebar-image", theme);
-	} catch (error) {}
+  try {
+    yield call(changeBodyAttribute, "data-sidebar-image", theme);
+  } catch (error) {}
 }
 
 /**
@@ -129,9 +129,9 @@ function* changeLeftSidebarThemeImage({ payload: theme }) {
  * @param {*} param0
  */
 function* changeTopbarTheme({ payload: theme }) {
-	try {
-		yield call(changeBodyAttribute, "data-topbar", theme);
-	} catch (error) {}
+  try {
+    yield call(changeBodyAttribute, "data-topbar", theme);
+  } catch (error) {}
 }
 
 /**
@@ -139,112 +139,112 @@ function* changeTopbarTheme({ payload: theme }) {
  * @param {*} param0
  */
 function* changeLeftSidebarType({ payload: { sidebarType, isMobile } }) {
-	try {
-		switch (sidebarType) {
-			case "compact":
-				yield call(changeBodyAttribute, "data-sidebar-size", "small");
-				yield call(manageBodyClass, "sidebar-enable", "remove");
-				yield call(manageBodyClass, "vertical-collpsed", "remove");
-				break;
-			case "icon":
-				yield call(changeBodyAttribute, "data-sidebar-size", "");
-				yield call(changeBodyAttribute, "data-keep-enlarged", "true");
-				yield call(manageBodyClass, "vertical-collpsed", "add");
-				break;
-			case "condensed":
-				yield call(manageBodyClass, "sidebar-enable", "add");
-				if (window.screen.width >= 992) {
-					yield call(manageBodyClass, "vertical-collpsed", "remove");
-					yield call(manageBodyClass, "sidebar-enable", "remove");
-					yield call(manageBodyClass, "vertical-collpsed", "add");
-					yield call(manageBodyClass, "sidebar-enable", "add");
-				} else {
-					yield call(manageBodyClass, "sidebar-enable", "add");
-					yield call(manageBodyClass, "vertical-collpsed", "add");
-				}
-				break;
-			default:
-				yield call(changeBodyAttribute, "data-sidebar-size", "");
-				yield call(manageBodyClass, "sidebar-enable", "remove");
-				if (!isMobile)
-					yield call(manageBodyClass, "vertical-collpsed", "remove");
-				break;
-		}
-	} catch (error) {}
+  try {
+    switch (sidebarType) {
+      case "compact":
+        yield call(changeBodyAttribute, "data-sidebar-size", "small");
+        yield call(manageBodyClass, "sidebar-enable", "remove");
+        yield call(manageBodyClass, "vertical-collpsed", "remove");
+        break;
+      case "icon":
+        yield call(changeBodyAttribute, "data-sidebar-size", "");
+        yield call(changeBodyAttribute, "data-keep-enlarged", "true");
+        yield call(manageBodyClass, "vertical-collpsed", "add");
+        break;
+      case "condensed":
+        yield call(manageBodyClass, "sidebar-enable", "add");
+        if (window.screen.width >= 992) {
+          yield call(manageBodyClass, "vertical-collpsed", "remove");
+          yield call(manageBodyClass, "sidebar-enable", "remove");
+          yield call(manageBodyClass, "vertical-collpsed", "add");
+          yield call(manageBodyClass, "sidebar-enable", "add");
+        } else {
+          yield call(manageBodyClass, "sidebar-enable", "add");
+          yield call(manageBodyClass, "vertical-collpsed", "add");
+        }
+        break;
+      default:
+        yield call(changeBodyAttribute, "data-sidebar-size", "");
+        yield call(manageBodyClass, "sidebar-enable", "remove");
+        if (!isMobile)
+          yield call(manageBodyClass, "vertical-collpsed", "remove");
+        break;
+    }
+  } catch (error) {}
 }
 
 /**
  * Show the rightsidebar
  */
 function* showRightSidebar() {
-	try {
-		yield call(manageBodyClass, "right-bar-enabled", "add");
-	} catch (error) {}
+  try {
+    yield call(manageBodyClass, "right-bar-enabled", "add");
+  } catch (error) {}
 }
 
 /**
  * Watchers
  */
 export function* watchChangeLayoutType() {
-	yield takeEvery(CHANGE_LAYOUT, changeLayout);
+  yield takeEvery(CHANGE_LAYOUT, changeLayout);
 }
 
 export function* watchChangeLayoutWidth() {
-	yield takeEvery(CHANGE_LAYOUT_WIDTH, changeLayoutWidth);
+  yield takeEvery(CHANGE_LAYOUT_WIDTH, changeLayoutWidth);
 }
 
 export function* watchChangeLeftSidebarTheme() {
-	yield takeEvery(CHANGE_SIDEBAR_THEME, changeLeftSidebarTheme);
+  yield takeEvery(CHANGE_SIDEBAR_THEME, changeLeftSidebarTheme);
 }
 
 export function* watchChangeLeftSidebarThemeImage() {
-	yield takeEvery(CHANGE_SIDEBAR_THEME_IMAGE, changeLeftSidebarThemeImage);
+  yield takeEvery(CHANGE_SIDEBAR_THEME_IMAGE, changeLeftSidebarThemeImage);
 }
 
 export function* watchChangeLeftSidebarType() {
-	yield takeEvery(CHANGE_SIDEBAR_TYPE, changeLeftSidebarType);
+  yield takeEvery(CHANGE_SIDEBAR_TYPE, changeLeftSidebarType);
 }
 
 export function* watchChangeTopbarTheme() {
-	yield takeEvery(CHANGE_TOPBAR_THEME, changeTopbarTheme);
+  yield takeEvery(CHANGE_TOPBAR_THEME, changeTopbarTheme);
 }
 
 export function* watchShowRightSidebar() {
-	yield takeEvery(SHOW_RIGHT_SIDEBAR, showRightSidebar);
+  yield takeEvery(SHOW_RIGHT_SIDEBAR, showRightSidebar);
 }
 
 export function* watchSChangeLayoutMode() {
-	yield takeEvery(CHANGE_LAYOUT_MODE, changeLayoutMode);
+  yield takeEvery(CHANGE_LAYOUT_MODE, changeLayoutMode);
 }
 
 function* applyPersistedLayoutSettings() {
-	const layoutMode = getLayout("layoutModeType");
-	const layoutType = getLayout("layoutType");
-	const layoutWidth = getLayout("layoutWidth");
-	const leftSidebarTheme = getLayout("leftSideBarTheme");
-	const topbarTheme = getLayout("topbarTheme");
+  const layoutMode = getLayout("layoutModeType");
+  const layoutType = getLayout("layoutType");
+  const layoutWidth = getLayout("layoutWidth");
+  const leftSidebarTheme = getLayout("leftSideBarTheme");
+  const topbarTheme = getLayout("topbarTheme");
 
-	if (layoutMode) yield call(changeHtmlAttribute, "data-bs-theme", layoutMode);
-	if (layoutType) yield call(changeBodyAttribute, "data-layout", layoutType);
-	if (layoutWidth)
-		yield call(changeBodyAttribute, "data-layout-size", layoutWidth);
-	if (leftSidebarTheme)
-		yield call(changeBodyAttribute, "data-sidebar", leftSidebarTheme);
-	if (topbarTheme) yield call(changeBodyAttribute, "data-topbar", topbarTheme);
+  if (layoutMode) yield call(changeHtmlAttribute, "data-bs-theme", layoutMode);
+  if (layoutType) yield call(changeBodyAttribute, "data-layout", layoutType);
+  if (layoutWidth)
+    yield call(changeBodyAttribute, "data-layout-size", layoutWidth);
+  if (leftSidebarTheme)
+    yield call(changeBodyAttribute, "data-sidebar", leftSidebarTheme);
+  if (topbarTheme) yield call(changeBodyAttribute, "data-topbar", topbarTheme);
 }
 
 function* LayoutSaga() {
-	yield all([
-		fork(applyPersistedLayoutSettings),
-		fork(watchSChangeLayoutMode),
-		fork(watchChangeLayoutType),
-		fork(watchChangeLayoutWidth),
-		fork(watchChangeLeftSidebarTheme),
-		fork(watchChangeLeftSidebarThemeImage),
-		fork(watchChangeLeftSidebarType),
-		fork(watchShowRightSidebar),
-		fork(watchChangeTopbarTheme),
-	]);
+  yield all([
+    fork(applyPersistedLayoutSettings),
+    fork(watchSChangeLayoutMode),
+    fork(watchChangeLayoutType),
+    fork(watchChangeLayoutWidth),
+    fork(watchChangeLeftSidebarTheme),
+    fork(watchChangeLeftSidebarThemeImage),
+    fork(watchChangeLeftSidebarType),
+    fork(watchShowRightSidebar),
+    fork(watchChangeTopbarTheme),
+  ]);
 }
 
 export default LayoutSaga;

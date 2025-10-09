@@ -1,17 +1,17 @@
-
 //
 // Table editable
 //
 
-.table-edits{
-  input, select{
+.table-edits {
+  input,
+  select {
     height: $input-height-sm;
     padding: $input-padding-y-sm $input-padding-x-sm;
     border: 1px solid $input-border-color;
     background-color: $input-bg;
     color: $input-color;
     border-radius: $input-border-radius;
-    &:focus{
+    &:focus {
       outline: none;
       border-color: $input-focus-border-color;
     }

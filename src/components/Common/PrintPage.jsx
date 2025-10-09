@@ -3,7 +3,15 @@ import { useTranslation } from "react-i18next";
 import { UncontrolledTooltip, DropdownItem } from "reactstrap";
 import { FaPrint } from "react-icons/fa";
 
-const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs, columnsToIgnore = 0, dropdownItem = false }) => {
+const PrintPage = ({
+  tableData,
+  tablename,
+  excludeKey = [],
+  gridRef,
+  columnDefs,
+  columnsToIgnore = 0,
+  dropdownItem = false,
+}) => {
   const { t } = useTranslation();
 
   // Function to get printable content
@@ -25,7 +33,8 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
       // Add table headers
       html += `<thead><tr>`;
       columnDefs.forEach((col) => {
-        if (!excludeKey.includes(col.field)) { // Exclude columns based on excludeKey
+        if (!excludeKey.includes(col.field)) {
+          // Exclude columns based on excludeKey
           html += `<th>${col.headerName || col.field}</th>`;
         }
       });
@@ -36,9 +45,11 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
         html += `<tr>`;
         columnDefs.forEach((col) => {
           // if (!excludeKey.includes(col.field)) { // Exclude columns based on excludeKey
-          html += `<td>${typeof row[col.field] === "number"
-            ? row[col.field].toLocaleString()
-            : row[col.field]}</td>`;
+          html += `<td>${
+            typeof row[col.field] === "number"
+              ? row[col.field].toLocaleString()
+              : row[col.field]
+          }</td>`;
           // }
         });
         html += `</tr>`;
@@ -72,7 +83,11 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
     const customHeader = getCustomHeader();
     const customFooter = getCustomFooter();
 
-    const printWindow = window.open("", "_blank", `width=${window.screen.width},height=${window.screen.height}`);
+    const printWindow = window.open(
+      "",
+      "_blank",
+      `width=${window.screen.width},height=${window.screen.height}`,
+    );
     printWindow.document.open();
     printWindow.document.write(`
       <html>
@@ -180,7 +195,10 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
 
   if (dropdownItem) {
     return (
-      <DropdownItem onClick={printPage} disabled={!tableData || tableData.length === 0}>
+      <DropdownItem
+        onClick={printPage}
+        disabled={!tableData || tableData.length === 0}
+      >
         <FaPrint className="me-1" />
         {t("print")}
       </DropdownItem>
@@ -196,7 +214,6 @@ const PrintPage = ({ tableData, tablename, excludeKey = [], gridRef, columnDefs,
       >
         {t("print")}
       </button>
-
     </div>
   );
 };

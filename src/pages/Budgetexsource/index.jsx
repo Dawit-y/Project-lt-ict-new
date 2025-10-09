@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -10,386 +7,357 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchBudgetExSources,
-  useSearchBudgetExSources,
-  useAddBudgetExSource,
-  useDeleteBudgetExSource,
-  useUpdateBudgetExSource,
+	useFetchBudgetExSources,
+	useAddBudgetExSource,
+	useDeleteBudgetExSource,
+	useUpdateBudgetExSource,
 } from "../../queries/budgetexsource_query";
 import BudgetExSourceModal from "./BudgetExSourceModal";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
+	alphanumericValidation,
+	amountValidation,
 } from "../../utils/Validation/validation";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const BudgetExSourceModel = ({ passedId, isActive }) => {
-  const param = { budget_request_id: passedId };
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [budgetExSource, setBudgetExSource] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchBudgetExSources(
-    param,
-    isActive
-  );
-  const addBudgetExSource = useAddBudgetExSource();
-  const updateBudgetExSource = useUpdateBudgetExSource();
-  const deleteBudgetExSource = useDeleteBudgetExSource();
-  //START CRUD
-  const handleAddBudgetExSource = async (data) => {
-    try {
-      await addBudgetExSource.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateBudgetExSource = async (data) => {
-    try {
-      await updateBudgetExSource.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteBudgetExSource = async () => {
-    if (budgetExSource && budgetExSource.bes_id) {
-      try {
-        const id = budgetExSource.bes_id;
-        await deleteBudgetExSource.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	const param = { budget_request_id: passedId };
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [budgetExSource, setBudgetExSource] = useState(null);
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+	const { data, isLoading, error, isError, refetch } = useFetchBudgetExSources(
+		param,
+		isActive
+	);
+	const addBudgetExSource = useAddBudgetExSource();
+	const updateBudgetExSource = useUpdateBudgetExSource();
+	const deleteBudgetExSource = useDeleteBudgetExSource();
+	//START CRUD
+	const handleAddBudgetExSource = async (data) => {
+		try {
+			await addBudgetExSource.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetExSource = async (data) => {
+		try {
+			await updateBudgetExSource.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteBudgetExSource = async () => {
+		if (budgetExSource && budgetExSource.bes_id) {
+			try {
+				const id = budgetExSource.bes_id;
+				await deleteBudgetExSource.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
 
-    initialValues: {
-      bes_budget_request_id:
-        (budgetExSource && budgetExSource.bes_budget_request_id) || "",
-      bes_organ_code: (budgetExSource && budgetExSource.bes_organ_code) || "",
-      bes_org_name: (budgetExSource && budgetExSource.bes_org_name) || "",
-      bes_support_amount:
-        (budgetExSource && budgetExSource.bes_support_amount) || "",
-      bes_credit_amount:
-        (budgetExSource && budgetExSource.bes_credit_amount) || "",
-      bes_description: (budgetExSource && budgetExSource.bes_description) || "",
-      bes_status: (budgetExSource && budgetExSource.bes_status) || "",
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			bes_budget_request_id:
+				(budgetExSource && budgetExSource.bes_budget_request_id) || "",
+			bes_organ_code: (budgetExSource && budgetExSource.bes_organ_code) || "",
+			bes_org_name: (budgetExSource && budgetExSource.bes_org_name) || "",
+			bes_support_amount:
+				(budgetExSource && budgetExSource.bes_support_amount) || "",
+			bes_credit_amount:
+				(budgetExSource && budgetExSource.bes_credit_amount) || "",
+			bes_description: (budgetExSource && budgetExSource.bes_description) || "",
+			bes_status: (budgetExSource && budgetExSource.bes_status) || "",
 
-      is_deletable: (budgetExSource && budgetExSource.is_deletable) || 1,
-      is_editable: (budgetExSource && budgetExSource.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      //bes_budget_request_id: Yup.string().required(t('bes_budget_request_id')),
-      bes_organ_code: alphanumericValidation(2, 10, true),
-      bes_org_name: alphanumericValidation(2, 30, true),
-      bes_support_amount: amountValidation(0, 100000000000, false),
-      bes_credit_amount: amountValidation(0, 100000000000, false),
-      bes_description: alphanumericValidation(3, 425, false),
-      //bes_status: Yup.string().required(t('bes_status')),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateBudgetExSource = {
-          bes_id: budgetExSource.bes_id,
-          bes_organ_code: values.bes_organ_code,
-          bes_org_name: values.bes_org_name,
-          bes_support_amount: values.bes_support_amount,
-          bes_credit_amount: values.bes_credit_amount,
-          bes_description: values.bes_description,
-          bes_status: values.bes_status,
+			is_deletable: (budgetExSource && budgetExSource.is_deletable) || 1,
+			is_editable: (budgetExSource && budgetExSource.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			//bes_budget_request_id: Yup.string().required(t('bes_budget_request_id')),
+			bes_organ_code: alphanumericValidation(2, 10, true),
+			bes_org_name: alphanumericValidation(2, 30, true),
+			bes_support_amount: amountValidation(0, 100000000000, false),
+			bes_credit_amount: amountValidation(0, 100000000000, false),
+			bes_description: alphanumericValidation(3, 425, false),
+			//bes_status: Yup.string().required(t('bes_status')),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateBudgetExSource = {
+					bes_id: budgetExSource.bes_id,
+					bes_organ_code: values.bes_organ_code,
+					bes_org_name: values.bes_org_name,
+					bes_support_amount: values.bes_support_amount,
+					bes_credit_amount: values.bes_credit_amount,
+					bes_description: values.bes_description,
+					bes_status: values.bes_status,
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update BudgetExSource
-        handleUpdateBudgetExSource(updateBudgetExSource);
-      } else {
-        const newBudgetExSource = {
-          bes_budget_request_id: passedId,
-          bes_organ_code: values.bes_organ_code,
-          bes_org_name: values.bes_org_name,
-          bes_support_amount: values.bes_support_amount,
-          bes_credit_amount: values.bes_credit_amount,
-          bes_description: values.bes_description,
-          bes_status: values.bes_status,
-        };
-        // save new BudgetExSource
-        handleAddBudgetExSource(newBudgetExSource);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update BudgetExSource
+				handleUpdateBudgetExSource(updateBudgetExSource);
+			} else {
+				const newBudgetExSource = {
+					bes_budget_request_id: passedId,
+					bes_organ_code: values.bes_organ_code,
+					bes_org_name: values.bes_org_name,
+					bes_support_amount: values.bes_support_amount,
+					bes_credit_amount: values.bes_credit_amount,
+					bes_description: values.bes_description,
+					bes_status: values.bes_status,
+				};
+				// save new BudgetExSource
+				handleAddBudgetExSource(newBudgetExSource);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch BudgetExSource on component mount
-  useEffect(() => {
-    setBudgetExSource(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setBudgetExSource(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setBudgetExSource(null);
-    } else {
-      setModal(true);
-    }
-  };
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setBudgetExSource(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-  const handleBudgetExSourceClick = (arg) => {
-    const budgetExSource = arg;
-    // console.log("handleBudgetExSourceClick", budgetExSource);
-    setBudgetExSource({
-      bes_id: budgetExSource.bes_id,
-      bes_budget_request_id: budgetExSource.bes_budget_request_id,
-      bes_organ_code: budgetExSource.bes_organ_code,
-      bes_org_name: budgetExSource.bes_org_name,
-      bes_support_amount: budgetExSource.bes_support_amount,
-      bes_credit_amount: budgetExSource.bes_credit_amount,
-      bes_description: budgetExSource.bes_description,
-      bes_status: budgetExSource.bes_status,
+	const handleBudgetExSourceClick = (arg) => {
+		const budgetExSource = arg;
+		setBudgetExSource({
+			bes_id: budgetExSource.bes_id,
+			bes_budget_request_id: budgetExSource.bes_budget_request_id,
+			bes_organ_code: budgetExSource.bes_organ_code,
+			bes_org_name: budgetExSource.bes_org_name,
+			bes_support_amount: budgetExSource.bes_support_amount,
+			bes_credit_amount: budgetExSource.bes_credit_amount,
+			bes_description: budgetExSource.bes_description,
+			bes_status: budgetExSource.bes_status,
+			is_deletable: budgetExSource.is_deletable,
+			is_editable: budgetExSource.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-      is_deletable: budgetExSource.is_deletable,
-      is_editable: budgetExSource.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (budgetExSource) => {
+		setBudgetExSource(budgetExSource);
+		setDeleteModal(true);
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (budgetExSource) => {
-    setBudgetExSource(budgetExSource);
-    setDeleteModal(true);
-  };
+	const handleBudgetExSourceClicks = () => {
+		setIsEdit(false);
+		setBudgetExSource("");
+		toggle();
+	};
 
-  const handleBudgetExSourceClicks = () => {
-    setIsEdit(false);
-    setBudgetExSource("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "bes_organ_code",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_organ_code, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_org_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_org_name, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_support_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_support_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_credit_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_credit_amount, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bes_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bes_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleBudgetExSourceClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "bes_organ_code",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bes_organ_code, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "bes_org_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bes_org_name, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "bes_support_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bes_support_amount, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "bes_credit_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bes_credit_amount, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "bes_description",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bes_description, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleBudgetExSourceClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
 
-    return baseColumns;
-  }, [handleBudgetExSourceClick, toggleViewModal, onClickDelete]);
+		return baseColumns;
+	}, [handleBudgetExSourceClick, toggleViewModal, onClickDelete, data, t]);
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
 
-  return (
+	return (
 		<React.Fragment>
 			<BudgetExSourceModal
 				isOpen={modal1}
@@ -402,7 +370,7 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteBudgetExSource.isPending}
 			/>
-			{isLoading || isSearchLoading ? (
+			{isLoading ? (
 				<Spinners />
 			) : (
 				<Row>
@@ -411,15 +379,12 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
 							<CardBody>
 								<TableContainer
 									columns={columns}
-									data={
-										showSearchResult ? searchResults?.data : data?.data || []
-									}
+									data={data?.data || []}
 									isGlobalFilter={true}
 									isAddButton={data?.previledge?.is_role_can_add == 1}
 									isCustomPageSize={true}
 									handleUserClick={handleBudgetExSourceClicks}
 									isPagination={true}
-									// SearchPlaceholder="26 records..."
 									SearchPlaceholder={t("filter_placeholder")}
 									buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
 									buttonName={t("add")}
@@ -611,6 +576,6 @@ const BudgetExSourceModel = ({ passedId, isActive }) => {
 	);
 };
 BudgetExSourceModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default BudgetExSourceModel;

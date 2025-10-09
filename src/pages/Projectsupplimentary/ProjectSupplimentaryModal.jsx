@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+	width: "100%",
 };
 
 const ProjectSupplimentaryModal = (props) => {
@@ -33,47 +32,78 @@ const ProjectSupplimentaryModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('prs_requested_amount')}: <span className="text-primary">{transaction.prs_requested_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_released_amount')}: <span className="text-primary">{transaction.prs_released_amount}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_project_id')}: <span className="text-primary">{transaction.prs_project_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_requested_date_ec')}: <span className="text-primary">{transaction.prs_requested_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_requested_date_gc')}: <span className="text-primary">{transaction.prs_requested_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_released_date_ec')}: <span className="text-primary">{transaction.prs_released_date_ec}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_released_date_gc')}: <span className="text-primary">{transaction.prs_released_date_gc}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_description')}: <span className="text-primary">{transaction.prs_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('prs_status')}: <span className="text-primary">{transaction.prs_status}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("prs_requested_amount")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_requested_amount}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_released_amount")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_released_amount}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_project_id")}:{" "}
+              <span className="text-primary">{transaction.prs_project_id}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_requested_date_ec")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_requested_date_ec}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_requested_date_gc")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_requested_date_gc}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_released_date_ec")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_released_date_ec}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_released_date_gc")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_released_date_gc}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_description")}:{" "}
+              <span className="text-primary">
+                {transaction.prs_description}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("prs_status")}:{" "}
+              <span className="text-primary">{transaction.prs_status}</span>
+            </p>
           </tr>
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

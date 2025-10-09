@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { isEmpty } from "lodash";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -11,335 +10,336 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchSmsTemplates,
-  useSearchSmsTemplates,
-  useAddSmsTemplate,
-  useDeleteSmsTemplate,
-  useUpdateSmsTemplate,
+	useFetchSmsTemplates,
+	useSearchSmsTemplates,
+	useAddSmsTemplate,
+	useDeleteSmsTemplate,
+	useUpdateSmsTemplate,
 } from "../../queries/smstemplate_query";
 import SmsTemplateModal from "./SmsTemplateModal";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
+	FormGroup,
+	Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
-import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-} from "../../utils/Validation/validation";
+import { alphanumericValidation } from "../../utils/Validation/validation";
+
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const SmsTemplateModel = () => {
-  //meta title
-  document.title = " SmsTemplate";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [smsTemplate, setSmsTemplate] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchSmsTemplates();
-  const addSmsTemplate = useAddSmsTemplate();
-  const updateSmsTemplate = useUpdateSmsTemplate();
-  const deleteSmsTemplate = useDeleteSmsTemplate();
-  //START CRUD
-  const handleAddSmsTemplate = async (data) => {
-    try {
-      await addSmsTemplate.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateSmsTemplate = async (data) => {
-    try {
-      await updateSmsTemplate.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteSmsTemplate = async () => {
-    if (smsTemplate && smsTemplate.smt_id) {
-      try {
-        const id = smsTemplate.smt_id;
-        await deleteSmsTemplate.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	//meta title
+	document.title = " SmsTemplate";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [smsTemplate, setSmsTemplate] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, error, isError, refetch } = useFetchSmsTemplates();
+	const addSmsTemplate = useAddSmsTemplate();
+	const updateSmsTemplate = useUpdateSmsTemplate();
+	const deleteSmsTemplate = useDeleteSmsTemplate();
+	//START CRUD
+	const handleAddSmsTemplate = async (data) => {
+		try {
+			await addSmsTemplate.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateSmsTemplate = async (data) => {
+		try {
+			await updateSmsTemplate.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteSmsTemplate = async () => {
+		if (smsTemplate && smsTemplate.smt_id) {
+			try {
+				const id = smsTemplate.smt_id;
+				await deleteSmsTemplate.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
 
-    initialValues: {
-      smt_template_name: (smsTemplate && smsTemplate.smt_template_name) || "",
-      smt_template_content:
-        (smsTemplate && smsTemplate.smt_template_content) || "",
-      smt_template_content_am:
-        (smsTemplate && smsTemplate.smt_template_content_am) || "",
-      smt_template_content_en:
-        (smsTemplate && smsTemplate.smt_template_content_en) || "",
-      smt_description: (smsTemplate && smsTemplate.smt_description) || "",
-      smt_status: (smsTemplate && smsTemplate.smt_status) || "",
+		initialValues: {
+			smt_template_name: (smsTemplate && smsTemplate.smt_template_name) || "",
+			smt_template_content:
+				(smsTemplate && smsTemplate.smt_template_content) || "",
+			smt_template_content_am:
+				(smsTemplate && smsTemplate.smt_template_content_am) || "",
+			smt_template_content_en:
+				(smsTemplate && smsTemplate.smt_template_content_en) || "",
+			smt_description: (smsTemplate && smsTemplate.smt_description) || "",
+			smt_status: (smsTemplate && smsTemplate.smt_status) || "",
 
-      is_deletable: (smsTemplate && smsTemplate.is_deletable) || 1,
-      is_editable: (smsTemplate && smsTemplate.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      smt_template_name: alphanumericValidation(3, 200, true),
-      smt_template_content: alphanumericValidation(10, 200, true),
-      smt_template_content_en: alphanumericValidation(10, 200, false),
-      //smt_template_content_am: alphanumericValidation(50, 200, false),
-      smt_description: alphanumericValidation(3, 200, false),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateSmsTemplate = {
-          smt_id: smsTemplate?.smt_id,
-          smt_template_name: values.smt_template_name,
-          smt_template_content: values.smt_template_content,
-          smt_template_content_am: values.smt_template_content_am,
-          smt_template_content_en: values.smt_template_content_en,
-          smt_description: values.smt_description,
-          smt_status: values.smt_status,
+			is_deletable: (smsTemplate && smsTemplate.is_deletable) || 1,
+			is_editable: (smsTemplate && smsTemplate.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			smt_template_name: alphanumericValidation(3, 200, true),
+			smt_template_content: alphanumericValidation(10, 200, true),
+			smt_template_content_en: alphanumericValidation(10, 200, false),
+			//smt_template_content_am: alphanumericValidation(50, 200, false),
+			smt_description: alphanumericValidation(3, 200, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateSmsTemplate = {
+					smt_id: smsTemplate?.smt_id,
+					smt_template_name: values.smt_template_name,
+					smt_template_content: values.smt_template_content,
+					smt_template_content_am: values.smt_template_content_am,
+					smt_template_content_en: values.smt_template_content_en,
+					smt_description: values.smt_description,
+					smt_status: values.smt_status,
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update SmsTemplate
-        handleUpdateSmsTemplate(updateSmsTemplate);
-      } else {
-        const newSmsTemplate = {
-          smt_template_name: values.smt_template_name,
-          smt_template_content: values.smt_template_content,
-          smt_template_content_am: values.smt_template_content_am,
-          smt_template_content_en: values.smt_template_content_en,
-          smt_description: values.smt_description,
-          smt_status: values.smt_status,
-        };
-        // save new SmsTemplate
-        handleAddSmsTemplate(newSmsTemplate);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update SmsTemplate
+				handleUpdateSmsTemplate(updateSmsTemplate);
+			} else {
+				const newSmsTemplate = {
+					smt_template_name: values.smt_template_name,
+					smt_template_content: values.smt_template_content,
+					smt_template_content_am: values.smt_template_content_am,
+					smt_template_content_en: values.smt_template_content_en,
+					smt_description: values.smt_description,
+					smt_status: values.smt_status,
+				};
+				// save new SmsTemplate
+				handleAddSmsTemplate(newSmsTemplate);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch SmsTemplate on component mount
-  useEffect(() => {
-    setSmsTemplate(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setSmsTemplate(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setSmsTemplate(null);
-    } else {
-      setModal(true);
-    }
-  };
+	// Fetch SmsTemplate on component mount
+	useEffect(() => {
+		setSmsTemplate(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setSmsTemplate(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setSmsTemplate(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-  const handleSmsTemplateClick = (arg) => {
-    const smsTemplate = arg;
-    // console.log("handleSmsTemplateClick", smsTemplate);
-    setSmsTemplate({
-      smt_id: smsTemplate.smt_id,
-      smt_template_name: smsTemplate.smt_template_name,
-      smt_template_content: smsTemplate.smt_template_content,
-      smt_template_content_am: smsTemplate.smt_template_content_am,
-      smt_template_content_en: smsTemplate.smt_template_content_en,
-      smt_description: smsTemplate.smt_description,
-      smt_status: smsTemplate.smt_status,
+	const handleSmsTemplateClick = (arg) => {
+		const smsTemplate = arg;
+		// console.log("handleSmsTemplateClick", smsTemplate);
+		setSmsTemplate({
+			smt_id: smsTemplate.smt_id,
+			smt_template_name: smsTemplate.smt_template_name,
+			smt_template_content: smsTemplate.smt_template_content,
+			smt_template_content_am: smsTemplate.smt_template_content_am,
+			smt_template_content_en: smsTemplate.smt_template_content_en,
+			smt_description: smsTemplate.smt_description,
+			smt_status: smsTemplate.smt_status,
 
-      is_deletable: smsTemplate.is_deletable,
-      is_editable: smsTemplate.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+			is_deletable: smsTemplate.is_deletable,
+			is_editable: smsTemplate.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (smsTemplate) => {
-    setSmsTemplate(smsTemplate);
-    setDeleteModal(true);
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (smsTemplate) => {
+		setSmsTemplate(smsTemplate);
+		setDeleteModal(true);
+	};
 
-  const handleSmsTemplateClicks = () => {
-    setIsEdit(false);
-    setSmsTemplate("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "smt_template_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.smt_template_name, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "smt_template_content",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.smt_template_content, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleSmsTemplateClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+	const handleSmsTemplateClicks = () => {
+		setIsEdit(false);
+		setSmsTemplate("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "smt_template_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.smt_template_name, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "smt_template_content",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.smt_template_content, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleSmsTemplateClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
 
-    return baseColumns;
-  }, [handleSmsTemplateClick, toggleViewModal, onClickDelete]);
+		return baseColumns;
+	}, [handleSmsTemplateClick, toggleViewModal, onClickDelete, data, t]);
 
-  return (
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+	return (
 		<React.Fragment>
 			<SmsTemplateModal
 				isOpen={modal1}
@@ -581,7 +581,7 @@ const SmsTemplateModel = () => {
 	);
 };
 SmsTemplateModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default SmsTemplateModel;

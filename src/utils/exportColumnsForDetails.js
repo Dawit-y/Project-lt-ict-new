@@ -292,7 +292,7 @@ export const projectBudgetExpenditureExportColumns = [
 				? new Intl.NumberFormat("en-US", {
 						minimumFractionDigits: 2,
 						maximumFractionDigits: 2,
-				  }).format(val)
+					}).format(val)
 				: "0.00",
 		type: "number",
 	},
@@ -335,11 +335,11 @@ export const projectComponentExportColumns = [
 ];
 
 export const implementingAreaExportColumns = [
-	{
-		key: "pia_sector_id",
-		label: "sector",
-		format: (val) => sectorsMap?.[val] ?? "-",
-	},
+	// {
+	// 	key: "pia_sector_id",
+	// 	label: "sector",
+	// 	format: (val) => sectorsMap?.[val] ?? "-",
+	// },
 	{
 		key: "pia_budget_amount",
 		label: "pia_budget_amount",

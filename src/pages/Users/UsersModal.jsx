@@ -63,13 +63,13 @@ const UsersModal = (props) => {
       await changeUserStatus.mutateAsync(data);
       setSwitch1(!switch1);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       setSwitch1(false);
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
   };
 
@@ -100,18 +100,15 @@ const UsersModal = (props) => {
     };
     try {
       await changeUserPassword.mutateAsync(data);
-      //setSwitch1(true);
       toast.success(`password changed successfully`, {
-        autoClose: 2000,
+				autoClose: 3000,
       });
+      setModal_backdrop(false);
     } catch (error) {
-      //setSwitch1(false);
       toast.error(`Failed to change password`, {
-        autoClose: 2000,
-      });
-    } finally {
-      setModal_backdrop(false)
-    }
+				autoClose: 3000,
+			});
+    } 
   };
 
   const handlePasswordInput = (e) => {
@@ -185,8 +182,9 @@ const UsersModal = (props) => {
                   <Row>
                     <Col className="md-6">
                       <img
-                        src={`${import.meta.env.VITE_BASE_API_FILE
-                          }/public/uploads/userfiles/${transaction.usr_picture}`}
+                        src={`${
+                          import.meta.env.VITE_BASE_API_FILE
+                        }/public/uploads/userfiles/${transaction.usr_picture}`}
                         alt="User Profile"
                         className="img-thumbnail"
                         style={{
@@ -271,7 +269,7 @@ const UsersModal = (props) => {
                           style={{
                             fontSize: "16px",
                             fontWeight: "bold",
-                            color: !switch1 ? "#d9534f" : "#28a745", // Green for Active, Red for Inactive
+                            color: !switch1 ? "#d9534f" : "#28a745",
                           }}
                         >
                           {switch1 == 1 ? "Active" : "Inactive"}
@@ -334,7 +332,6 @@ const UsersModal = (props) => {
                   </Col>
                 </CardBody>
               </Card>
-
             </Col>
           </Row>
         </ModalBody>
@@ -381,8 +378,9 @@ const UsersModal = (props) => {
                     onChange={handlePasswordInput}
                   />
                   <i
-                    className={`mdi ${passwordShown ? "mdi-eye-off" : "mdi-eye"
-                      } font-size-16`}
+                    className={`mdi ${
+                      passwordShown ? "mdi-eye-off" : "mdi-eye"
+                    } font-size-16`}
                     onClick={togglePasswordVisibility}
                     style={{
                       position: "absolute",
@@ -426,11 +424,20 @@ const UsersModal = (props) => {
               type="button"
               color="success"
               onClick={handlePasswordChange}
-              disabled={passwordStrength === "Weak" || !newPassword || changeUserPassword.isPending}
+              disabled={
+                passwordStrength === "Weak" ||
+                !newPassword ||
+                changeUserPassword.isPending
+              }
             >
-              {changeUserPassword.isPending ?
-                <span> <Spinner size={"sm"} />  {" Change Password"}</span>
-                : "Change Password"}
+              {changeUserPassword.isPending ? (
+                <span>
+                  {" "}
+                  <Spinner size={"sm"} /> {" Change Password"}
+                </span>
+              ) : (
+                "Change Password"
+              )}
             </Button>
           </ModalFooter>
         </Modal>

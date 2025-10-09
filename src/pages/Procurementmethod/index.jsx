@@ -9,385 +9,388 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
-//import components
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchProcurementMethods,
-  useSearchProcurementMethods,
-  useAddProcurementMethod,
-  useDeleteProcurementMethod,
-  useUpdateProcurementMethod,
+	useFetchProcurementMethods,
+	useSearchProcurementMethods,
+	useAddProcurementMethod,
+	useDeleteProcurementMethod,
+	useUpdateProcurementMethod,
 } from "../../queries/procurementmethod_query";
 import ProcurementMethodModal from "./ProcurementMethodModal";
 import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { createSelector } from "reselect";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
+	FormGroup,
+	Badge,
 } from "reactstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
-  onlyAmharicValidation,
+	alphanumericValidation,
+	onlyAmharicValidation,
 } from "../../utils/Validation/validation";
 import { procurementMethodExportColumns } from "../../utils/exportColumnsForLookups";
+import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const ProcurementMethodModel = () => {
-  //meta title
-  document.title = " ProcurementMethod";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [procurementMethod, setProcurementMethod] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, isFetching, error, isError, refetch } =
-    useFetchProcurementMethods();
-  const addProcurementMethod = useAddProcurementMethod();
-  const updateProcurementMethod = useUpdateProcurementMethod();
-  const deleteProcurementMethod = useDeleteProcurementMethod();
-  //START CRUD
-  const handleAddProcurementMethod = async (data) => {
-    try {
-      await addProcurementMethod.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateProcurementMethod = async (data) => {
-    try {
-      await updateProcurementMethod.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteProcurementMethod = async () => {
-    if (procurementMethod && procurementMethod.prm_id) {
-      try {
-        const id = procurementMethod.prm_id;
-        await deleteProcurementMethod.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	document.title = "Procurement Method";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [procurementMethod, setProcurementMethod] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, isFetching, error, isError, refetch } =
+		useFetchProcurementMethods();
+	const addProcurementMethod = useAddProcurementMethod();
+	const updateProcurementMethod = useUpdateProcurementMethod();
+	const deleteProcurementMethod = useDeleteProcurementMethod();
+	//START CRUD
+	const handleAddProcurementMethod = async (data) => {
+		try {
+			await addProcurementMethod.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateProcurementMethod = async (data) => {
+		try {
+			await updateProcurementMethod.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteProcurementMethod = async () => {
+		if (procurementMethod && procurementMethod.prm_id) {
+			try {
+				const id = procurementMethod.prm_id;
+				await deleteProcurementMethod.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
-    initialValues: {
-      prm_name_or: (procurementMethod && procurementMethod.prm_name_or) || "",
-      prm_name_en: (procurementMethod && procurementMethod.prm_name_en) || "",
-      prm_name_am: (procurementMethod && procurementMethod.prm_name_am) || "",
-      prm_description:
-        (procurementMethod && procurementMethod.prm_description) || "",
-      prm_status: (procurementMethod && procurementMethod.prm_status) || false,
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
+		initialValues: {
+			prm_name_or: (procurementMethod && procurementMethod.prm_name_or) || "",
+			prm_name_en: (procurementMethod && procurementMethod.prm_name_en) || "",
+			prm_name_am: (procurementMethod && procurementMethod.prm_name_am) || "",
+			prm_description:
+				(procurementMethod && procurementMethod.prm_description) || "",
+			prm_status: (procurementMethod && procurementMethod.prm_status) || false,
 
-      is_deletable: (procurementMethod && procurementMethod.is_deletable) || 1,
-      is_editable: (procurementMethod && procurementMethod.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      prm_name_or: alphanumericValidation(2, 100, true).test(
-        "unique-prm_name_or",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.prm_name_or == value &&
-              item.prm_id !== procurementMethod?.prm_id
-          );
-        }
-      ),
-      prm_name_am: onlyAmharicValidation(2, 100, true),
-      prm_name_en: alphanumericValidation(2, 100, true),
-      prm_description: alphanumericValidation(3, 425, false),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateProcurementMethod = {
-          prm_id: procurementMethod ? procurementMethod.prm_id : 0,
-          prm_name_or: values.prm_name_or,
-          prm_name_en: values.prm_name_en,
-          prm_name_am: values.prm_name_am,
-          prm_description: values.prm_description,
-          prm_status: values.prm_status ? 1 : 0,
+			is_deletable: (procurementMethod && procurementMethod.is_deletable) || 1,
+			is_editable: (procurementMethod && procurementMethod.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			prm_name_or: alphanumericValidation(2, 100, true).test(
+				"unique-prm_name_or",
+				t("Already exists"),
+				(value) => {
+					return !data?.data.some(
+						(item) =>
+							item.prm_name_or == value &&
+							item.prm_id !== procurementMethod?.prm_id
+					);
+				}
+			),
+			prm_name_am: onlyAmharicValidation(2, 100, true),
+			prm_name_en: alphanumericValidation(2, 100, true),
+			prm_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateProcurementMethod = {
+					prm_id: procurementMethod ? procurementMethod.prm_id : 0,
+					prm_name_or: values.prm_name_or,
+					prm_name_en: values.prm_name_en,
+					prm_name_am: values.prm_name_am,
+					prm_description: values.prm_description,
+					prm_status: values.prm_status ? 1 : 0,
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update ProcurementMethod
-        handleUpdateProcurementMethod(updateProcurementMethod);
-      } else {
-        const newProcurementMethod = {
-          prm_name_or: values.prm_name_or,
-          prm_name_en: values.prm_name_en,
-          prm_name_am: values.prm_name_am,
-          prm_description: values.prm_description,
-          prm_status: values.prm_status ? 1 : 0,
-        };
-        // save new ProcurementMethod
-        handleAddProcurementMethod(newProcurementMethod);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
-  // Fetch ProcurementMethod on component mount
-  useEffect(() => {
-    setProcurementMethod(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setProcurementMethod(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setProcurementMethod(null);
-    } else {
-      setModal(true);
-    }
-  };
-  const handleProcurementMethodClick = (arg) => {
-    const procurementMethod = arg;
-    // console.log("handleProcurementMethodClick", procurementMethod);
-    setProcurementMethod({
-      prm_id: procurementMethod.prm_id,
-      prm_name_or: procurementMethod.prm_name_or,
-      prm_name_en: procurementMethod.prm_name_en,
-      prm_name_am: procurementMethod.prm_name_am,
-      prm_description: procurementMethod.prm_description,
-      prm_status: procurementMethod.prm_status === 1,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update ProcurementMethod
+				handleUpdateProcurementMethod(updateProcurementMethod);
+			} else {
+				const newProcurementMethod = {
+					prm_name_or: values.prm_name_or,
+					prm_name_en: values.prm_name_en,
+					prm_name_am: values.prm_name_am,
+					prm_description: values.prm_description,
+					prm_status: values.prm_status ? 1 : 0,
+				};
+				// save new ProcurementMethod
+				handleAddProcurementMethod(newProcurementMethod);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
+	// Fetch ProcurementMethod on component mount
+	useEffect(() => {
+		setProcurementMethod(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setProcurementMethod(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setProcurementMethod(null);
+		} else {
+			setModal(true);
+		}
+	};
+	const handleProcurementMethodClick = (arg) => {
+		const procurementMethod = arg;
+		// console.log("handleProcurementMethodClick", procurementMethod);
+		setProcurementMethod({
+			prm_id: procurementMethod.prm_id,
+			prm_name_or: procurementMethod.prm_name_or,
+			prm_name_en: procurementMethod.prm_name_en,
+			prm_name_am: procurementMethod.prm_name_am,
+			prm_description: procurementMethod.prm_description,
+			prm_status: procurementMethod.prm_status === 1,
 
-      is_deletable: procurementMethod.is_deletable,
-      is_editable: procurementMethod.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (procurementMethod) => {
-    setProcurementMethod(procurementMethod);
-    setDeleteModal(true);
-  };
-  const handleProcurementMethodClicks = () => {
-    setIsEdit(false);
-    setProcurementMethod("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "prm_name_or",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prm_name_or, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prm_name_en",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prm_name_en, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prm_name_am",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prm_name_am, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "prm_description",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.prm_description, 30) || "-"}
-            </span>
-          );
-        },
-      },
+			is_deletable: procurementMethod.is_deletable,
+			is_editable: procurementMethod.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (procurementMethod) => {
+		setProcurementMethod(procurementMethod);
+		setDeleteModal(true);
+	};
+	const handleProcurementMethodClicks = () => {
+		setIsEdit(false);
+		setProcurementMethod("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "prm_name_or",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.prm_name_or, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "prm_name_en",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.prm_name_en, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "prm_name_am",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.prm_name_am, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "prm_description",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.prm_description, 30) || "-"}
+						</span>
+					);
+				},
+			},
 
-      {
-        header: "",
-        accessorKey: t("is_inactive"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span
-              className={
-                cellProps.row.original.prm_status === 1
-                  ? "btn btn-sm btn-soft-danger"
-                  : ""
-              }
-            >
-              {cellProps.row.original.prm_status === 1 ? t("yes") : t("no")}
-            </span>
-          );
-        },
-      },
+			{
+				header: "",
+				accessorKey: t("is_inactive"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span
+							className={
+								cellProps.row.original.prm_status === 1
+									? "btn btn-sm btn-soft-danger"
+									: ""
+							}
+						>
+							{cellProps.row.original.prm_status === 1 ? t("yes") : t("no")}
+						</span>
+					);
+				},
+			},
 
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleProcurementMethodClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-    return baseColumns;
-  }, [handleProcurementMethodClick, toggleViewModal, onClickDelete]);
-  return (
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleProcurementMethodClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
+		return baseColumns;
+  }, [handleProcurementMethodClick, toggleViewModal, onClickDelete, data]);
+  
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+
+	return (
 		<React.Fragment>
 			<ProcurementMethodModal
 				isOpen={modal1}
@@ -650,6 +653,6 @@ const ProcurementMethodModel = () => {
 	);
 };
 ProcurementMethodModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default ProcurementMethodModel;

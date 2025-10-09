@@ -11,332 +11,339 @@ import Spinners from "../../components/Common/Spinner";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchEmailTemplates,
-  useSearchEmailTemplates,
-  useAddEmailTemplate,
-  useDeleteEmailTemplate,
-  useUpdateEmailTemplate,
+	useFetchEmailTemplates,
+	useSearchEmailTemplates,
+	useAddEmailTemplate,
+	useDeleteEmailTemplate,
+	useUpdateEmailTemplate,
 } from "../../queries/emailtemplate_query";
 import EmailTemplateModal from "./EmailTemplateModal";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
+	FormGroup,
+	Badge,
 } from "reactstrap";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
+	alphanumericValidation,
+	amountValidation,
+	numberValidation,
 } from "../../utils/Validation/validation";
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const EmailTemplateModel = () => {
-  //meta title
-  document.title = " EmailTemplate";
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [emailTemplate, setEmailTemplate] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } = useFetchEmailTemplates();
-  const addEmailTemplate = useAddEmailTemplate();
-  const updateEmailTemplate = useUpdateEmailTemplate();
-  const deleteEmailTemplate = useDeleteEmailTemplate();
-  //START CRUD
-  const handleAddEmailTemplate = async (data) => {
-    try {
-      await addEmailTemplate.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateEmailTemplate = async (data) => {
-    try {
-      await updateEmailTemplate.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteEmailTemplate = async () => {
-    if (emailTemplate && emailTemplate.emt_id) {
-      try {
-        const id = emailTemplate.emt_id;
-        await deleteEmailTemplate.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
-  //END CRUD
-  //START FOREIGN CALLS
+	//meta title
+	document.title = " EmailTemplate";
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [emailTemplate, setEmailTemplate] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searcherror, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
+	const { data, isLoading, error, isError, refetch } = useFetchEmailTemplates();
+	const addEmailTemplate = useAddEmailTemplate();
+	const updateEmailTemplate = useUpdateEmailTemplate();
+	const deleteEmailTemplate = useDeleteEmailTemplate();
+	//START CRUD
+	const handleAddEmailTemplate = async (data) => {
+		try {
+			await addEmailTemplate.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateEmailTemplate = async (data) => {
+		try {
+			await updateEmailTemplate.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteEmailTemplate = async () => {
+		if (emailTemplate && emailTemplate.emt_id) {
+			try {
+				const id = emailTemplate.emt_id;
+				await deleteEmailTemplate.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
+	//END CRUD
+	//START FOREIGN CALLS
 
-  // validation
-  const validation = useFormik({
-    // enableReinitialize: use this flag when initial values need to be changed
-    enableReinitialize: true,
+	// validation
+	const validation = useFormik({
+		// enableReinitialize: use this flag when initial values need to be changed
+		enableReinitialize: true,
 
-    initialValues: {
-      emt_template_name:
-        (emailTemplate && emailTemplate.emt_template_name) || "",
-      emt_template_content:
-        (emailTemplate && emailTemplate.emt_template_content) || "",
-      emt_template_content_am:
-        (emailTemplate && emailTemplate.emt_template_content_am) || "",
-      emt_template_content_en:
-        (emailTemplate && emailTemplate.emt_template_content_en) || "",
-      emt_description: (emailTemplate && emailTemplate.emt_description) || "",
+		initialValues: {
+			emt_template_name:
+				(emailTemplate && emailTemplate.emt_template_name) || "",
+			emt_template_content:
+				(emailTemplate && emailTemplate.emt_template_content) || "",
+			emt_template_content_am:
+				(emailTemplate && emailTemplate.emt_template_content_am) || "",
+			emt_template_content_en:
+				(emailTemplate && emailTemplate.emt_template_content_en) || "",
+			emt_description: (emailTemplate && emailTemplate.emt_description) || "",
 
-      is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
-      is_editable: (emailTemplate && emailTemplate.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      emt_template_name: alphanumericValidation(3, 200, true),
-      emt_template_content: alphanumericValidation(10, 200, true),
-      //emt_template_content_am: alphanumericValidation(10, 200, false),
-      emt_template_content_en: alphanumericValidation(10, 200, false),
-      emt_description: alphanumericValidation(3, 425, false),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateEmailTemplate = {
-          emt_id: emailTemplate?.emt_id,
-          emt_template_name: values.emt_template_name,
-          emt_template_content: values.emt_template_content,
-          emt_template_content_am: values.emt_template_content_am,
-          emt_template_content_en: values.emt_template_content_en,
-          emt_description: values.emt_description,
-          emt_status: values.emt_status,
+			is_deletable: (emailTemplate && emailTemplate.is_deletable) || 1,
+			is_editable: (emailTemplate && emailTemplate.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			emt_template_name: alphanumericValidation(3, 200, true),
+			emt_template_content: alphanumericValidation(10, 200, true),
+			//emt_template_content_am: alphanumericValidation(10, 200, false),
+			emt_template_content_en: alphanumericValidation(10, 200, false),
+			emt_description: alphanumericValidation(3, 425, false),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateEmailTemplate = {
+					emt_id: emailTemplate?.emt_id,
+					emt_template_name: values.emt_template_name,
+					emt_template_content: values.emt_template_content,
+					emt_template_content_am: values.emt_template_content_am,
+					emt_template_content_en: values.emt_template_content_en,
+					emt_description: values.emt_description,
+					emt_status: values.emt_status,
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update EmailTemplate
-        handleUpdateEmailTemplate(updateEmailTemplate);
-      } else {
-        const newEmailTemplate = {
-          emt_template_name: values.emt_template_name,
-          emt_template_content: values.emt_template_content,
-          emt_template_content_am: values.emt_template_content_am,
-          emt_template_content_en: values.emt_template_content_en,
-          emt_description: values.emt_description,
-          emt_status: values.emt_status,
-        };
-        // save new EmailTemplate
-        handleAddEmailTemplate(newEmailTemplate);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update EmailTemplate
+				handleUpdateEmailTemplate(updateEmailTemplate);
+			} else {
+				const newEmailTemplate = {
+					emt_template_name: values.emt_template_name,
+					emt_template_content: values.emt_template_content,
+					emt_template_content_am: values.emt_template_content_am,
+					emt_template_content_en: values.emt_template_content_en,
+					emt_description: values.emt_description,
+					emt_status: values.emt_status,
+				};
+				// save new EmailTemplate
+				handleAddEmailTemplate(newEmailTemplate);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch EmailTemplate on component mount
-  useEffect(() => {
-    setEmailTemplate(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setEmailTemplate(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setEmailTemplate(null);
-    } else {
-      setModal(true);
-    }
-  };
+	// Fetch EmailTemplate on component mount
+	useEffect(() => {
+		setEmailTemplate(data);
+	}, [data]);
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setEmailTemplate(data);
+			setIsEdit(false);
+		}
+	}, [data]);
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setEmailTemplate(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-  const handleEmailTemplateClick = (arg) => {
-    const emailTemplate = arg;
-    // console.log("handleEmailTemplateClick", emailTemplate);
-    setEmailTemplate({
-      emt_id: emailTemplate.emt_id,
-      emt_template_name: emailTemplate.emt_template_name,
-      emt_template_content: emailTemplate.emt_template_content,
-      emt_template_content_am: emailTemplate.emt_template_content_am,
-      emt_template_content_en: emailTemplate.emt_template_content_en,
-      emt_description: emailTemplate.emt_description,
-      emt_status: emailTemplate.emt_status,
+	const handleEmailTemplateClick = (arg) => {
+		const emailTemplate = arg;
+		// console.log("handleEmailTemplateClick", emailTemplate);
+		setEmailTemplate({
+			emt_id: emailTemplate.emt_id,
+			emt_template_name: emailTemplate.emt_template_name,
+			emt_template_content: emailTemplate.emt_template_content,
+			emt_template_content_am: emailTemplate.emt_template_content_am,
+			emt_template_content_en: emailTemplate.emt_template_content_en,
+			emt_description: emailTemplate.emt_description,
+			emt_status: emailTemplate.emt_status,
 
-      is_deletable: emailTemplate.is_deletable,
-      is_editable: emailTemplate.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+			is_deletable: emailTemplate.is_deletable,
+			is_editable: emailTemplate.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (emailTemplate) => {
-    setEmailTemplate(emailTemplate);
-    setDeleteModal(true);
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (emailTemplate) => {
+		setEmailTemplate(emailTemplate);
+		setDeleteModal(true);
+	};
 
-  const handleEmailTemplateClicks = () => {
-    setIsEdit(false);
-    setEmailTemplate("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "emt_template_name",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emt_template_name, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "emt_template_content",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.emt_template_content, 30) ||
-                "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_detail"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_detail")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleEmailTemplateClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-    return baseColumns;
-  }, [handleEmailTemplateClick, toggleViewModal, onClickDelete]);
-  return (
+	const handleEmailTemplateClicks = () => {
+		setIsEdit(false);
+		setEmailTemplate("");
+		toggle();
+	};
+	const handleSearchResults = ({ data, error }) => {
+		setSearchResults(data);
+		setSearchError(error);
+		setShowSearchResult(true);
+	};
+	//START UNCHANGED
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "emt_template_name",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.emt_template_name, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "emt_template_content",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.emt_template_content, 30) ||
+								"-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_detail"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_detail")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleEmailTemplateClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
+		return baseColumns;
+	}, [handleEmailTemplateClick, toggleViewModal, onClickDelete, data]);
+
+	if (isError) {
+		return <FetchErrorHandler refetch={refetch} error={error} />;
+	}
+
+	return (
 		<React.Fragment>
 			<EmailTemplateModal
 				isOpen={modal1}
@@ -578,7 +585,7 @@ const EmailTemplateModel = () => {
 	);
 };
 EmailTemplateModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 
 export default EmailTemplateModel;

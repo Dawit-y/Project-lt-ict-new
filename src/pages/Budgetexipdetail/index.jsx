@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import { Link } from "react-router-dom";
-import { isEmpty, update } from "lodash";
-import "bootstrap/dist/css/bootstrap.min.css";
 import TableContainer from "../../components/Common/TableContainer";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -10,357 +7,343 @@ import { Spinner } from "reactstrap";
 import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import {
-  useFetchBudgetExipDetails,
-  useSearchBudgetExipDetails,
-  useAddBudgetExipDetail,
-  useDeleteBudgetExipDetail,
-  useUpdateBudgetExipDetail,
+	useFetchBudgetExipDetails,
+	useAddBudgetExipDetail,
+	useDeleteBudgetExipDetail,
+	useUpdateBudgetExipDetail,
 } from "../../queries/budgetexipdetail_query";
 import { useFetchExpenditureCodes } from "../../queries/expenditurecode_query";
 import { createSelectOptions } from "../../utils/commonMethods";
 import BudgetExipDetailModal from "./BudgetExipDetailModal";
 import { useTranslation } from "react-i18next";
 import {
-  Button,
-  Col,
-  Row,
-  UncontrolledTooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Card,
-  CardBody,
-  FormGroup,
-  Badge,
+	Button,
+	Col,
+	Row,
+	UncontrolledTooltip,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Card,
+	CardBody,
 } from "reactstrap";
 import {
-  alphanumericValidation,
-  amountValidation,
-  numberValidation,
+	alphanumericValidation,
+	amountValidation,
+	numberValidation,
 } from "../../utils/Validation/validation";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
+
 const truncateText = (text, maxLength) => {
-  if (typeof text !== "string") {
-    return text;
-  }
-  return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 const BudgetExipDetailModel = ({ passedId, isActive }) => {
-  const param = { budget_expend_id: passedId };
-  const { t } = useTranslation();
-  const [modal, setModal] = useState(false);
-  const [modal1, setModal1] = useState(false);
-  const [isEdit, setIsEdit] = useState(false);
-  const [budgetExipDetail, setBudgetExipDetail] = useState(null);
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searcherror, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
-  const { data, isLoading, error, isError, refetch } =
-    useFetchBudgetExipDetails(param, isActive);
-  const addBudgetExipDetail = useAddBudgetExipDetail();
-  const updateBudgetExipDetail = useUpdateBudgetExipDetail();
-  const deleteBudgetExipDetail = useDeleteBudgetExipDetail();
-  const { data: expenditureCodeData } = useFetchExpenditureCodes();
-  const expenditureCodeOptions = createSelectOptions(
-    expenditureCodeData?.data || [],
-    "pec_id",
-    "pec_name"
-  );
+	const param = { budget_expend_id: passedId };
+	const { t } = useTranslation();
+	const [modal, setModal] = useState(false);
+	const [modal1, setModal1] = useState(false);
+	const [isEdit, setIsEdit] = useState(false);
+	const [budgetExipDetail, setBudgetExipDetail] = useState(null);
 
-  const expenditureCodeMap = useMemo(() => {
-    return (
-      expenditureCodeData?.data?.reduce((acc, expend) => {
-        acc[expend.pec_id] = expend.pec_name;
-        return acc;
-      }, {}) || {}
-    );
-  }, [expenditureCodeData]);
-  //START CRUD
-  const handleAddBudgetExipDetail = async (data) => {
-    try {
-      await addBudgetExipDetail.mutateAsync(data);
-      toast.success(t("add_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("add_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleUpdateBudgetExipDetail = async (data) => {
-    try {
-      await updateBudgetExipDetail.mutateAsync(data);
-      toast.success(t("update_success"), {
-        autoClose: 2000,
-      });
-      validation.resetForm();
-    } catch (error) {
-      toast.success(t("update_failure"), {
-        autoClose: 2000,
-      });
-    }
-    toggle();
-  };
-  const handleDeleteBudgetExipDetail = async () => {
-    if (budgetExipDetail && budgetExipDetail.bed_id) {
-      try {
-        const id = budgetExipDetail.bed_id;
-        await deleteBudgetExipDetail.mutateAsync(id);
-        toast.success(t("delete_success"), {
-          autoClose: 2000,
-        });
-      } catch (error) {
-        toast.success(t("delete_failure"), {
-          autoClose: 2000,
-        });
-      }
-      setDeleteModal(false);
-    }
-  };
+	const { data, isLoading, error, isError, refetch } =
+		useFetchBudgetExipDetails(param, isActive);
+	const addBudgetExipDetail = useAddBudgetExipDetail();
+	const updateBudgetExipDetail = useUpdateBudgetExipDetail();
+	const deleteBudgetExipDetail = useDeleteBudgetExipDetail();
+	const { data: expenditureCodeData } = useFetchExpenditureCodes();
+	const expenditureCodeOptions = createSelectOptions(
+		expenditureCodeData?.data || [],
+		"pec_id",
+		"pec_name"
+	);
 
-  const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      bed_budget_expenditure_id:
-        (budgetExipDetail && budgetExipDetail.bed_budget_expenditure_id) || "",
-      bed_budget_expenditure_code_id:
-        (budgetExipDetail && budgetExipDetail.bed_budget_expenditure_code_id) ||
-        "",
-      bed_amount: (budgetExipDetail && budgetExipDetail.bed_amount) || "",
-      bed_description:
-        (budgetExipDetail && budgetExipDetail.bed_description) || "",
-      bed_status: (budgetExipDetail && budgetExipDetail.bed_status) || "",
+	const expenditureCodeMap = useMemo(() => {
+		return (
+			expenditureCodeData?.data?.reduce((acc, expend) => {
+				acc[expend.pec_id] = expend.pec_name;
+				return acc;
+			}, {}) || {}
+		);
+	}, [expenditureCodeData]);
+	//START CRUD
+	const handleAddBudgetExipDetail = async (data) => {
+		try {
+			await addBudgetExipDetail.mutateAsync(data);
+			toast.success(t("add_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleUpdateBudgetExipDetail = async (data) => {
+		try {
+			await updateBudgetExipDetail.mutateAsync(data);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			toggle();
+			validation.resetForm();
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+	const handleDeleteBudgetExipDetail = async () => {
+		if (budgetExipDetail && budgetExipDetail.bed_id) {
+			try {
+				const id = budgetExipDetail.bed_id;
+				await deleteBudgetExipDetail.mutateAsync(id);
+				toast.success(t("delete_success"), {
+					autoClose: 3000,
+				});
+			} catch (error) {
+				toast.success(t("delete_failure"), {
+					autoClose: 3000,
+				});
+			}
+			setDeleteModal(false);
+		}
+	};
 
-      is_deletable: (budgetExipDetail && budgetExipDetail.is_deletable) || 1,
-      is_editable: (budgetExipDetail && budgetExipDetail.is_editable) || 1,
-    },
-    validationSchema: Yup.object({
-      bed_budget_expenditure_code_id: numberValidation(1, 500, true).test(
-        "unique-role-id",
-        t("Already exists"),
-        (value) => {
-          return !data?.data.some(
-            (item) =>
-              item.bed_budget_expenditure_code_id == value &&
-              item.bed_id !== budgetExipDetail?.bed_id
-          );
-        }
-      ),
-      bed_amount: amountValidation(1000, 1000000000, true),
-      bed_description: alphanumericValidation(3, 425, false),
-      //bed_status: Yup.string().required(t('bed_status')),
-    }),
-    validateOnBlur: true,
-    validateOnChange: false,
-    onSubmit: (values) => {
-      if (isEdit) {
-        const updateBudgetExipDetail = {
-          bed_id: budgetExipDetail.bed_id,
-          bed_budget_expenditure_code_id: values.bed_budget_expenditure_code_id,
-          bed_amount: values.bed_amount,
-          bed_description: values.bed_description,
-          bed_status: values.bed_status,
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues: {
+			bed_budget_expenditure_id:
+				(budgetExipDetail && budgetExipDetail.bed_budget_expenditure_id) || "",
+			bed_budget_expenditure_code_id:
+				(budgetExipDetail && budgetExipDetail.bed_budget_expenditure_code_id) ||
+				"",
+			bed_amount: (budgetExipDetail && budgetExipDetail.bed_amount) || "",
+			bed_description:
+				(budgetExipDetail && budgetExipDetail.bed_description) || "",
+			bed_status: (budgetExipDetail && budgetExipDetail.bed_status) || "",
 
-          is_deletable: values.is_deletable,
-          is_editable: values.is_editable,
-        };
-        // update BudgetExipDetail
-        handleUpdateBudgetExipDetail(updateBudgetExipDetail);
-      } else {
-        const newBudgetExipDetail = {
-          bed_budget_expenditure_id: passedId,
-          bed_budget_expenditure_code_id: values.bed_budget_expenditure_code_id,
-          bed_amount: values.bed_amount,
-          bed_description: values.bed_description,
-          bed_status: values.bed_status,
-        };
-        // save new BudgetExipDetail
-        handleAddBudgetExipDetail(newBudgetExipDetail);
-      }
-    },
-  });
-  const [transaction, setTransaction] = useState({});
-  const toggleViewModal = () => setModal1(!modal1);
+			is_deletable: (budgetExipDetail && budgetExipDetail.is_deletable) || 1,
+			is_editable: (budgetExipDetail && budgetExipDetail.is_editable) || 1,
+		},
+		validationSchema: Yup.object({
+			bed_budget_expenditure_code_id: numberValidation(1, 500, true).test(
+				"unique-role-id",
+				t("Already exists"),
+				(value) => {
+					return !data?.data.some(
+						(item) =>
+							item.bed_budget_expenditure_code_id == value &&
+							item.bed_id !== budgetExipDetail?.bed_id
+					);
+				}
+			),
+			bed_amount: amountValidation(1000, 1000000000, true),
+			bed_description: alphanumericValidation(3, 425, false),
+			//bed_status: Yup.string().required(t('bed_status')),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: (values) => {
+			if (isEdit) {
+				const updateBudgetExipDetail = {
+					bed_id: budgetExipDetail.bed_id,
+					bed_budget_expenditure_code_id: values.bed_budget_expenditure_code_id,
+					bed_amount: values.bed_amount,
+					bed_description: values.bed_description,
+					bed_status: values.bed_status,
+					is_deletable: values.is_deletable,
+					is_editable: values.is_editable,
+				};
+				// update BudgetExipDetail
+				handleUpdateBudgetExipDetail(updateBudgetExipDetail);
+			} else {
+				const newBudgetExipDetail = {
+					bed_budget_expenditure_id: passedId,
+					bed_budget_expenditure_code_id: values.bed_budget_expenditure_code_id,
+					bed_amount: values.bed_amount,
+					bed_description: values.bed_description,
+					bed_status: values.bed_status,
+				};
+				// save new BudgetExipDetail
+				handleAddBudgetExipDetail(newBudgetExipDetail);
+			}
+		},
+	});
+	const [transaction, setTransaction] = useState({});
+	const toggleViewModal = () => setModal1(!modal1);
 
-  // Fetch BudgetExipDetail on component mount
-  useEffect(() => {
-    setBudgetExipDetail(data);
-  }, [data]);
-  useEffect(() => {
-    if (!isEmpty(data) && !!isEdit) {
-      setBudgetExipDetail(data);
-      setIsEdit(false);
-    }
-  }, [data]);
-  const toggle = () => {
-    if (modal) {
-      setModal(false);
-      setBudgetExipDetail(null);
-    } else {
-      setModal(true);
-    }
-  };
+	const toggle = () => {
+		if (modal) {
+			setModal(false);
+			setBudgetExipDetail(null);
+		} else {
+			setModal(true);
+		}
+	};
 
-  const handleBudgetExipDetailClick = (arg) => {
-    const budgetExipDetail = arg;
-    setBudgetExipDetail({
-      bed_id: budgetExipDetail.bed_id,
-      bed_budget_expenditure_id: budgetExipDetail.bed_budget_expenditure_id,
-      bed_budget_expenditure_code_id:
-        budgetExipDetail.bed_budget_expenditure_code_id,
-      bed_amount: budgetExipDetail.bed_amount,
-      bed_description: budgetExipDetail.bed_description,
-      bed_status: budgetExipDetail.bed_status,
+	const handleBudgetExipDetailClick = (arg) => {
+		const budgetExipDetail = arg;
+		setBudgetExipDetail({
+			bed_id: budgetExipDetail.bed_id,
+			bed_budget_expenditure_id: budgetExipDetail.bed_budget_expenditure_id,
+			bed_budget_expenditure_code_id:
+				budgetExipDetail.bed_budget_expenditure_code_id,
+			bed_amount: budgetExipDetail.bed_amount,
+			bed_description: budgetExipDetail.bed_description,
+			bed_status: budgetExipDetail.bed_status,
 
-      is_deletable: budgetExipDetail.is_deletable,
-      is_editable: budgetExipDetail.is_editable,
-    });
-    setIsEdit(true);
-    toggle();
-  };
+			is_deletable: budgetExipDetail.is_deletable,
+			is_editable: budgetExipDetail.is_editable,
+		});
+		setIsEdit(true);
+		toggle();
+	};
 
-  //delete projects
-  const [deleteModal, setDeleteModal] = useState(false);
-  const onClickDelete = (budgetExipDetail) => {
-    setBudgetExipDetail(budgetExipDetail);
-    setDeleteModal(true);
-  };
+	//delete projects
+	const [deleteModal, setDeleteModal] = useState(false);
+	const onClickDelete = (budgetExipDetail) => {
+		setBudgetExipDetail(budgetExipDetail);
+		setDeleteModal(true);
+	};
 
-  const handleBudgetExipDetailClicks = () => {
-    setIsEdit(false);
-    setBudgetExipDetail("");
-    toggle();
-  };
-  const handleSearchResults = ({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  };
-  //START UNCHANGED
-  const columns = useMemo(() => {
-    const baseColumns = [
-      {
-        header: "",
-        accessorKey: "bed_budget_expenditure_code_id",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {
-                expenditureCodeMap[
-                cellProps.row.original.bed_budget_expenditure_code_id
-                ]
-              }
-            </span>
-          );
-        },
-      },
-      {
-        header: "",
-        accessorKey: "bed_amount",
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <span>
-              {truncateText(cellProps.row.original.bed_amount, 30) || "-"}
-            </span>
-          );
-        },
-      },
-      {
-        header: t("view_details"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <Button
-              type="button"
-              color="primary"
-              className="btn-sm"
-              onClick={() => {
-                const data = cellProps.row.original;
-                toggleViewModal(data);
-                setTransaction(cellProps.row.original);
-              }}
-            >
-              {t("view_details")}
-            </Button>
-          );
-        },
-      },
-    ];
-    if (
-      data?.previledge?.is_role_editable == 1 ||
-      data?.previledge?.is_role_deletable == 1
-    ) {
-      baseColumns.push({
-        header: t("Action"),
-        accessorKey: t("Action"),
-        enableColumnFilter: false,
-        enableSorting: true,
-        cell: (cellProps) => {
-          return (
-            <div className="d-flex gap-3">
-              {cellProps.row.original.is_editable == 1 && (
-                <Link
-                  to="#"
-                  className="text-success"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    handleBudgetExipDetailClick(data);
-                  }}
-                >
-                  <i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-                  <UncontrolledTooltip placement="top" target="edittooltip">
-                    Edit
-                  </UncontrolledTooltip>
-                </Link>
-              )}
+	const handleBudgetExipDetailClicks = () => {
+		setIsEdit(false);
+		setBudgetExipDetail("");
+		toggle();
+	};
 
-              {cellProps.row.original.is_deletable == 1 && (
-                <Link
-                  to="#"
-                  className="text-danger"
-                  onClick={() => {
-                    const data = cellProps.row.original;
-                    onClickDelete(data);
-                  }}
-                >
-                  <i
-                    className="mdi mdi-delete font-size-18"
-                    id="deletetooltip"
-                  />
-                  <UncontrolledTooltip placement="top" target="deletetooltip">
-                    Delete
-                  </UncontrolledTooltip>
-                </Link>
-              )}
-            </div>
-          );
-        },
-      });
-    }
-    return baseColumns;
-  }, [handleBudgetExipDetailClick, toggleViewModal, onClickDelete]);
+	const columns = useMemo(() => {
+		const baseColumns = [
+			{
+				header: "",
+				accessorKey: "bed_budget_expenditure_code_id",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{
+								expenditureCodeMap[
+									cellProps.row.original.bed_budget_expenditure_code_id
+								]
+							}
+						</span>
+					);
+				},
+			},
+			{
+				header: "",
+				accessorKey: "bed_amount",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{truncateText(cellProps.row.original.bed_amount, 30) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("view_details"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								toggleViewModal(data);
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_details")}
+						</Button>
+					);
+				},
+			},
+		];
+		if (
+			data?.previledge?.is_role_editable == 1 ||
+			data?.previledge?.is_role_deletable == 1
+		) {
+			baseColumns.push({
+				header: t("Action"),
+				accessorKey: t("Action"),
+				enableColumnFilter: false,
+				enableSorting: false,
+				cell: (cellProps) => {
+					return (
+						<div className="d-flex gap-1">
+							{cellProps.row.original.is_editable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-success"
+									onClick={() => {
+										const data = cellProps.row.original;
+										handleBudgetExipDetailClick(data);
+									}}
+								>
+									<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
+									<UncontrolledTooltip placement="top" target="edittooltip">
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
 
-  if (isError) {
-    return <FetchErrorHandler error={error} refetch={refetch} />;
-  }
+							{cellProps.row.original.is_deletable == 1 && (
+								<Button
+									color="None"
+									size="sm"
+									className="text-danger"
+									onClick={() => {
+										const data = cellProps.row.original;
+										onClickDelete(data);
+									}}
+								>
+									<i
+										className="mdi mdi-delete font-size-18"
+										id="deletetooltip"
+									/>
+									<UncontrolledTooltip placement="top" target="deletetooltip">
+										Delete
+									</UncontrolledTooltip>
+								</Button>
+							)}
+						</div>
+					);
+				},
+			});
+		}
+		return baseColumns;
+	}, [
+		handleBudgetExipDetailClick,
+		toggleViewModal,
+		onClickDelete,
+		data,
+		expenditureCodeMap,
+		t,
+	]);
 
-  return (
+	if (isError) {
+		return <FetchErrorHandler error={error} refetch={refetch} />;
+	}
+
+	return (
 		<React.Fragment>
 			<BudgetExipDetailModal
 				isOpen={modal1}
@@ -375,7 +358,7 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 			/>
 			<div className="">
 				<div className="container-fluid1">
-					{isLoading || isSearchLoading ? (
+					{isLoading ? (
 						<Spinners />
 					) : (
 						<Row>
@@ -384,17 +367,12 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 									<CardBody>
 										<TableContainer
 											columns={columns}
-											data={
-												showSearchResult
-													? searchResults?.data
-													: data?.data || []
-											}
+											data={data?.data || []}
 											isGlobalFilter={true}
 											isAddButton={true}
 											isCustomPageSize={true}
 											handleUserClick={handleBudgetExipDetailClicks}
 											isPagination={true}
-											// SearchPlaceholder="26 records..."
 											SearchPlaceholder={t("filter_placeholder")}
 											buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
 											buttonName={t("add")}
@@ -553,6 +531,6 @@ const BudgetExipDetailModel = ({ passedId, isActive }) => {
 	);
 };
 BudgetExipDetailModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
 export default BudgetExipDetailModel;

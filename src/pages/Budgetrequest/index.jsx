@@ -102,30 +102,30 @@ const BudgetRequestModel = () => {
 		try {
 			await addBudgetRequest.mutateAsync(data);
 			toast.success(t("add_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.success(t("add_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("add_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	const handleUpdateBudgetRequest = async (data) => {
 		try {
 			await updateBudgetRequest.mutateAsync(data);
 			toast.success(t("update_success"), {
-				autoClose: 2000,
+				autoClose: 3000,
 			});
+			toggle();
 			validation.resetForm();
 		} catch (error) {
-			toast.success(t("update_failure"), {
-				autoClose: 2000,
-			});
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
 		}
-		toggle();
 	};
 
 	// validation
@@ -255,11 +255,11 @@ const BudgetRequestModel = () => {
 				const id = budgetRequest.bdr_id;
 				await deleteBudgetRequest.mutateAsync(id);
 				toast.success(`Budget Request ${id} deleted successfully`, {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			} catch (error) {
 				toast.error(`Failed to delete Budget Request ${budgetRequest.bdr_id}`, {
-					autoClose: 2000,
+					autoClose: 3000,
 				});
 			}
 			setDeleteModal(false);
@@ -439,15 +439,15 @@ const BudgetRequestModel = () => {
 				header: t("Action"),
 				accessorKey: t("Action"),
 				enableColumnFilter: false,
-				enableSorting: true,
+				enableSorting: false,
 				cell: (cellProps) => {
 					return (
-						<div className="d-flex gap-3">
+						<div className="d-flex gap-1">
 							{(cellProps.row.original?.is_editable == 1 ||
 								cellProps.row.original?.is_role_editable) && (
-								<Link
-									to="#"
-									className="text-success"
+								<Button
+									color="None"
+									size="sm"
 									onClick={() => {
 										const data = cellProps.row.original;
 										handleBudgetRequestClick(data);
@@ -457,7 +457,7 @@ const BudgetRequestModel = () => {
 									<UncontrolledTooltip placement="top" target="edittooltip">
 										Edit
 									</UncontrolledTooltip>
-								</Link>
+								</Button>
 							)}
 							{(cellProps.row.original?.is_deletable == 9 ||
 								cellProps.row.original?.is_role_deletable == 9) && (

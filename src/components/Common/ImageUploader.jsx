@@ -46,7 +46,7 @@ const ImageUploader = ({ validation }) => {
               accept={{ "image/*": [] }}
               onDrop={(acceptedFiles, rejectedFiles) => {
                 const validFiles = acceptedFiles.filter(
-                  (file) => file.size <= MAX_SIZE_BYTES
+                  (file) => file.size <= MAX_SIZE_BYTES,
                 );
 
                 handleRejectedFiles(rejectedFiles);

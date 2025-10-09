@@ -1,5 +1,5 @@
-import React, { useTransition } from "react"
-import PropTypes from "prop-types"
+import React, { useTransition } from "react";
+import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import {
   Button,
@@ -8,11 +8,10 @@ import {
   ModalFooter,
   ModalHeader,
   Table,
-} from "reactstrap"
+} from "reactstrap";
 
 const modalStyle = {
-  width: '100%',
-  height: '100%',
+	width: "100%",
 };
 
 const UserSectorModal = (props) => {
@@ -33,35 +32,44 @@ const UserSectorModal = (props) => {
       <div className="modal-xl">
         <ModalHeader toggle={toggle}>{t("View Details")}</ModalHeader>
         <ModalBody>
-        <tr>
-                    <p className="mb-2">
-            {t('usc_sector_id')}: <span className="text-primary">{transaction.usc_sector_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('usc_user_id')}: <span className="text-primary">{transaction.usc_user_id}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('usc_description')}: <span className="text-primary">{transaction.usc_description}</span>
-          </p>
-          </tr><tr>
-                    <p className="mb-2">
-            {t('usc_status')}: <span className="text-primary">{transaction.usc_status}</span>
-          </p>
+          <tr>
+            <p className="mb-2">
+              {t("usc_sector_id")}:{" "}
+              <span className="text-primary">{transaction.usc_sector_id}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("usc_user_id")}:{" "}
+              <span className="text-primary">{transaction.usc_user_id}</span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("usc_description")}:{" "}
+              <span className="text-primary">
+                {transaction.usc_description}
+              </span>
+            </p>
+          </tr>
+          <tr>
+            <p className="mb-2">
+              {t("usc_status")}:{" "}
+              <span className="text-primary">{transaction.usc_status}</span>
+            </p>
           </tr>
 
           {transaction.is_deletable === 1 && (
             <p className="text-danger">data is deletable</p>
           )}
-          
+
           {transaction.is_editable === 1 && (
             <p className="text-success">Editable</p>
           )}
         </ModalBody>
         <ModalFooter>
           <Button type="button" color="secondary" onClick={toggle}>
-            {t('Close')}
+            {t("Close")}
           </Button>
         </ModalFooter>
       </div>

@@ -51,7 +51,7 @@ const Index = (props) => {
   const [selectedDocumentTypeId, setSelectedDocumentTypeId] = useState(null);
   const { data, isLoading, isError, error, refetch } = useFetchProjectDocuments(
     param,
-    isActive
+    isActive,
   );
   const { data: searchedDocs, isLoading: isSearchLoading } =
     useSearchProjectDocuments(searchParams, isActive);
@@ -65,12 +65,12 @@ const Index = (props) => {
     try {
       await addProjectDocument.mutateAsync(data);
       toast.success(`Data added successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error("Failed to add data", {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -79,12 +79,12 @@ const Index = (props) => {
     try {
       await updateProjectDocument.mutateAsync(data);
       toast.success(`data updated successfully`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     } catch (error) {
       toast.error(`Failed to update Data`, {
-        autoClose: 2000,
-      });
+				autoClose: 3000,
+			});
     }
     toggle();
   };
@@ -94,12 +94,12 @@ const Index = (props) => {
         const id = projectDocument.prd_id;
         await deleteProjectDocument.mutateAsync(id);
         toast.success(`Data deleted successfully`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       } catch (error) {
         toast.error(`Failed to delete Data`, {
-          autoClose: 2000,
-        });
+					autoClose: 3000,
+				});
       }
       setDeleteModal(false);
     }
@@ -260,7 +260,7 @@ const Index = (props) => {
                   onChange={(e) => {
                     validation.setFieldValue(
                       "prd_status",
-                      Number(e.target.value)
+                      Number(e.target.value),
                     );
                   }}
                   onBlur={validation.handleBlur}
@@ -271,7 +271,7 @@ const Index = (props) => {
                   <option value={0}>{t("Inactive")}</option>
                 </Input>
                 {validation.touched.prd_status &&
-                  validation.errors.prd_status ? (
+                validation.errors.prd_status ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prd_status}
                   </FormFeedback>
@@ -289,14 +289,14 @@ const Index = (props) => {
                   value={validation.values.prd_description || ""}
                   invalid={
                     validation.touched.prd_description &&
-                      validation.errors.prd_description
+                    validation.errors.prd_description
                       ? true
                       : false
                   }
                   maxLength={20}
                 />
                 {validation.touched.prd_description &&
-                  validation.errors.prd_description ? (
+                validation.errors.prd_description ? (
                   <FormFeedback type="invalid">
                     {validation.errors.prd_description}
                   </FormFeedback>
@@ -306,7 +306,7 @@ const Index = (props) => {
                 <Col>
                   <div className="text-end">
                     {addProjectDocument.isPending ||
-                      updateProjectDocument.isPending ? (
+                    updateProjectDocument.isPending ? (
                       <Button
                         color="success"
                         type="submit"
@@ -360,16 +360,18 @@ const Index = (props) => {
                           type="button"
                           onClick={toggle}
                         >
-                          <i className="mdi mdi-plus me-1"></i>{t("create_new")}
+                          <i className="mdi mdi-plus me-1"></i>
+                          {t("create_new")}
                         </Button>
                       </div>
                       <ul className="list-unstyled categories-list">
                         <li>
                           <div
-                            className={`${selectedDocumentTypeId === null
-                              ? "border border-info-subtle"
-                              : ""
-                              }`}
+                            className={`${
+                              selectedDocumentTypeId === null
+                                ? "border border-info-subtle"
+                                : ""
+                            }`}
                           >
                             <Button
                               className="text-body fw-medium py-1 d-flex align-items-center border-0 bg-transparent w-100 text-start"
@@ -404,7 +406,6 @@ const Index = (props) => {
                               </Button>
                             </div>
                           </li>
-
                         ))}
                       </ul>
                     </div>
@@ -414,7 +415,7 @@ const Index = (props) => {
 
               {/* Main Content */}
               <div className="w-100 h-100" style={{ minHeight: "500px" }}>
-                <Card className="h-100" >
+                <Card className="h-100">
                   <CardBody>
                     {isSearchLoading || isLoading ? (
                       <Spinners />

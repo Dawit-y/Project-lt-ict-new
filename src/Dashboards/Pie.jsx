@@ -60,7 +60,7 @@ const Pie = ({ chartData, dataColors }) => {
       trigger: "item",
       formatter: "{a} <br/>{b} : {c} ({d}%)",
     },
-   /* legend: {
+    /* legend: {
       orient: "vertical",
       left: "left",
       data: chartData,
