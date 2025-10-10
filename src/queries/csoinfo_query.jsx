@@ -21,7 +21,7 @@ export const useFetchCsoInfos = () => {
 };
 
 //search cso_info
-export const useSearchCsoInfos = (searchParams = {}) => {
+export const useSearchCsoInfos = (searchParams = {}, isActive) => {
 	return useQuery({
 		queryKey: [...CSO_INFO_QUERY_KEY, searchParams],
 		queryFn: () => getCsoInfo(searchParams),
@@ -29,7 +29,7 @@ export const useSearchCsoInfos = (searchParams = {}) => {
 		gcTime: 1000 * 60 * 5,
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
-		enabled: searchParams.length > 0,
+		enabled: isActive,
 	});
 };
 // Add cso_info
