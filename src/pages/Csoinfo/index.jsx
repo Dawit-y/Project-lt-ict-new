@@ -520,7 +520,7 @@ const CsoInfoModel = () => {
 											rowData={data?.data || []}
 											columnDefs={columnDefs}
 											isPagination={true}
-											paginationPageSize={20}
+											paginationPageSize={30}
 											isGlobalFilter={true}
 											isAddButton={data?.previledge?.is_role_can_add == 1}
 											addButtonText="Add"

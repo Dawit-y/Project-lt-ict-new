@@ -287,149 +287,149 @@ const BudgetRequestListModel = () => {
   }
 
   return (
-    <React.Fragment>
-      <BudgetRequestModal
-        isOpen={modal1}
-        toggle={toggleViewModal}
-        transaction={transaction}
-      />
-      <AttachFileModal
-        isOpen={fileModal}
-        toggle={toggleFileModal}
-        projectId={transaction?.bdr_project_id}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id}
-      />
-      <ConvInfoModal
-        isOpen={convModal}
-        toggle={toggleConvModal}
-        ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-        ownerId={transaction?.bdr_id ?? null}
-      />
-      <div className="page-content">
-        <div className="">
-          <Breadcrumbs
-            title={t("budget_request")}
-            breadcrumbItem={t("budget_request")}
-          />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-            />
-            <div className="w-100">
-              <AdvancedSearch
-                searchHook={useSearchBudgetRequests}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "bdr_budget_year_id",
-                    options: budgetYearOptions,
-                  },
-                ]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                setIsSearchLoading={setIsSearchLoading}
-                setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}
-              />
+		<React.Fragment>
+			<BudgetRequestModal
+				isOpen={modal1}
+				toggle={toggleViewModal}
+				transaction={transaction}
+			/>
+			<AttachFileModal
+				isOpen={fileModal}
+				toggle={toggleFileModal}
+				projectId={transaction?.bdr_project_id}
+				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+				ownerId={transaction?.bdr_id}
+			/>
+			<ConvInfoModal
+				isOpen={convModal}
+				toggle={toggleConvModal}
+				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
+				ownerId={transaction?.bdr_id ?? null}
+			/>
+			<div className="page-content">
+				<div className="">
+					<Breadcrumbs
+						title={t("budget_request")}
+						breadcrumbItem={t("budget_request")}
+					/>
+					<div className="w-100 d-flex gap-2">
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+						/>
+						<div className="w-100">
+							<AdvancedSearch
+								searchHook={useSearchBudgetRequests}
+								textSearchKeys={["prj_name", "prj_code"]}
+								dropdownSearchKeys={[
+									{
+										key: "bdr_budget_year_id",
+										options: budgetYearOptions,
+									},
+								]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								onSearchResult={handleSearchResults}
+								setIsSearchLoading={setIsSearchLoading}
+								setSearchResults={setSearchResults}
+								setShowSearchResult={setShowSearchResult}
+							/>
 
-              {isLoading || isSearchLoading ? (
-                <Spinners />
-              ) : (
-                <>
-                  <div
-                    className="ag-theme-alpine"
-                    style={{ height: "100%", width: "100%" }}
-                  >
-                    {/* Row for search input and buttons */}
-                    <Row className="mb-3">
-                      <Col sm="12" md="6">
-                        <Input
-                          type="text"
-                          placeholder="Search..."
-                          onChange={(e) => setQuickFilterText(e.target.value)}
-                          className="mb-2"
-                        />
-                      </Col>
-                      <Col
-                        sm="12"
-                        md="6"
-                        className="text-md-end d-flex align-items-center justify-content-end gap-2"
-                      >
-                        <ExportToExcel
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          excludeKey={["is_editable", "is_deletable"]}
-                        />
-                        <ExportToPDF
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={"projects"}
-                          includeKey={budget_request}
-                        />
-                        <PrintPage
-                          tableData={
-                            showSearchResult
-                              ? searchResults?.data
-                              : data?.data || []
-                          }
-                          tablename={t("Projects")}
-                          excludeKey={["is_editable", "is_deletable"]}
-                          gridRef={gridRef}
-                          columnDefs={columnDefs}
-                          columnsToIgnore="3"
-                        />
-                      </Col>
-                    </Row>
-                    {/* AG Grid */}
-                    <div style={{}}>
-                      <AgGridReact
-                        ref={gridRef}
-                        rowData={
-                          showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []
-                        }
-                        columnDefs={columnDefs}
-                        pagination={true}
-                        paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-                        paginationPageSize={20}
-                        quickFilterText={quickFilterText}
-                        onSelectionChanged={onSelectionChanged}
-                        rowHeight={30}
-                        animateRows={true}
-                        domLayout="autoHeight"
-                        // onGridReady={(params) => {
-                        //   params.api.sizeColumnsToFit();
-                        // }}
-                      />
-                    </div>
-                    {/*<BudgetRequestAnalysis
+							{isLoading || isSearchLoading ? (
+								<Spinners />
+							) : (
+								<>
+									<div
+										className="ag-theme-alpine"
+										style={{ height: "100%", width: "100%" }}
+									>
+										{/* Row for search input and buttons */}
+										<Row className="mb-3">
+											<Col sm="12" md="6">
+												<Input
+													type="text"
+													placeholder="Search..."
+													onChange={(e) => setQuickFilterText(e.target.value)}
+													className="mb-2"
+												/>
+											</Col>
+											<Col
+												sm="12"
+												md="6"
+												className="text-md-end d-flex align-items-center justify-content-end gap-2"
+											>
+												<ExportToExcel
+													tableData={
+														showSearchResult
+															? searchResults?.data
+															: data?.data || []
+													}
+													tablename={"projects"}
+													excludeKey={["is_editable", "is_deletable"]}
+												/>
+												<ExportToPDF
+													tableData={
+														showSearchResult
+															? searchResults?.data
+															: data?.data || []
+													}
+													tablename={"projects"}
+													includeKey={budget_request}
+												/>
+												<PrintPage
+													tableData={
+														showSearchResult
+															? searchResults?.data
+															: data?.data || []
+													}
+													tablename={t("Projects")}
+													excludeKey={["is_editable", "is_deletable"]}
+													gridRef={gridRef}
+													columnDefs={columnDefs}
+													columnsToIgnore="3"
+												/>
+											</Col>
+										</Row>
+										{/* AG Grid */}
+										<div style={{}}>
+											<AgGridReact
+												ref={gridRef}
+												rowData={
+													showSearchResult
+														? searchResults?.data
+														: data?.data || []
+												}
+												columnDefs={columnDefs}
+												pagination={true}
+												paginationPageSizeSelector={[10, 20, 30, 40, 50]}
+												paginationPageSize={30}
+												quickFilterText={quickFilterText}
+												onSelectionChanged={onSelectionChanged}
+												rowHeight={30}
+												animateRows={true}
+												domLayout="autoHeight"
+												// onGridReady={(params) => {
+												//   params.api.sizeColumnsToFit();
+												// }}
+											/>
+										</div>
+										{/*<BudgetRequestAnalysis
                       data={
                         showSearchResult
                           ? searchResults?.data
                           : data?.data || []
                       }
                     />*/}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+									</div>
+								</>
+							)}
+						</div>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 BudgetRequestListModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

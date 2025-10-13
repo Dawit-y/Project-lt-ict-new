@@ -417,32 +417,32 @@ export default ApproverBudgetRequestList;
 
 const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
   return (
-    <AgGridContainer
-      rowData={showSearchResult ? data?.data : []}
-      columnDefs={columnDefs}
-      isLoading={isLoading}
-      isPagination={true}
-      paginationPageSize={20}
-      isGlobalFilter={true}
-      isAddButton={false}
-      rowHeight={35}
-      addButtonText="Add"
-      isExcelExport={true}
-      isPdfExport={true}
-      isPrint={true}
-      tableName="budget_request"
-      includeKey={[
-        "bdy_name",
-        "prj_name",
-        "prj_code",
-        "bdr_request_status",
-        "bdr_requested_amount",
-        "bdr_released_amount",
-        "bdr_requested_date_gc",
-        "bdr_released_date_gc",
-        "bdr_description",
-      ]}
-      excludeKey={["is_editable", "is_deletable"]}
-    />
-  );
+		<AgGridContainer
+			rowData={showSearchResult ? data?.data : []}
+			columnDefs={columnDefs}
+			isLoading={isLoading}
+			isPagination={true}
+			paginationPageSize={30}
+			isGlobalFilter={true}
+			isAddButton={false}
+			rowHeight={35}
+			addButtonText="Add"
+			isExcelExport={true}
+			isPdfExport={true}
+			isPrint={true}
+			tableName="budget_request"
+			includeKey={[
+				"bdy_name",
+				"prj_name",
+				"prj_code",
+				"bdr_request_status",
+				"bdr_requested_amount",
+				"bdr_released_amount",
+				"bdr_requested_date_gc",
+				"bdr_released_date_gc",
+				"bdr_description",
+			]}
+			excludeKey={["is_editable", "is_deletable"]}
+		/>
+	);
 };

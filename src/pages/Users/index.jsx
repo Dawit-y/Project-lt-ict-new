@@ -674,7 +674,7 @@ const UsersModel = () => {
 								}
 								columnDefs={columnDefs}
 								isPagination={true}
-								paginationPageSize={20}
+								paginationPageSize={30}
 								isGlobalFilter={true}
 								isAddButton={true}
 								onAddClick={handleUsersClicks}
