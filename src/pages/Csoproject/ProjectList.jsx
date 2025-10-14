@@ -238,76 +238,76 @@ const ProjectList = () => {
   }, [data, onClickDelete, t]);
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <div className="w-100">
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div
-            className="d-flex gap-2"
-            style={{ display: "flex", flexWrap: "nowrap" }}
-          >
-            {/* Sidebar - Tree */}
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-            />
-            <SearchTableContainer isCollapsed={isCollapsed}>
-              <AdvancedSearch
-                searchHook={useSearchProjects}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prj_project_category_id",
-                    options:
-                      lang === "en"
-                        ? projectCategoryOptionsEn
-                        : lang === "am"
-                          ? projectCategoryOptionsAm
-                          : projectCategoryOptionsOr,
-                  },
-                ]}
-                checkboxSearchKeys={[]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                setSearchResults={handleSearch}
-                onSearchResult={handleSearch}
-                setShowSearchResult={setShowSearchResult}
-                setIsSearchLoading={setIsSearchLoading}
-                params={params}
-                setParams={setParams}
-                searchParams={searchParams}
-                setSearchParams={setSearchParams}
-              >
-                <div>
-                  <AgGridContainer
-                    rowData={
-                      showSearchResult ? searchResults?.data : data?.data || []
-                    }
-                    columnDefs={columnDefs}
-                    isLoading={isSearchLoading}
-                    isPagination={true}
-                    paginationPageSize={20}
-                    isGlobalFilter={true}
-                    isAddButton={false}
-                    addButtonText="Add"
-                    isExcelExport={true}
-                    isPdfExport={true}
-                    isPrint={true}
-                    tableName="Projects"
-                    includeKey={["prj_name", "prj_code"]}
-                    excludeKey={["is_editable", "is_deletable"]}
-                  />
-                </div>
-              </AdvancedSearch>
-            </SearchTableContainer>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<div className="page-content">
+				<div className="w-100">
+					<Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+					<div
+						className="d-flex gap-2"
+						style={{ display: "flex", flexWrap: "nowrap" }}
+					>
+						{/* Sidebar - Tree */}
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
+						<SearchTableContainer isCollapsed={isCollapsed}>
+							<AdvancedSearch
+								searchHook={useSearchProjects}
+								textSearchKeys={["prj_name", "prj_code"]}
+								dropdownSearchKeys={[
+									{
+										key: "prj_project_category_id",
+										options:
+											lang === "en"
+												? projectCategoryOptionsEn
+												: lang === "am"
+													? projectCategoryOptionsAm
+													: projectCategoryOptionsOr,
+									},
+								]}
+								checkboxSearchKeys={[]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								setSearchResults={handleSearch}
+								onSearchResult={handleSearch}
+								setShowSearchResult={setShowSearchResult}
+								setIsSearchLoading={setIsSearchLoading}
+								params={params}
+								setParams={setParams}
+								searchParams={searchParams}
+								setSearchParams={setSearchParams}
+							>
+								<div>
+									<AgGridContainer
+										rowData={
+											showSearchResult ? searchResults?.data : data?.data || []
+										}
+										columnDefs={columnDefs}
+										isLoading={isSearchLoading}
+										isPagination={true}
+										paginationPageSize={30}
+										isGlobalFilter={true}
+										isAddButton={false}
+										addButtonText="Add"
+										isExcelExport={true}
+										isPdfExport={true}
+										isPrint={true}
+										tableName="Projects"
+										includeKey={["prj_name", "prj_code"]}
+										excludeKey={["is_editable", "is_deletable"]}
+									/>
+								</div>
+							</AdvancedSearch>
+						</SearchTableContainer>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 ProjectList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

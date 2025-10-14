@@ -68,7 +68,6 @@ const FileModal = (props) => {
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
 	}
-
 	return (
 		<Modal
 			isOpen={isOpen}
@@ -89,7 +88,11 @@ const FileModal = (props) => {
 								className="w-100"
 								name="approve"
 								onClick={handleClick}
-								disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
+								disabled={
+									isLoading ||
+									data?.data?.length === 0 ||
+									updateCsoInfo.isPending
+								}
 							>
 								{updateCsoInfo.isPending && clickedButton === "approve" ? (
 									<>
@@ -107,7 +110,11 @@ const FileModal = (props) => {
 								className="w-100"
 								name="reject"
 								onClick={handleClick}
-								disabled={data?.data?.length === 0 || updateCsoInfo.isPending}
+								disabled={
+									isLoading ||
+									data?.data?.length === 0 ||
+									updateCsoInfo.isPending
+								}
 							>
 								{updateCsoInfo.isPending && clickedButton === "reject" ? (
 									<>

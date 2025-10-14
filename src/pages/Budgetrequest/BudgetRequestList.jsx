@@ -444,7 +444,7 @@ const BudgetRequestListModel = () => {
 									columnDefs={columnDefs}
 									isLoading={isSearchLoading}
 									isPagination={true}
-									paginationPageSize={20}
+									paginationPageSize={30}
 									isGlobalFilter={true}
 									isAddButton={false}
 									addButtonText="Add"

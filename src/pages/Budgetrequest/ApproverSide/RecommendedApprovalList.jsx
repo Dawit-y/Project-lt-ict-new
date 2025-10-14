@@ -697,7 +697,7 @@ const TableWrapper = ({ data, isLoading, columnDefs, showSearchResult }) => {
 							columnDefs={columnDefs}
 							pagination={true}
 							paginationPageSizeSelector={[10, 20, 30, 40, 50]}
-							paginationPageSize={20}
+							paginationPageSize={30}
 							quickFilterText={quickFilterText}
 							onSelectionChanged={onSelectionChanged}
 							rowHeight={35}

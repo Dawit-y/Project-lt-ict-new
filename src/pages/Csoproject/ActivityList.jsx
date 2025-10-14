@@ -239,77 +239,77 @@ const ActivityList = () => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <div className="w-100">
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div
-            className="d-flex gap-2"
-            style={{ display: "flex", flexWrap: "nowrap" }}
-          >
-            {/* Sidebar - Tree */}
-            <div style={{ flex: "0 0 25%", minWidth: "250px" }}>
-              <TreeForLists
-                onNodeSelect={handleNodeSelect}
-                setIsAddressLoading={setIsAddressLoading}
-                setInclude={setInclude}
-              />
-            </div>
+		<React.Fragment>
+			<div className="page-content">
+				<div className="w-100">
+					<Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+					<div
+						className="d-flex gap-2"
+						style={{ display: "flex", flexWrap: "nowrap" }}
+					>
+						{/* Sidebar - Tree */}
+						<div style={{ flex: "0 0 25%", minWidth: "250px" }}>
+							<TreeForLists
+								onNodeSelect={handleNodeSelect}
+								setIsAddressLoading={setIsAddressLoading}
+								setInclude={setInclude}
+							/>
+						</div>
 
-            {/* Main Content */}
-            <div style={{ flex: "0 0 75%" }}>
-              <AdvancedSearch
-                searchHook={useSearchProjects}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prj_project_category_id",
-                    options:
-                      lang === "en"
-                        ? projectCategoryOptionsEn
-                        : lang === "am"
-                          ? projectCategoryOptionsAm
-                          : projectCategoryOptionsOr,
-                  },
-                ]}
-                checkboxSearchKeys={[]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                setSearchResults={handleSearch}
-                onSearchResult={handleSearch}
-                setShowSearchResult={setShowSearchResult}
-                setIsSearchLoading={setIsSearchLoading}
-                params={params}
-                setParams={setParams}
-                searchParams={searchParams}
-                setSearchParams={setSearchParams}
-              />
-              <div>
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : data?.data || []
-                  }
-                  columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  paginationPageSize={20}
-                  isGlobalFilter={true}
-                  isAddButton={false}
-                  addButtonText="Add"
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Projects"
-                  includeKey={["prj_name", "prj_code"]}
-                  excludeKey={["is_editable", "is_deletable"]}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+						{/* Main Content */}
+						<div style={{ flex: "0 0 75%" }}>
+							<AdvancedSearch
+								searchHook={useSearchProjects}
+								textSearchKeys={["prj_name", "prj_code"]}
+								dropdownSearchKeys={[
+									{
+										key: "prj_project_category_id",
+										options:
+											lang === "en"
+												? projectCategoryOptionsEn
+												: lang === "am"
+													? projectCategoryOptionsAm
+													: projectCategoryOptionsOr,
+									},
+								]}
+								checkboxSearchKeys={[]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								setSearchResults={handleSearch}
+								onSearchResult={handleSearch}
+								setShowSearchResult={setShowSearchResult}
+								setIsSearchLoading={setIsSearchLoading}
+								params={params}
+								setParams={setParams}
+								searchParams={searchParams}
+								setSearchParams={setSearchParams}
+							/>
+							<div>
+								<AgGridContainer
+									rowData={
+										showSearchResult ? searchResults?.data : data?.data || []
+									}
+									columnDefs={columnDefs}
+									isLoading={isSearchLoading}
+									isPagination={true}
+									paginationPageSize={30}
+									isGlobalFilter={true}
+									isAddButton={false}
+									addButtonText="Add"
+									isExcelExport={true}
+									isPdfExport={true}
+									isPrint={true}
+									tableName="Projects"
+									includeKey={["prj_name", "prj_code"]}
+									excludeKey={["is_editable", "is_deletable"]}
+								/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 ActivityList.propTypes = {
   preGlobalFilteredRows: PropTypes.any,

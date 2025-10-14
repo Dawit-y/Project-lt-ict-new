@@ -190,67 +190,67 @@ const ProjectModel = () => {
   }, [searchResults, t]);
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <div>
-          <Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-            />
-            {/* Main Content */}
-            <SearchTableContainer isCollapsed={isCollapsed}>
-              <AdvancedSearch
-                searchHook={useSearchProjects}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dropdownSearchKeys={[
-                  {
-                    key: "prj_project_category_id",
-                    options:
-                      lang === "en"
-                        ? projectCategoryOptionsEn
-                        : lang === "am"
-                          ? projectCategoryOptionsAm
-                          : projectCategoryOptionsOr,
-                  },
-                ]}
-                checkboxSearchKeys={[]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                setSearchResults={handleSearch}
-                onSearchResult={handleSearch}
-                setShowSearchResult={setShowSearchResult}
-                setIsSearchLoading={setIsSearchLoading}
-                params={params}
-                setParams={setParams}
-                searchParams={searchParams}
-                setSearchParams={setSearchParams}
-              >
-                <AgGridContainer
-                  rowData={showSearchResult ? searchResults?.data : []}
-                  columnDefs={columnDefs}
-                  isPagination={true}
-                  paginationPageSize={20}
-                  isGlobalFilter={true}
-                  isAddButton={false}
-                  addButtonText="Add"
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Projects"
-                  exportColumns={citizenshipProjectExportColumns}
-                />
-              </AdvancedSearch>
-            </SearchTableContainer>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<div className="page-content">
+				<div>
+					<Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+					<div className="w-100 d-flex gap-2">
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
+						{/* Main Content */}
+						<SearchTableContainer isCollapsed={isCollapsed}>
+							<AdvancedSearch
+								searchHook={useSearchProjects}
+								textSearchKeys={["prj_name", "prj_code"]}
+								dropdownSearchKeys={[
+									{
+										key: "prj_project_category_id",
+										options:
+											lang === "en"
+												? projectCategoryOptionsEn
+												: lang === "am"
+													? projectCategoryOptionsAm
+													: projectCategoryOptionsOr,
+									},
+								]}
+								checkboxSearchKeys={[]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								setSearchResults={handleSearch}
+								onSearchResult={handleSearch}
+								setShowSearchResult={setShowSearchResult}
+								setIsSearchLoading={setIsSearchLoading}
+								params={params}
+								setParams={setParams}
+								searchParams={searchParams}
+								setSearchParams={setSearchParams}
+							>
+								<AgGridContainer
+									rowData={showSearchResult ? searchResults?.data : []}
+									columnDefs={columnDefs}
+									isPagination={true}
+									paginationPageSize={30}
+									isGlobalFilter={true}
+									isAddButton={false}
+									addButtonText="Add"
+									isExcelExport={true}
+									isPdfExport={true}
+									isPrint={true}
+									tableName="Projects"
+									exportColumns={citizenshipProjectExportColumns}
+								/>
+							</AdvancedSearch>
+						</SearchTableContainer>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 ProjectModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
