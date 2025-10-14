@@ -2058,5 +2058,7 @@
 	"agreement_details": "Agreement Details",
 	"beneficiary_information": "Beneficiary Information",
 	"federal": "Federal",
-	"regional": "Regional"
+	"regional": "Regional",
+	"prj_funding_agency": "Funding Agency",
+	"prj_consortium_members": "Consortium Members"
 }
