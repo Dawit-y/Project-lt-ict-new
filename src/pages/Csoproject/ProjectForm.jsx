@@ -30,6 +30,39 @@ import {
 	createKeyValueMap,
 } from "../../utils/commonMethods";
 
+// utils/dateUtils.js
+export const parseFormDate = (dateValue) => {
+	if (dateValue === null || dateValue === undefined) {
+		return null;
+	}
+
+	if (typeof dateValue === "number") {
+		// Handle Excel serial date conversion
+		const excelEpoch = new Date(1900, 0, 1);
+		// Excel date correction: subtract 2 days due to Excel's leap year bug
+		const jsDate = new Date(
+			excelEpoch.getTime() + (dateValue - 2) * 24 * 60 * 60 * 1000
+		);
+		return jsDate;
+	}
+
+	if (typeof dateValue === "string") {
+		// Handle string dates
+		try {
+			return new Date(dateValue.replace(/\//g, "-"));
+		} catch (error) {
+			console.warn("Failed to parse date string:", dateValue, error);
+			return null;
+		}
+	}
+
+	if (dateValue instanceof Date) {
+		return dateValue;
+	}
+
+	return null;
+};
+
 const ProjectForm = ({
 	isOpen,
 	toggle,
@@ -73,11 +106,7 @@ const ProjectForm = ({
 		);
 	}, [sectorCategories]);
 
-	const rawStartDate = validation.values.prj_start_date_plan_gc;
-	const startDate = rawStartDate
-		? new Date(rawStartDate.replace(/\//g, "-"))
-		: null;
-
+	const startDate = parseFormDate(validation.values.prj_start_date_plan_gc);
 	const minEndDate = startDate ? addMonths(startDate, 1) : null;
 	const maxEndDate = startDate ? addYears(startDate, 5) : null;
 
