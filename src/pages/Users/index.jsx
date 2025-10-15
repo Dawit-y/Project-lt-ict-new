@@ -74,8 +74,8 @@ const UsersModel = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
-	const [exportSearchParams, setExportSearchParams] = useState(null);
-
+	const [exportSearchParams, setExportSearchParams] = useState({});
+	
 	const exportColumns = useUserExportColumns();
 	const { data, isLoading, error, isError, refetch } = useFetchUserss(null);
 	const {
