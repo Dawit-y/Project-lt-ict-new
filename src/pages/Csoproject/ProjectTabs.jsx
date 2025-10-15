@@ -113,7 +113,7 @@ const ProjectTabs = ({
 	}, [projectCategoryData, lang]);
 
 	const programColumnDefs = useMemo(() => {
-    const baseColumnDefs = [
+		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
 				field: "sn",
@@ -249,9 +249,10 @@ const ProjectTabs = ({
 						<div className="d-flex gap-3">
 							{program?.previledge?.is_role_editable === 1 &&
 								rowData?.is_editable === 1 &&
-								rowData.prj_project_status_id === 1 && (
-									<Link
-										to="#"
+								rowData.prj_project_status_id > 1 && (
+									<Button
+										color="none"
+										size="sm"
 										className="text-success"
 										onClick={() => handleEditClick(rowData)}
 									>
@@ -262,7 +263,7 @@ const ProjectTabs = ({
 										<UncontrolledTooltip placement="top" target="edittooltip">
 											Edit
 										</UncontrolledTooltip>
-									</Link>
+									</Button>
 								)}
 						</div>
 					);
@@ -274,7 +275,7 @@ const ProjectTabs = ({
 	}, [program, t, selectedProject?.prj_id, projectCategoryMap]);
 
 	const activitiesColumnDefs = useMemo(() => {
-    const baseColumnDefs = [
+		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
 				field: "sn",

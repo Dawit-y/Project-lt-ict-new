@@ -367,7 +367,7 @@ const ProjectTabs = ({
 						<div className="d-flex gap-3">
 							{projects?.previledge?.is_role_editable === 1 &&
 								rowData?.is_editable === 1 &&
-								rowData.prj_project_status_id === 1 && (
+								rowData.prj_project_status_id > 1 && (
 									<Link
 										to="#"
 										className="text-success"
