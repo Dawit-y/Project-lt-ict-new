@@ -5,6 +5,7 @@ import { Spinner } from "reactstrap";
 import { useFetchSideData } from "../queries/side_data_query";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useIsRestoring } from "@tanstack/react-query";
+import NoRoleAssigned from "../components/Common/NoRoleAssigned";
 
 // these are paths that are allowed if the user is authenticated
 const allowedPathsIfAuthenticated = [
@@ -109,7 +110,7 @@ const AuthMiddleware = ({ children }) => {
 		isRestoring ||
 		isLoading ||
 		authLoading ||
-		(sidedata.length === 0 && !isError)
+		(sidedata.length === 0 && isError)
 	) {
 		return (
 			<div
@@ -128,6 +129,10 @@ const AuthMiddleware = ({ children }) => {
 
 	if (!isAuthenticated) {
 		return <Navigate to="/login" state={{ from: location }} />;
+	}
+
+	if (isAuthenticated && !isLoading && sidedata.length === 0 && !isError) {
+		return <NoRoleAssigned />;
 	}
 
 	if (
