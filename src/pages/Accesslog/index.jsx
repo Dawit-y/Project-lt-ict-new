@@ -207,80 +207,80 @@ const AccessLogModel = () => {
     return <FetchErrorHandler error={error} refetch={refetch} />;
   }
   return (
-    <React.Fragment>
-      <Suspense fallback={<div>Loading...</div>}>
-        <AccessLogModal
-          isOpen={modal1}
-          toggle={toggleViewModal}
-          transaction={transaction}
-        />
-        <div className="page-content">
-          <div className="container-fluid">
-            <Breadcrumbs
-              title={t("access_log")}
-              breadcrumbItem={t("access_log")}
-            />
-            <AdvancedSearch
-              searchHook={useSearchAccessLogs}
-              textSearchKeys={["acl_user_id"]}
-              dateSearchKeys={["log_time"]}
-              dropdownSearchKeys={[
-                {
-                  key: "acl_object_action",
-                  options: [
-                    { value: "INSERT", label: "INSERT" },
-                    { value: "UPDATE", label: "UPDATE" },
-                    { value: "DELETE", label: "DELETE" },
-                  ],
-                },
-                {
-                  key: "bdr_budget_year_id",
-                  options: pagesOptions,
-                },
-              ]}
-              checkboxSearchKeys={[]}
-              onSearchResult={handleSearchResults}
-              setIsSearchLoading={setIsSearchLoading}
-              setSearchResults={setSearchResults}
-              setShowSearchResult={setShowSearchResult}
-            />
-            {isLoading || isSearchLoading ? (
-              <Spinners />
-            ) : (
-              <Row>
-                <Col xs="12">
-                  <Card>
-                    <CardBody>
-                      <TableContainer
-                        columns={columns}
-                        data={
-                          showSearchResult
-                            ? searchResults?.data
-                            : data?.data || []
-                        }
-                        isGlobalFilter={true}
-                        isAddButton={false}
-                        isCustomPageSize={true}
-                        handleUserClick={handleAccessLogClicks}
-                        isPagination={true}
-                        SearchPlaceholder={t("filter_placeholder")}
-                        buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
-                        buttonName={`${t("add")} ${t("access_log")}`}
-                        tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
-                        theadClass="table-light"
-                        pagination="pagination"
-                        paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
-                      />
-                    </CardBody>
-                  </Card>
-                </Col>
-              </Row>
-            )}
-          </div>
-        </div>
-      </Suspense>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<Suspense fallback={<div>Loading...</div>}>
+				<AccessLogModal
+					isOpen={modal1}
+					toggle={toggleViewModal}
+					transaction={transaction}
+				/>
+				<div className="page-content">
+					<div className="container-fluid">
+						<Breadcrumbs
+							title={t("access_log")}
+							breadcrumbItem={t("access_log")}
+						/>
+						<AdvancedSearch
+							searchHook={useSearchAccessLogs}
+							textSearchKeys={["acl_user_id"]}
+							dateSearchKeys={["log_time"]}
+							dropdownSearchKeys={[
+								{
+									key: "acl_object_action",
+									options: [
+										{ value: "INSERT", label: "INSERT" },
+										{ value: "UPDATE", label: "UPDATE" },
+										{ value: "DELETE", label: "DELETE" },
+									],
+								},
+								{
+									key: "page_id",
+									options: pagesOptions,
+								},
+							]}
+							checkboxSearchKeys={[]}
+							onSearchResult={handleSearchResults}
+							setIsSearchLoading={setIsSearchLoading}
+							setSearchResults={setSearchResults}
+							setShowSearchResult={setShowSearchResult}
+						/>
+						{isLoading || isSearchLoading ? (
+							<Spinners />
+						) : (
+							<Row>
+								<Col xs="12">
+									<Card>
+										<CardBody>
+											<TableContainer
+												columns={columns}
+												data={
+													showSearchResult
+														? searchResults?.data
+														: data?.data || []
+												}
+												isGlobalFilter={true}
+												isAddButton={false}
+												isCustomPageSize={true}
+												handleUserClick={handleAccessLogClicks}
+												isPagination={true}
+												SearchPlaceholder={t("filter_placeholder")}
+												buttonClass="btn btn-success waves-effect waves-light mb-2 me-2 addOrder-modal"
+												buttonName={`${t("add")} ${t("access_log")}`}
+												tableClass="align-middle table-nowrap dt-responsive nowrap w-100 table-check dataTable no-footer dtr-inline"
+												theadClass="table-light"
+												pagination="pagination"
+												paginationWrapper="dataTables_paginate paging_simple_numbers pagination-rounded"
+											/>
+										</CardBody>
+									</Card>
+								</Col>
+							</Row>
+						)}
+					</div>
+				</div>
+			</Suspense>
+		</React.Fragment>
+	);
 };
 AccessLogModel.propTypes = {
   preGlobalFilteredRows: PropTypes.any,
