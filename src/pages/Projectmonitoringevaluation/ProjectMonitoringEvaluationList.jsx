@@ -268,6 +268,7 @@ const ProjectMonitoringEvaluationList = () => {
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}

@@ -705,6 +705,7 @@ const UsersModel = () => {
 						setIsSearchLoading={setIsSearchLoading}
 						setSearchResults={setSearchResults}
 						setShowSearchResult={setShowSearchResult}
+						setExportSearchParams={setExportSearchParams}
 					/>
 					{isLoading || isSearchLoading ? (
 						<Spinners top={"top-60"} />

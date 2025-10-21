@@ -214,60 +214,59 @@ const ProjectContractorList = () => {
   });
 
   return (
-    <React.Fragment>
-      <div className="page-content">
-        <div>
-          <Breadcrumbs
-            title={t("project")}
-            breadcrumbItem={t("project_contract_list")}
-          />
-          <div className="w-100 d-flex gap-2">
-            <TreeForLists
-              onNodeSelect={handleNodeSelect}
-              setIsAddressLoading={setIsAddressLoading}
-              setInclude={setInclude}
-              isCollapsed={isCollapsed}
-              setIsCollapsed={setIsCollapsed}
-            />
-            <SearchTableContainer isCollapsed={isCollapsed}>
-              <AdvancedSearch
-                searchHook={useSearchProjectContractors}
-                textSearchKeys={["prj_name", "prj_code"]}
-                dateSearchKeys={["contractsign_date"]}
-                dropdownSearchKeys={[]}
-                checkboxSearchKeys={[]}
-                additionalParams={projectParams}
-                setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                onSearchLabels={handleSearchLabels}
-                setIsSearchLoading={setIsSearchLoading}
-                setSearchResults={setSearchResults}
-                setShowSearchResult={setShowSearchResult}
-              >
-                <AgGridContainer
-                  rowData={
-                    showSearchResult ? searchResults?.data : []
-                  }
-                  columnDefs={columnDefs}
-                  isLoading={isSearchLoading}
-                  isPagination={true}
-                  rowHeight={35}
-                  paginationPageSize={10}
-                  isGlobalFilter={true}
-                  isExcelExport={true}
-                  isPdfExport={true}
-                  isPrint={true}
-                  tableName="Project Contract/Contractor"
-                  exportColumns={projectContractorExportColumns}
-                  exportSearchParams={exportSearchParams}
-                />
-              </AdvancedSearch>
-            </SearchTableContainer>
-          </div>
-        </div>
-      </div>
-    </React.Fragment>
-  );
+		<React.Fragment>
+			<div className="page-content">
+				<div>
+					<Breadcrumbs
+						title={t("project")}
+						breadcrumbItem={t("project_contract_list")}
+					/>
+					<div className="w-100 d-flex gap-2">
+						<TreeForLists
+							onNodeSelect={handleNodeSelect}
+							setIsAddressLoading={setIsAddressLoading}
+							setInclude={setInclude}
+							isCollapsed={isCollapsed}
+							setIsCollapsed={setIsCollapsed}
+						/>
+						<SearchTableContainer isCollapsed={isCollapsed}>
+							<AdvancedSearch
+								searchHook={useSearchProjectContractors}
+								textSearchKeys={["prj_name", "prj_code"]}
+								dateSearchKeys={["contractsign_date"]}
+								dropdownSearchKeys={[]}
+								checkboxSearchKeys={[]}
+								additionalParams={projectParams}
+								setAdditionalParams={setProjectParams}
+								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
+								setIsSearchLoading={setIsSearchLoading}
+								setSearchResults={setSearchResults}
+								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
+							>
+								<AgGridContainer
+									rowData={showSearchResult ? searchResults?.data : []}
+									columnDefs={columnDefs}
+									isLoading={isSearchLoading}
+									isPagination={true}
+									rowHeight={35}
+									paginationPageSize={10}
+									isGlobalFilter={true}
+									isExcelExport={true}
+									isPdfExport={true}
+									isPrint={true}
+									tableName="Project Contract/Contractor"
+									exportColumns={projectContractorExportColumns}
+									exportSearchParams={exportSearchParams}
+								/>
+							</AdvancedSearch>
+						</SearchTableContainer>
+					</div>
+				</div>
+			</div>
+		</React.Fragment>
+	);
 };
 
 export default ProjectContractorList;

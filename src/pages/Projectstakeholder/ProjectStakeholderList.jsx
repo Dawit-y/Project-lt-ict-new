@@ -197,6 +197,7 @@ const ProjectStakeholderList = () => {
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<AgGridContainer
 									rowData={showSearchResult ? searchResults?.data : []}
@@ -210,8 +211,8 @@ const ProjectStakeholderList = () => {
 									isPdfExport={true}
 									isPrint={true}
 									tableName="Project Stakeholder"
-                  exportColumns={projectStakeholderExportColumns}
-                  exportSearchParams={exportSearchParams}
+									exportColumns={projectStakeholderExportColumns}
+									exportSearchParams={exportSearchParams}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

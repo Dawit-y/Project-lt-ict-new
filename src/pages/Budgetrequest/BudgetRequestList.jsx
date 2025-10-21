@@ -436,6 +436,7 @@ const BudgetRequestListModel = () => {
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<AgGridContainer
 									rowData={
