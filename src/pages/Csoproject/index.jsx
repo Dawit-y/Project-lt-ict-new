@@ -568,7 +568,7 @@ const ProjectModel = () => {
 							<div className="w-100">
 								{isLoading ? (
 									<Spinners />
-								) : userType === 2 ? (
+								) : userType === 4 ? (
 									<RegionProjectTab
 										handleAddClick={handleProjectsClicks}
 										handleEditClick={handleProjectClick}
