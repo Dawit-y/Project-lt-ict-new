@@ -100,7 +100,7 @@ const AuthMiddleware = ({ children }) => {
 		return <Navigate to="/login" state={{ from: location }} />;
 	}
 
-	if ((csoStatus === null || csoStatus === 0) && userType !== 2) {
+	if ((csoStatus === null || csoStatus === 0) && userType !== 4) {
 		return <Navigate to="/not_approved" />;
 	}
 
