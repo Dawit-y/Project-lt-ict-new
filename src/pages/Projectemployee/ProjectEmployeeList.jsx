@@ -208,6 +208,7 @@ const ProjectEmployeeList = () => {
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<AgGridContainer
 									rowData={showSearchResult ? searchResults?.data : []}

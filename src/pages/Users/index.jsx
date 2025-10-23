@@ -64,6 +64,15 @@ const truncateText = (text, maxLength) => {
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
+export const getDepartmentType = (user) => {
+	if (!user) return null;
+	if (user?.usr_officer_id > 0) return "Expert";
+	if (user?.usr_team_id > 0) return "Team Leader";
+	if (user?.usr_directorate_id > 0) return "Director";
+	if (user?.usr_department_id > 0) return "All Department";
+	return null;
+};
+
 const UsersModel = () => {
 	document.title = "Users";
 	const { t, i18n } = useTranslation();
@@ -74,7 +83,7 @@ const UsersModel = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
-	const [exportSearchParams, setExportSearchParams] = useState(null);
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
 	const exportColumns = useUserExportColumns();
 	const { data, isLoading, error, isError, refetch } = useFetchUserss(null);
@@ -125,7 +134,7 @@ const UsersModel = () => {
 	const togglePasswordVisibility = () => {
 		setShowPassword((prevState) => !prevState);
 	};
-	//START CRUD
+
 	const handleAddUsers = async (data) => {
 		try {
 			await addUsers.mutateAsync(data);
@@ -458,11 +467,22 @@ const UsersModel = () => {
 		// setProjectMetaData(data);
 		setUserData(data);
 	};
+
 	const handleUsersClicks = () => {
 		setIsEdit(false);
 		setUsers("");
 		toggle();
 	};
+
+	const userTypeMap = useMemo(() => {
+		return {
+			1: t("Governmental"),
+			2: t("CSO"),
+			4: t("CSO Director"),
+			3: t("Citizenship"),
+		};
+	});
+
 	const columnDefs = useMemo(() => {
 		const baseColumns = [
 			{
@@ -470,33 +490,33 @@ const UsersModel = () => {
 				field: "sn",
 				valueGetter: "node.rowIndex + 1",
 				width: 60,
-			},
-			{
-				headerName: t("usr_email"),
-				field: "usr_email",
-				sortable: true,
-				filter: false,
-				flex: 3,
-				minWidth: 200,
-				cellRenderer: (params) =>
-					truncateText(params.data.usr_email, 30) || "-",
+				pinned: "left",
 			},
 			{
 				headerName: t("usr_full_name"),
 				field: "usr_full_name",
 				sortable: true,
 				filter: false,
-				flex: 3,
+				flex: 1,
 				minWidth: 200,
+				pinned: "left",
 				cellRenderer: (params) =>
 					truncateText(params.data.usr_full_name, 30) || "-",
+			},
+			{
+				headerName: t("usr_email"),
+				field: "usr_email",
+				sortable: true,
+				filter: false,
+				minWidth: 200,
+				cellRenderer: (params) =>
+					truncateText(params.data.usr_email, 30) || "-",
 			},
 			{
 				headerName: t("usr_phone_number"),
 				field: "usr_phone_number",
 				sortable: true,
 				filter: false,
-				flex: 2,
 				minWidth: 200,
 				cellRenderer: (params) =>
 					truncateText(params.data.usr_phone_number, 30) || "-",
@@ -511,6 +531,27 @@ const UsersModel = () => {
 				cellRenderer: (params) =>
 					sectorInformationMap[params.data.usr_sector_id],
 			},
+			{
+				headerName: t("Department"),
+				field: "dep_name",
+				sortable: true,
+				filter: false,
+				minWidth: 200,
+				cellRenderer: (params) => {
+					const departmentType = getDepartmentType(params.data);
+					return departmentType;
+				},
+			},
+			{
+				headerName: t("usr_user_type"),
+				field: "usr_user_type",
+				sortable: true,
+				filter: false,
+				minWidth: 200,
+				cellRenderer: ({ data }) => {
+					return userTypeMap[data.usr_user_type] ?? "";
+				},
+			},
 		];
 
 		if (1 == 1) {
@@ -519,6 +560,7 @@ const UsersModel = () => {
 				sortable: true,
 				filter: false,
 				minWidth: 120,
+				pinned: "right",
 				cellRenderer: (params) => {
 					const userId = params.data.id || params.data.usr_id || params.node.id;
 					const viewTooltipId = `viewtooltip-${userId}`;
@@ -663,6 +705,7 @@ const UsersModel = () => {
 						setIsSearchLoading={setIsSearchLoading}
 						setSearchResults={setSearchResults}
 						setShowSearchResult={setShowSearchResult}
+						setExportSearchParams={setExportSearchParams}
 					/>
 					{isLoading || isSearchLoading ? (
 						<Spinners top={"top-60"} />

@@ -160,8 +160,34 @@ const UserSectorModel = ({ passedId, isActive }) => {
 									xl={12}
 									className="mb-2 d-flex align-items-center justify-content-between"
 								>
-									<Col>
-										<h5>{t("Select sectors")}</h5>
+									<Col className="d-flex align-items-center gap-3 mb-3">
+										<FormGroup
+											check
+											className="d-flex align-items-center gap-2 mb-0"
+										>
+											<Input
+												type="checkbox"
+												id="select-all"
+												checked={selectAll}
+												onChange={handleSelectAll}
+												style={{ width: "15px", height: "15px" }}
+											/>
+											<Label for="select-all" className="mb-0">
+												<strong>{t("Select All")}</strong>
+											</Label>
+										</FormGroup>
+
+										<Button
+											color="secondary"
+											outline
+											size="sm"
+											onClick={() => {
+												setSelectAll(false);
+												validation.setFieldValue("sectors", {});
+											}}
+										>
+											{t("Clear All")}
+										</Button>
 									</Col>
 									<Col xl={6}>
 										<Input
@@ -174,25 +200,6 @@ const UserSectorModel = ({ passedId, isActive }) => {
 								</Row>
 								<hr />
 								<Col className="">
-									<FormGroup
-										check
-										className="d-flex align-items-center gap-2 w-100 mb-3"
-									>
-										<Input
-											type="checkbox"
-											id="select-all"
-											checked={selectAll}
-											onChange={handleSelectAll}
-											style={{ width: "15px", height: "15px" }}
-										/>
-										<Label
-											for="select-all"
-											style={{ fontSize: "1 rem" }}
-											className="me-2 my-auto"
-										>
-											<strong>{t("Select All")}</strong>
-										</Label>
-									</FormGroup>
 									<Row className="g-2">
 										{filteredOptions.map(({ value, label }) => (
 											<Col md={4} key={value}>
@@ -229,6 +236,7 @@ const UserSectorModel = ({ passedId, isActive }) => {
 					</Row>
 					<div className="text-center mt-3">
 						<Button
+							className="w-50"
 							type="submit"
 							color="success"
 							disabled={addUserSector.isPending || updateUserSector.isPending}

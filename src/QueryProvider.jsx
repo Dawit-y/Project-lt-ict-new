@@ -62,10 +62,15 @@ const queryClient = new QueryClient({
 		// },
 	}),
 	mutationCache: new MutationCache({
-    onError: (error, _, __, mutation) => {
-			if (!error.handledByMutationCache && error.response?.status !== 401) {
+		onError: (error, variables, context, mutation) => {
+			const skipGlobalError =
+				error.handledByMutationCache ||
+				error.response?.status === 401 ||
+				mutation.options.meta?.skipGlobalErrorHandler;
+
+			if (!skipGlobalError) {
 				error.handledByMutationCache = true;
-				const message = <GetErrorMessage error={error} />;
+				const message = getErrorMessage(error);
 				toast.error(message, { autoClose: 3000 });
 			}
 		},

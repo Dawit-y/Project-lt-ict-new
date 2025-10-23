@@ -42,6 +42,7 @@ const AdvancedSearch = forwardRef(
 			setIsSearchLoading,
 			setSearchResults,
 			setShowSearchResult,
+			setExportSearchParams,
 			children,
 		},
 		ref
@@ -253,6 +254,9 @@ const AdvancedSearch = forwardRef(
 			}
 			if (setAdditionalParams) {
 				setAdditionalParams({});
+			}
+			if (setExportSearchParams) {
+				setExportSearchParams({});
 			}
 		};
 

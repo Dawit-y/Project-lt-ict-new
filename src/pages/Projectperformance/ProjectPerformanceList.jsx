@@ -406,6 +406,7 @@ const ProjectPerformanceList = () => {
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<TableWrapper
 									// data={showSearchResult ? searchResults : data}

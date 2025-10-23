@@ -204,11 +204,12 @@ const ProjectBudgetExpenditureList = () => {
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
-                onSearchResult={handleSearchResults}
-                onSearchLabels={handleSearchLabels}
+								onSearchResult={handleSearchResults}
+								onSearchLabels={handleSearchLabels}
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<AgGridContainer
 									rowData={showSearchResult ? searchResults?.data : []}
@@ -222,8 +223,8 @@ const ProjectBudgetExpenditureList = () => {
 									isPdfExport={true}
 									isPrint={true}
 									tableName="Project Budget Expenditure"
-                  exportColumns={projectBudgetExpenditureExportColumns}
-                  exportSearchParams={exportSearchParams}
+									exportColumns={projectBudgetExpenditureExportColumns}
+									exportSearchParams={exportSearchParams}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

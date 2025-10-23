@@ -418,6 +418,7 @@ const ProjectList = () => {
 								setParams={setParams}
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
+								setExportSearchParams={setExportSearchParams}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}

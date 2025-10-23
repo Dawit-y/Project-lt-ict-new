@@ -8,6 +8,9 @@ import {
 	changePassword,
 	updateProfile,
 	getUser,
+	getOwnUser,
+	changeOwnPassword,
+	updateOwnProfile,
 } from "../helpers/users_backend_helper";
 
 export const USERS_QUERY_KEY = ["users"];
@@ -35,6 +38,18 @@ export const useFetchUser = (searchParams = {}) => {
 		refetchOnWindowFocus: false,
 		refetchOnMount: false,
 		enabled: Object.keys(searchParams).length > 0,
+	});
+};
+
+//get user
+export const useFetchOwnUser = (id) => {
+	return useQuery({
+		queryKey: [...USERS_QUERY_KEY, "detail", id],
+		queryFn: () => getOwnUser(),
+		staleTime: 1000 * 60 * 5,
+		gcTime: 1000 * 60 * 6,
+		refetchOnWindowFocus: false,
+		refetchOnMount: false,
 	});
 };
 
@@ -239,6 +254,69 @@ export const useUpdateProfile = () => {
 	});
 };
 
+// Update Own profile
+export const useUpdateOwnProfile = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: updateOwnProfile,
+
+		onMutate: async (updatedData) => {
+			await queryClient.cancelQueries(USERS_QUERY_KEY);
+
+			const previousQueries = queryClient.getQueriesData({
+				queryKey: USERS_QUERY_KEY,
+			});
+
+			previousQueries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.usr_id === updatedData.usr_id ? { ...d, ...updatedData } : d
+						),
+					};
+				});
+			});
+
+			return { previousQueries };
+		},
+
+		onError: (_err, _updatedData, context) => {
+			context?.previousQueries?.forEach(([queryKey, oldData]) => {
+				queryClient.setQueryData(queryKey, oldData);
+			});
+		},
+
+		onSuccess: (response) => {
+			const serverData = response.data;
+
+			const queries = queryClient.getQueriesData({
+				queryKey: USERS_QUERY_KEY,
+			});
+
+			queries.forEach(([queryKey]) => {
+				queryClient.setQueryData(queryKey, (oldData) => {
+					if (!oldData) return;
+					return {
+						...oldData,
+						data: oldData.data.map((d) =>
+							d.usr_id === serverData.usr_id ? serverData : d
+						),
+					};
+				});
+			});
+		},
+
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: USERS_QUERY_KEY,
+			});
+		},
+	});
+};
+
 // Change user status
 export const useChangeUserStatus = () => {
 	const queryClient = useQueryClient();
@@ -310,6 +388,22 @@ export const useChangePassword = () => {
 			queryClient.invalidateQueries({
 				queryKey: USERS_QUERY_KEY,
 			});
+		},
+	});
+};
+
+export const useChangeOwnPassword = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: changeOwnPassword,
+		onSettled: () => {
+			queryClient.invalidateQueries({
+				queryKey: USERS_QUERY_KEY,
+			});
+		},
+		meta: {
+			skipGlobalErrorHandler: true,
 		},
 	});
 };

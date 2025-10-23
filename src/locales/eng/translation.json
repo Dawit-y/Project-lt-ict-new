@@ -1185,7 +1185,7 @@
 	"cso_delete_time": "Delete Time",
 	"cso_created_by": "Created By",
 	"cso_status": "Status",
-	"select_department": "Department",
+	"select_department": "Select Department",
 	"usr_directorate_id": "Directorate",
 	"usr_team_id": "Team",
 	"usr_officer_id": "Officer",
@@ -2067,5 +2067,8 @@
 	"federal": "Federal",
 	"regional": "Regional",
 	"prj_funding_agency": "Funding Agency",
-	"prj_consortium_members": "Consortium Members"
+	"prj_consortium_members": "Consortium Members",
+	"old_password": "Old Password",
+	"enter_old_password": "Enter Old Password",
+	"page_id": "Page"
 }

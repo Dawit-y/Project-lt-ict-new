@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Modal,
   ModalBody,
@@ -15,7 +14,7 @@ import {
   FormFeedback,
   Spinner,
 } from "reactstrap";
-import { useUpdateProfile } from "../../queries/users_query";
+import { useUpdateOwnProfile } from "../../queries/users_query";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
@@ -29,7 +28,7 @@ import {
 const UpdateModal = ({ modal, toggle, profile, refetch }) => {
   const { t } = useTranslation();
 
-  const updateUsers = useUpdateProfile();
+  const updateUsers = useUpdateOwnProfile();
   const handleUpdateUsers = async (data) => {
     try {
 			await updateUsers.mutateAsync(data);

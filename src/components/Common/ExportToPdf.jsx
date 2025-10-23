@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { DropdownItem } from "reactstrap";
 import { FaFilePdf } from "react-icons/fa";
 import { transformTableName } from "../../utils/commonMethods";
+import logo from "../../assets/images/logo-light.png";
 
 const COLORS = {
 	primary: [31, 78, 120], // Dark blue: #1F4E78
@@ -150,7 +151,7 @@ const ExportToPDF = ({
 						fontStyle: "bold",
 						fillColor: COLORS.accent,
 						textColor: COLORS.white,
-						lineColor: COLORS.white, // White border for header separators
+						lineColor: COLORS.white,
 						lineWidth: 0.5,
 					},
 				};
@@ -273,10 +274,33 @@ const ExportToPDF = ({
 		return totals;
 	};
 
+	// Convert image to base64 for PDF
+	const getLogoBase64 = () => {
+		return new Promise((resolve) => {
+			const img = new Image();
+			img.crossOrigin = "Anonymous";
+			img.src = logo;
+
+			img.onload = () => {
+				const canvas = document.createElement("canvas");
+				const ctx = canvas.getContext("2d");
+				canvas.width = img.width;
+				canvas.height = img.height;
+				ctx.drawImage(img, 0, 0);
+				resolve(canvas.toDataURL("image/png"));
+			};
+
+			img.onerror = () => {
+				console.error("Failed to load logo image");
+				resolve(null);
+			};
+		});
+	};
+
 	/** =====================
 	 * Main Export Handler
 	 * ===================== */
-	const handleExportToPDF = () => {
+	const handleExportToPDF = async () => {
 		if (!tableData || tableData.length === 0 || exportColumns.length === 0) {
 			console.error("No data or exportColumns to export.");
 			return;
@@ -296,6 +320,22 @@ const ExportToPDF = ({
 			const x = (pageWidth - textWidth) / 2;
 			doc.text(text, x, y);
 		};
+
+		// Add logo
+		try {
+			const logoDataUrl = await getLogoBase64();
+			if (logoDataUrl) {
+				const logoWidth = 35;
+				const logoHeight = 25;
+				const logoX = (pageWidth - logoWidth) / 2;
+				const logoY = currentY;
+
+				doc.addImage(logoDataUrl, "PNG", logoX, logoY, logoWidth, logoHeight);
+				currentY += logoHeight + 5;
+			}
+		} catch (error) {
+			console.error("Error loading logo:", error);
+		}
 
 		// Add organization header
 		doc.setFontSize(16);
@@ -317,7 +357,7 @@ const ExportToPDF = ({
 		doc.setTextColor(0, 0, 0);
 		doc.setFont("NotoSansEthiopic-Regular", "normal");
 		drawCenteredText(`${t("generated_on")}: ${currentDate}`, currentY);
-		currentY += 10;
+		currentY += 15;
 
 		// Add search criteria if provided
 		if (Object.keys(exportSearchParams).length > 0) {
@@ -349,25 +389,24 @@ const ExportToPDF = ({
 			});
 
 			currentY += 4;
-
-			// Data Summary Header
-			doc.setFillColor(...COLORS.green);
-			doc.rect(margin, currentY, pageWidth - 2 * margin, 8, "F");
-			doc.setTextColor(...COLORS.gray);
-			doc.setFont("NotoSansEthiopic-Bold", "normal");
-			doc.text(t("data_summary"), margin + 5, currentY + 5);
-			currentY += 15;
-
-			// Total Records
-			doc.setTextColor(0, 0, 0);
-			doc.setFont("NotoSansEthiopic-Bold", "normal");
-			doc.text(
-				`${t("total_records")}: ${tableData.length}`,
-				margin + 5,
-				currentY
-			);
-			currentY += 10;
 		}
+		// Data Summary Header
+		doc.setFillColor(...COLORS.green);
+		doc.rect(margin, currentY, pageWidth - 2 * margin, 8, "F");
+		doc.setTextColor(...COLORS.gray);
+		doc.setFont("NotoSansEthiopic-Bold", "normal");
+		doc.text(t("data_summary"), margin + 5, currentY + 5);
+		currentY += 15;
+
+		// Total Records
+		doc.setTextColor(0, 0, 0);
+		doc.setFont("NotoSansEthiopic-Bold", "normal");
+		doc.text(
+			`${t("total_records")}: ${tableData.length}`,
+			margin + 5,
+			currentY
+		);
+		currentY += 10;
 
 		// Split columns into chunks
 		const columnChunks = chunkColumns(exportColumns, MAX_COLS_PER_TABLE);
@@ -508,7 +547,7 @@ const ExportToPDF = ({
 						font: "NotoSansEthiopic-Bold",
 						fontSize: 9,
 						cellPadding: 4,
-						fillColor: COLORS.orange, // Light orange background
+						fillColor: COLORS.orange,
 						fontStyle: "bold",
 						lineColor: COLORS.lightGray,
 						lineWidth: 0.3,

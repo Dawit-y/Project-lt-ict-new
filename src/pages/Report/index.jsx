@@ -543,6 +543,7 @@ const Report = () => {
 										setIsSearchLoading={setIsLoading}
 										setSearchResults={setSearchResults}
 										setShowSearchResult={setShowSearchResult}
+										setExportSearchParams={setExportSearchParams}
 									/>
 								)}
 							</Col>

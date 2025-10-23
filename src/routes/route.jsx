@@ -6,6 +6,7 @@ import { useFetchSideData } from "../queries/side_data_query";
 import { useSearchCsoInfos } from "../queries/csoinfo_query";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useIsRestoring } from "@tanstack/react-query";
+import NoRoleAssigned from "../components/Common/NoRoleAssigned";
 
 // these are paths that are allowed if the user is authenticated
 const allowedPathsIfAuthenticated = [
