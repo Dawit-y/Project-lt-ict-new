@@ -446,7 +446,7 @@ const ProjectModel = () => {
 	};
 
 	const getFormType = () => {
-		if (userType === 2) {
+		if (userType === 4) {
 			return currentActiveTab.tab === 2 ? "project" : "activity";
 		}
 		return currentActiveTab.tab === 1 ? "project" : "activity";

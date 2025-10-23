@@ -4,6 +4,7 @@ import { useFetchProjectStatuss } from "../queries/projectstatus_query";
 import { createMultiLangKeyValueMap } from "./commonMethods";
 import { useTranslation } from "react-i18next";
 import { getDepartmentType } from "../pages/Users";
+import { useFetchProjectCategorys } from "../queries/projectcategory_query";
 
 export const useUserExportColumns = () => {
 	const { i18n, t } = useTranslation();
@@ -190,6 +191,129 @@ export const projectExportColumns = [
 		width: 30,
 	},
 ];
+
+export const useCsoProjectExportColumns = () => {
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+
+	const {
+		data: projectCategoryData,
+		isLoading: isPctLoading,
+		isError: isPctError,
+	} = useFetchProjectCategorys();
+
+	const projectCategoryMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			projectCategoryData?.data || [],
+			"pct_id",
+			{
+				en: "pct_name_en",
+				am: "pct_name_am",
+				or: "pct_name_or",
+			},
+			lang
+		);
+	}, [projectCategoryData, lang]);
+
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "prj_name",
+				label: t("prj_name"),
+				width: 60,
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_code",
+				label: t("prj_code"),
+				width: 40,
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_project_category_id",
+				label: t("prj_project_category_id"),
+				format: (val) => projectCategoryMap[val] ?? "-",
+				width: 50,
+			},
+			{
+				key: "status_name",
+				label: t("prs_status"),
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_total_estimate_budget",
+				label: t("prj_total_estimate_budget"),
+				format: (val) => (val != null ? parseFloat(val).toLocaleString() : "0"),
+				type: "number",
+				width: 30,
+			},
+		],
+		[t, projectCategoryMap]
+	);
+
+	return exportColumns;
+};
+
+export const useCsoActivityExportColumns = () => {
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+
+	const {
+		data: projectCategoryData,
+		isLoading: isPctLoading,
+		isError: isPctError,
+	} = useFetchProjectCategorys();
+
+	const projectCategoryMap = useMemo(() => {
+		return createMultiLangKeyValueMap(
+			projectCategoryData?.data || [],
+			"pct_id",
+			{
+				en: "pct_name_en",
+				am: "pct_name_am",
+				or: "pct_name_or",
+			},
+			lang
+		);
+	}, [projectCategoryData, lang]);
+
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "prj_name",
+				label: t("prj_name"),
+				width: 60,
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_project_category_id",
+				label: t("prj_project_category_id"),
+				format: (val) => projectCategoryMap[val] ?? "-",
+				width: 50,
+			},
+			{
+				key: "prj_measurement_unit",
+				label: t("prj_measurement_unit"),
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_measured_figure",
+				label: t("prj_measured_figure"),
+				format: (val) => val || "-",
+			},
+			{
+				key: "prj_total_estimate_budget",
+				label: t("prj_total_estimate_budget"),
+				format: (val) => (val != null ? parseFloat(val).toLocaleString() : "0"),
+				type: "number",
+				width: 30,
+			},
+		],
+		[t, projectCategoryMap]
+	);
+
+	return exportColumns;
+};
 
 export const budgetRequestExportColumns = [
 	{ key: "bdy_name", label: "bdy_name" },
@@ -674,45 +798,74 @@ export const procurementExportColumns = [
 	{ key: "pri_bid_award_date", label: "pri_bid_award_date" },
 ];
 
-export const csoExportColumns = [
-	{
-		key: "cso_name",
-		label: "cso_name",
-		format: (val) => val || "-",
-		width: 20,
-	},
-	{
-		key: "cso_contact_person",
-		label: "cso_contact_person",
-		format: (val) => val || "-",
-		width: 20,
-	},
-	{
-		key: "cso_code",
-		label: "cso_code",
-		format: (val) => val || "-",
-	},
-	{
-		key: "cso_address",
-		label: "cso_address",
-		format: (val) => val || "-",
-	},
-	{
-		key: "cso_phone",
-		label: "cso_phone",
-		format: (val) => val || "-",
-	},
-	{
-		key: "cso_email",
-		label: "cso_email",
-		format: (val) => val || "-",
-	},
-	{
-		key: "cso_status",
-		label: "cso_status",
-		format: (val) => (val === 1 ? "Approved" : "Requested"),
-	},
-];
+export const useCsoExportColumns = () => {
+	const { t } = useTranslation();
+
+	const csoTypes = useMemo(
+		() => [
+			{ value: 1, label: t("Local") },
+			{ value: 2, label: t("International") },
+		],
+		[t]
+	);
+
+	const csoTypesMap = useMemo(
+		() =>
+			Object.fromEntries(csoTypes.map(({ value, label }) => [value, label])),
+		[csoTypes]
+	);
+
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "cso_name",
+				label: t("cso_name"),
+				format: (val) => val || "-",
+				width: 60,
+			},
+			{
+				key: "cso_type",
+				label: t("cso_type"),
+				format: (val) => csoTypesMap[val] ?? "-",
+				width: 20,
+			},
+			{
+				key: "cso_contact_person",
+				label: t("cso_contact_person"),
+				format: (val) => val || "-",
+				width: 20,
+			},
+			{
+				key: "cso_code",
+				label: t("cso_code"),
+				format: (val) => val || "-",
+			},
+			// {
+			// 	key: "cso_address",
+			// 	label: t("cso_address"),
+			// 	format: (val) => val || "-",
+			// },
+			{
+				key: "cso_phone",
+				label: t("cso_phone"),
+				format: (val) => val || "-",
+			},
+			{
+				key: "cso_email",
+				label: t("cso_email"),
+				format: (val) => val || "-",
+			},
+			{
+				key: "cso_status",
+				label: t("cso_status"),
+				format: (val) => (val === 1 ? t("Approved") : t("Requested")),
+			},
+		],
+		[t, csoTypesMap]
+	);
+
+	return exportColumns;
+};
 
 export const programExportColumns = [
 	{

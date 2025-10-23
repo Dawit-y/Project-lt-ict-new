@@ -31,7 +31,7 @@ import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const AgGridContainer = lazy(
-  () => import("../../components/Common/AgGridContainer")
+	() => import("../../components/Common/AgGridContainer")
 );
 const BudgetRequestRegistration = lazy(
 	() => import("../Csobudgetrequest/BudgetRequestRegistration")
@@ -40,6 +40,11 @@ import { useFetchCsoInfos } from "../../queries/csoinfo_query";
 import { InfoItem } from "./ProjectTabs";
 import Spinners from "../../components/Common/Spinner";
 import { useAuthUser } from "../../hooks/useAuthUser";
+import {
+	useCsoExportColumns,
+	useCsoProjectExportColumns,
+	useCsoActivityExportColumns,
+} from "../../utils/exportColumnsForLists";
 
 const ProjectTabs = ({
 	handleAddClick,
@@ -54,8 +59,12 @@ const ProjectTabs = ({
 	const [selectedCsoId, setSelectedCsoId] = useState(null);
 	const [selectedCsoName, setSelectedCsoName] = useState(null);
 	const [selectedProject, setSelectedProject] = useState(null);
-	const programName = selectedProject?.prj_name;
 
+	const csoExportColumns = useCsoExportColumns();
+	const csoProjectExportColumns = useCsoProjectExportColumns();
+	const csoActivityExportColumns = useCsoActivityExportColumns()
+
+	const programName = selectedProject?.prj_name;
 	useEffect(() => {
 		if (!selectedProject?.prj_id || activeTab !== 2) {
 			handleTabChange(activeTab, selectedProject?.prj_id, selectedCsoId);
@@ -144,10 +153,10 @@ const ProjectTabs = ({
 			},
 			lang
 		);
-  }, [projectCategoryData, lang]);
-  
+	}, [projectCategoryData, lang]);
+
 	const csoColumnDefs = useMemo(() => {
-    const baseColumnDefs = [
+		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
 				field: "sn",
@@ -231,7 +240,7 @@ const ProjectTabs = ({
 	}, [t, selectedCsoId]);
 
 	const projectsColumnDefs = useMemo(() => {
-    const baseColumnDefs = [
+		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
 				field: "sn",
@@ -392,7 +401,7 @@ const ProjectTabs = ({
 	}, [projects, t, selectedProject, projectCategoryMap]);
 
 	const activitiesColumnDefs = useMemo(() => {
-    const baseColumnDefs = [
+		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
 				field: "sn",
@@ -628,8 +637,7 @@ const ProjectTabs = ({
 													isPdfExport={true}
 													isPrint={true}
 													tableName="CSO List"
-													// exportColumns={projectExportColumns}
-													// exportSearchParams={exportSearchParams}
+													exportColumns={csoExportColumns}
 												/>
 											</Suspense>
 										</>
@@ -661,8 +669,7 @@ const ProjectTabs = ({
 													isPdfExport={true}
 													isPrint={true}
 													tableName="Projects"
-													// exportColumns={projectExportColumns}
-													// exportSearchParams={exportSearchParams}
+													exportColumns={csoProjectExportColumns}
 												/>
 											</Suspense>
 										</>
@@ -689,8 +696,7 @@ const ProjectTabs = ({
 													isPdfExport={true}
 													isPrint={true}
 													tableName="Activities"
-													// exportColumns={projectExportColumns}
-													// exportSearchParams={exportSearchParams}
+													exportColumns={csoActivityExportColumns}
 												/>
 											</Suspense>
 										</>

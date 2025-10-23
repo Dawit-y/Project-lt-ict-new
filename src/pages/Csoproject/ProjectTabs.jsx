@@ -38,6 +38,10 @@ const AgGridContainer = lazy(
 const BudgetRequestRegistration = lazy(
 	() => import("../Csobudgetrequest/BudgetRequestRegistration")
 );
+import {
+	useCsoProjectExportColumns,
+	useCsoActivityExportColumns,
+} from "../../utils/exportColumnsForLists";
 
 const ProjectTabs = ({
 	program,
@@ -51,6 +55,9 @@ const ProjectTabs = ({
 	const [activeTab, setActiveTab] = useState(1);
 	const [passedSteps, setPassedSteps] = useState([1]);
 	const [selectedProject, setSelectedProject] = useState(null);
+
+	const csoProjectExportColumns = useCsoProjectExportColumns();
+	const csoActivityExportColumns = useCsoActivityExportColumns();
 	const programName = selectedProject?.prj_name;
 
 	const { userId } = useAuthUser();
@@ -499,8 +506,7 @@ const ProjectTabs = ({
 												isPdfExport={true}
 												isPrint={true}
 												tableName="Projects"
-												// exportColumns={projectExportColumns}
-												// exportSearchParams={exportSearchParams}
+												exportColumns={csoProjectExportColumns}
 											/>
 										</Suspense>
 									</>
@@ -523,8 +529,7 @@ const ProjectTabs = ({
 												isPdfExport={true}
 												isPrint={true}
 												tableName="Activities"
-												// exportColumns={projectExportColumns}
-												// exportSearchParams={exportSearchParams}
+												exportColumns={csoActivityExportColumns}
 												isFetching={isFetching}
 												refetch={refetch}
 											/>
