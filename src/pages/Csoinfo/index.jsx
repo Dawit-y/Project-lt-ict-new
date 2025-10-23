@@ -56,7 +56,7 @@ import FileModal from "./FileModal";
 import Conversation from "../Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
 import AgGridContainer from "../../components/Common/AgGridContainer";
-import { csoExportColumns } from "../../utils/exportColumnsForLists";
+import { useCsoExportColumns } from "../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -85,6 +85,7 @@ const CsoInfoModel = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
+	const csoExportColumns = useCsoExportColumns();
 
 	const { data, isLoading, error, isError, refetch } = useFetchCsoInfos();
 	const addCsoInfo = useAddCsoInfo();
@@ -308,6 +309,17 @@ const CsoInfoModel = () => {
 				sortable: false,
 				filter: false,
 				width: 60,
+				pinned: "left",
+			},
+			{
+				headerName: t("Name"),
+				field: "cso_name",
+				filter: false,
+				sortable: true,
+				minWidth: 200,
+				flex: 1,
+				cellRenderer: ({ data }) => truncateText(data.cso_name, 120) || "-",
+				pinned: "left",
 			},
 			{
 				headerName: t("cso_type"),
@@ -317,15 +329,6 @@ const CsoInfoModel = () => {
 				minWidth: 100,
 				flex: 1,
 				cellRenderer: ({ data }) => csoTypesMap[data.cso_type],
-			},
-			{
-				headerName: t("Name"),
-				field: "cso_name",
-				filter: false,
-				sortable: true,
-				minWidth: 200,
-				flex: 1,
-				cellRenderer: ({ data }) => truncateText(data.cso_name, 30) || "-",
 			},
 			{
 				headerName: t("cso_contact_person"),
@@ -378,6 +381,7 @@ const CsoInfoModel = () => {
 				headerName: t("actions"),
 				field: "actions",
 				width: 200,
+				pinned: "right",
 				cellRenderer: (params) => {
 					const rowData = params.data;
 
@@ -529,15 +533,7 @@ const CsoInfoModel = () => {
 											isPdfExport={true}
 											isPrint={true}
 											tableName="CSO List"
-											exportColumns={[
-												...csoExportColumns,
-												{
-													key: "cso_type",
-													label: "cso_type",
-													format: (val) => csoTypesMap[val] || "-",
-													width: 20,
-												},
-											]}
+											exportColumns={csoExportColumns}
 										/>
 									</CardBody>
 								</Card>
@@ -840,7 +836,9 @@ const CsoInfoModel = () => {
 		</React.Fragment>
 	);
 };
+
 CsoInfoModel.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
+
 export default CsoInfoModel;
