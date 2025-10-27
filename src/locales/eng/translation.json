@@ -837,7 +837,6 @@
 	"prj_project_amount_range": "Amount should be greater than 1000 and less than 100,000,000,000",
 	"prj_name_en": "Project Name in English",
 	"prj_name_am": "Project Name in Amharic",
-
 	"budget_year_range": "Budget year should be between 2017 and 2040",
 	"budget_month_range": "Budget month should be between 1 and 12",
 	"integer_only": "It should be number only",
@@ -1417,7 +1416,6 @@
 	"rqf_recommendation": "Recommendation",
 	"rqf_recommended_date": "Date of Recommendation",
 	"Project_Performance_Details": "Project Performance Details",
-
 	"Annual_Performance": "Annual Performance",
 	"No_description": "No description",
 	"Physical_Performance": "Physical Performance",
@@ -1461,7 +1459,6 @@
 	"quarter_4_financial_planned": "Quarter 4 Financial Planned",
 	"quarter_4_physical_actual": "Quarter 4 Physical Actual",
 	"quarter_4_financial_actual": "Quarter 4 Financial Actual",
-
 	"prp_pyhsical_planned_month_1": "Physical Planned Month 1",
 	"prp_pyhsical_planned_month_2": "Physical Planned Month 2",
 	"prp_pyhsical_planned_month_3": "Physical Planned Month 3",
@@ -2063,5 +2060,7 @@
 	"prj_consortium_members": "Consortium Members",
 	"old_password": "Old Password",
 	"enter_old_password": "Enter Old Password",
-	"page_id": "Page"
+	"page_id": "Page",
+	"programs_report": "Programs Report",
+	"project_plan_report": "Project Plan Report"
 }

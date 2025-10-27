@@ -25,6 +25,7 @@ import ProjectsBudgetExpenditureTable from "../Report/ProjectsBudgetExpenditureT
 import ProjectsBudgetSourceTable from "../Report/ProjectsBudgetSourceTable";
 import ProjectsContractorTable from "../Report/ProjectsContractorTable";
 import ProjectsPaymentTable from "../Report/ProjectsPaymentTable";
+import ProgramsReport from "./ProgramsReport";
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
@@ -356,6 +357,25 @@ const Report = () => {
 				],
 				reportTypeIndex: 13,
 			},
+			programs_report: {
+				locationParams: {
+					region: "prj_location_region_id",
+					zone: "prj_location_zone_id",
+					woreda: "prj_location_woreda_id",
+				},
+				dropdownSearchKeys: [
+					{
+						key: "pri_sector_id",
+						options:
+							lang === "en"
+								? sectorInformationOptionsEn
+								: lang === "am"
+									? sectorInformationOptionsAm
+									: sectorInformationOptionsOr,
+					},
+				],
+				reportTypeIndex: 14,
+			},
 		}),
 		[
 			budgetYearOptions,
@@ -447,6 +467,7 @@ const Report = () => {
 		11: ProjectPhysicalPerformanceReportsTable,
 		12: ProjectFinancialPerformanceReportsTable,
 		13: ProjectPlanTable,
+		14: ProgramsReport,
 	};
 
 	// Render appropriate table based on report type
