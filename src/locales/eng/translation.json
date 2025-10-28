@@ -2062,5 +2062,6 @@
 	"enter_old_password": "Enter Old Password",
 	"page_id": "Page",
 	"programs_report": "Programs Report",
-	"project_plan_report": "Project Plan Report"
+	"project_plan_report": "Project Plan Report",
+	"budget_by_zone": "Budget Allocation By Zone"
 }
