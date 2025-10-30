@@ -2063,5 +2063,6 @@
 	"page_id": "Page",
 	"programs_report": "Programs Report",
 	"project_plan_report": "Project Plan Report",
-	"budget_by_zone": "Budget Allocation By Zone"
+	"budget_by_zone": "Budget Allocation By Zone",
+	"project_finance_by_source": "Project Finance By Source"
 }
