@@ -2065,5 +2065,8 @@
 	"project_plan_report": "Project Plan Report",
 	"budget_by_zone": "Budget Allocation By Zone",
 	"project_finance_by_source": "Project Finance By Source",
-	"project_finance_by_status": "Project Finance By Status"
+	"project_finance_by_status": "Project Finance By Status",
+	"project_finance_by_year": "Project Finance By Year",
+	"zone_finance_by_year": "Zone Finance By Year",
+	"zone_finance_by_cluster": "Zone Finance By Cluster"
 }

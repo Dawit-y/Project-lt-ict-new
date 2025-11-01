@@ -29,6 +29,9 @@ import ProgramsReport from "./ProgramsReport";
 import BudgetAllocationByZone from "./BudgetAllocationByZone";
 import ProjectFinanceBySource from "./ProjectFinanceBySource";
 import ProjectFinanceByStatus from "./ProjectFinanceByStatus";
+import ProjectFinanceByYear from "./ProjectFinanceByYear";
+import ZoneFinanceByCluster from "./ZoneFinanceByCluster";
+import ZoneFinanceByYear from "./ZoneFinanceByYear";
 
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
@@ -416,6 +419,42 @@ const Report = () => {
 				],
 				reportTypeIndex: 17,
 			},
+			project_finance_by_year: {
+				locationParams: {
+					region: "prj_location_region_id",
+					zone: "prj_location_zone_id",
+					woreda: "prj_location_woreda_id",
+				},
+				dropdownSearchKeys: [
+					{ key: "bdr_budget_year_id", options: budgetYearOptions },
+					{ key: "sector_category", options: sectorCategoryOptions },
+				],
+				reportTypeIndex: 18,
+			},
+			zone_finance_by_cluster: {
+				locationParams: {
+					region: "prj_location_region_id",
+					zone: "prj_location_zone_id",
+					woreda: "prj_location_woreda_id",
+				},
+				dropdownSearchKeys: [
+					{ key: "bdr_budget_year_id", options: budgetYearOptions },
+					{ key: "sector_category", options: sectorCategoryOptions },
+				],
+				reportTypeIndex: 19,
+			},
+			zone_finance_by_year: {
+				locationParams: {
+					region: "prj_location_region_id",
+					zone: "prj_location_zone_id",
+					woreda: "prj_location_woreda_id",
+				},
+				dropdownSearchKeys: [
+					{ key: "bdr_budget_year_id", options: budgetYearOptions },
+					{ key: "sector_category", options: sectorCategoryOptions },
+				],
+				reportTypeIndex: 20,
+			},
 		}),
 		[
 			budgetYearOptions,
@@ -511,6 +550,9 @@ const Report = () => {
 		15: BudgetAllocationByZone,
 		16: ProjectFinanceBySource,
 		17: ProjectFinanceByStatus,
+		18: ProjectFinanceByYear,
+		19: ZoneFinanceByCluster,
+		20: ZoneFinanceByYear,
 	};
 
 	// Render appropriate table based on report type
