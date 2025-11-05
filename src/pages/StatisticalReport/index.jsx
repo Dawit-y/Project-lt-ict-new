@@ -435,10 +435,7 @@ const StatisticalReport = () => {
 												</Input>
 
 												<PrintStatisticalReportPage
-													tableData={searchResults}
-													tablename={t("Statistical Report")}
-													excludeKey={["is_editable", "is_deletable"]}
-													disabled={searchResults.length === 0}
+													tableName={t(selectedEndpoint)}
 												/>
 											</div>
 										</CardBody>
@@ -454,7 +451,7 @@ const StatisticalReport = () => {
 											dropdownSearchKeys={dropdownSearchKeys}
 											checkboxSearchKeys={[]}
 											additionalParams={projectParams}
-											setAdditionalParams={() => {}} // Can be removed if not used
+											setAdditionalParams={() => {}}
 											onSearchResult={handleSearchResults}
 											setIsSearchLoading={setIsSearchLoading}
 											setSearchResults={setSearchResults}
