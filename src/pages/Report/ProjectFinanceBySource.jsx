@@ -71,13 +71,27 @@ const ProjectFinanceBySource = ({
 				minWidth: 100,
 				group: "projects",
 			},
+			{
+				id: "approval_rate",
+				label: t("Approval Rate"),
+				visible: true,
+				minWidth: 100,
+				group: "projects",
+			},
 			// Budget by Source group
 			{
-				id: "gov_approved",
+				id: "gov_approved_value",
 				label: t("Government"),
 				visible: true,
 				minWidth: 120,
-				group: "budget",
+				group: "gov_budget",
+			},
+			{
+				id: "gov_approved_percentage",
+				label: t("Gov %"),
+				visible: true,
+				minWidth: 80,
+				group: "gov_budget",
 			},
 			{
 				id: "support_approved",
@@ -112,6 +126,12 @@ const ProjectFinanceBySource = ({
 				label: t("Total Approved"),
 				visible: true,
 				minWidth: 150,
+			},
+			{
+				id: "total_approved_percentage",
+				label: t("Total %"),
+				visible: true,
+				minWidth: 100,
 			},
 		],
 		[t]
@@ -153,7 +173,7 @@ const ProjectFinanceBySource = ({
 		}, {});
 	}, [data, t]);
 
-	// Calculate totals for each category
+	// Calculate totals for each category including percentages
 	const calculateCategoryTotals = useMemo(() => {
 		const totals = {};
 
@@ -161,12 +181,15 @@ const ProjectFinanceBySource = ({
 			totals[category] = {
 				requested_budget_count: 0,
 				approved_budget_count: 0,
+				approval_rate: 0,
 				gov_approved: 0,
+				gov_approved_percentage: 0,
 				support_approved: 0,
 				credit_approved: 0,
 				other_approved: 0,
 				internal_approved: 0,
 				total_approved: 0,
+				total_approved_percentage: 100, // Category total should always be 100% of itself
 			};
 
 			// Sum up all sectors in this category
@@ -193,6 +216,21 @@ const ProjectFinanceBySource = ({
 
 				totals[category].total_approved += sectorTotal;
 			});
+
+			// Calculate approval rate for the category
+			if (totals[category].requested_budget_count > 0) {
+				totals[category].approval_rate =
+					(totals[category].approved_budget_count /
+						totals[category].requested_budget_count) *
+					100;
+			}
+
+			// Calculate government percentage for the category
+			if (totals[category].total_approved > 0) {
+				totals[category].gov_approved_percentage =
+					(totals[category].gov_approved / totals[category].total_approved) *
+					100;
+			}
 		});
 
 		return totals;
@@ -229,13 +267,14 @@ const ProjectFinanceBySource = ({
 		}, {});
 	}, [filteredData, t]);
 
-	// Prepare all rows for rendering
+	// Prepare all rows for rendering with correct percentage calculations
 	const allRows = useMemo(() => {
 		const rows = [];
 
 		Object.entries(filteredGroupedData).forEach(
 			([categoryName, categoryData]) => {
 				const isExpanded = expandedCategories[categoryName] !== false;
+				const categoryTotals = calculateCategoryTotals[categoryName] || {};
 
 				// Add category row
 				rows.push({
@@ -243,7 +282,7 @@ const ProjectFinanceBySource = ({
 					categoryName,
 					sectorCount: categoryData.sectors.length,
 					isExpanded,
-					totals: calculateCategoryTotals[categoryName] || {},
+					totals: categoryTotals,
 				});
 
 				// Add sector rows if expanded
@@ -257,10 +296,31 @@ const ProjectFinanceBySource = ({
 							(Number(sector.other_approved) || 0) +
 							(Number(sector.internal_approved) || 0);
 
+						// Calculate approval rate
+						const approvalRate =
+							sector.requested_budget_count > 0
+								? (sector.approved_budget_count /
+										sector.requested_budget_count) *
+									100
+								: 0;
+
+						// Calculate government percentage (out of sector total)
+						const govPercentage =
+							sectorTotal > 0 ? (sector.gov_approved / sectorTotal) * 100 : 0;
+
+						// Calculate total approved percentage (out of CATEGORY total)
+						const totalPercentage =
+							categoryTotals.total_approved > 0
+								? (sectorTotal / categoryTotals.total_approved) * 100
+								: 0;
+
 						rows.push({
 							type: "sector",
 							...sector,
 							sectorTotal,
+							approvalRate,
+							govPercentage,
+							totalPercentage,
 							categoryName,
 						});
 					});
@@ -298,6 +358,8 @@ const ProjectFinanceBySource = ({
 
 		Object.entries(filteredGroupedData).forEach(
 			([categoryName, categoryData]) => {
+				const categoryTotals = calculateCategoryTotals[categoryName] || {};
+
 				// Add individual sector rows
 				categoryData.sectors.forEach((sector) => {
 					const gov = safeParseNumber(sector.gov_approved);
@@ -305,6 +367,21 @@ const ProjectFinanceBySource = ({
 					const credit = safeParseNumber(sector.credit_approved);
 					const other = safeParseNumber(sector.other_approved);
 					const internal = safeParseNumber(sector.internal_approved);
+					const total = gov + support + credit + other + internal;
+
+					const approvalRate =
+						sector.requested_budget_count > 0
+							? (sector.approved_budget_count / sector.requested_budget_count) *
+								100
+							: 0;
+
+					const govPercentage = total > 0 ? (gov / total) * 100 : 0;
+
+					// Calculate total percentage relative to category total
+					const totalPercentage =
+						categoryTotals.total_approved > 0
+							? (total / categoryTotals.total_approved) * 100
+							: 0;
 
 					const sectorRow = {
 						level: t("Sector"),
@@ -312,12 +389,15 @@ const ProjectFinanceBySource = ({
 						sector_name: sector.sector_name,
 						requested_budget_count: sector.requested_budget_count,
 						approved_budget_count: sector.approved_budget_count,
+						approval_rate: approvalRate,
 						gov_approved: gov,
+						gov_approved_percentage: govPercentage,
 						support_approved: support,
 						credit_approved: credit,
 						other_approved: other,
 						internal_approved: internal,
-						total_approved: gov + support + credit + other + internal,
+						total_approved: total,
+						total_approved_percentage: totalPercentage,
 					};
 					exportRows.push(sectorRow);
 				});
@@ -325,8 +405,8 @@ const ProjectFinanceBySource = ({
 		);
 
 		return exportRows;
-	}, [filteredGroupedData, t]);
-	
+	}, [filteredGroupedData, t, calculateCategoryTotals]);
+
 	// Filter export columns based on visibility
 	const visibleExportColumns = useMemo(() => {
 		const baseColumns = [
@@ -369,6 +449,40 @@ const ProjectFinanceBySource = ({
 			});
 		}
 
+		if (!hiddenColumns.includes("approval_rate")) {
+			projectsGroup.columns.push({
+				key: "approval_rate",
+				label: t("Approval Rate"),
+				width: 20,
+				type: "percentage",
+			});
+		}
+
+		// Government Budget group
+		const govBudgetGroup = {
+			key: "government_budget",
+			label: t("Government Budget"),
+			columns: [],
+		};
+
+		if (!hiddenColumns.includes("gov_approved_value")) {
+			govBudgetGroup.columns.push({
+				key: "gov_approved",
+				label: t("Government"),
+				width: 20,
+				type: "number",
+			});
+		}
+
+		if (!hiddenColumns.includes("gov_approved_percentage")) {
+			govBudgetGroup.columns.push({
+				key: "gov_approved_percentage",
+				label: t("Gov %"),
+				width: 15,
+				type: "percentage",
+			});
+		}
+
 		// Budget by Source group (including total approved)
 		const budgetGroup = {
 			key: "budget_by_source",
@@ -377,12 +491,12 @@ const ProjectFinanceBySource = ({
 		};
 
 		const budgetColumns = [
-			{ id: "gov_approved", label: t("Government") },
 			{ id: "support_approved", label: t("Support") },
 			{ id: "credit_approved", label: t("Credit") },
 			{ id: "other_approved", label: t("Other") },
 			{ id: "internal_approved", label: t("Internal") },
 			{ id: "total_approved", label: t("Total Approved") },
+			{ id: "total_approved_percentage", label: t("Total %") },
 		];
 
 		budgetColumns.forEach((col) => {
@@ -391,7 +505,8 @@ const ProjectFinanceBySource = ({
 					key: col.id,
 					label: col.label,
 					width: 20,
-					type: "number",
+					type:
+						col.id === "total_approved_percentage" ? "percentage" : "number",
 				});
 			}
 		});
@@ -399,6 +514,7 @@ const ProjectFinanceBySource = ({
 		// Only add groups if they have columns
 		const result = [...baseColumns];
 		if (projectsGroup.columns.length > 0) result.push(projectsGroup);
+		if (govBudgetGroup.columns.length > 0) result.push(govBudgetGroup);
 		if (budgetGroup.columns.length > 0) result.push(budgetGroup);
 
 		return result;
@@ -583,6 +699,12 @@ const ProjectFinanceBySource = ({
 		}).format(value);
 	};
 
+	// Format percentage
+	const formatPercentage = (value) => {
+		if (!value && value !== 0) return "-";
+		return `${value.toFixed(2)}%`;
+	};
+
 	// Format count
 	const formatCount = (value) => {
 		if (!value && value !== 0) return "-";
@@ -635,13 +757,27 @@ const ProjectFinanceBySource = ({
 						<strong>{formatCount(row.totals.approved_budget_count)}</strong>
 					</td>
 				)}
+				{!hiddenColumns.includes("approval_rate") && (
+					<td data-column="approval_rate">
+						<strong>{formatPercentage(row.totals.approval_rate)}</strong>
+					</td>
+				)}
 
-				{/* Budget by Source */}
-				{!hiddenColumns.includes("gov_approved") && (
-					<td data-column="gov_approved">
+				{/* Government Budget */}
+				{!hiddenColumns.includes("gov_approved_value") && (
+					<td data-column="gov_approved_value">
 						<strong>{formatCurrency(row.totals.gov_approved)}</strong>
 					</td>
 				)}
+				{!hiddenColumns.includes("gov_approved_percentage") && (
+					<td data-column="gov_approved_percentage">
+						<strong>
+							{formatPercentage(row.totals.gov_approved_percentage)}
+						</strong>
+					</td>
+				)}
+
+				{/* Other Budget Sources */}
 				{!hiddenColumns.includes("support_approved") && (
 					<td data-column="support_approved">
 						<strong>{formatCurrency(row.totals.support_approved)}</strong>
@@ -667,6 +803,13 @@ const ProjectFinanceBySource = ({
 				{!hiddenColumns.includes("total_approved") && (
 					<td data-column="total_approved">
 						<strong>{formatCurrency(row.totals.total_approved)}</strong>
+					</td>
+				)}
+				{!hiddenColumns.includes("total_approved_percentage") && (
+					<td data-column="total_approved_percentage">
+						<strong>
+							{formatPercentage(row.totals.total_approved_percentage)}
+						</strong>
 					</td>
 				)}
 			</tr>
@@ -710,11 +853,25 @@ const ProjectFinanceBySource = ({
 						{formatCount(row.approved_budget_count)}
 					</td>
 				)}
-
-				{/* Budget by Source */}
-				{!hiddenColumns.includes("gov_approved") && (
-					<td data-column="gov_approved">{formatCurrency(row.gov_approved)}</td>
+				{!hiddenColumns.includes("approval_rate") && (
+					<td data-column="approval_rate">
+						{formatPercentage(row.approvalRate)}
+					</td>
 				)}
+
+				{/* Government Budget */}
+				{!hiddenColumns.includes("gov_approved_value") && (
+					<td data-column="gov_approved_value">
+						{formatCurrency(row.gov_approved)}
+					</td>
+				)}
+				{!hiddenColumns.includes("gov_approved_percentage") && (
+					<td data-column="gov_approved_percentage">
+						{formatPercentage(row.govPercentage)}
+					</td>
+				)}
+
+				{/* Other Budget Sources */}
 				{!hiddenColumns.includes("support_approved") && (
 					<td data-column="support_approved">
 						{formatCurrency(row.support_approved)}
@@ -740,6 +897,11 @@ const ProjectFinanceBySource = ({
 				{!hiddenColumns.includes("total_approved") && (
 					<td data-column="total_approved">
 						{formatCurrency(row.sectorTotal)}
+					</td>
+				)}
+				{!hiddenColumns.includes("total_approved_percentage") && (
+					<td data-column="total_approved_percentage">
+						{formatPercentage(row.totalPercentage)}
 					</td>
 				)}
 			</tr>
@@ -905,7 +1067,7 @@ const ProjectFinanceBySource = ({
 					id="sector-budget-summary-table"
 					ref={tableRef}
 					className={`table ${tableClass}`}
-					style={{ width: "100%", fontSize: "0.85rem", minWidth: "1400px" }}
+					style={{ width: "100%", fontSize: "0.85rem", minWidth: "1600px" }}
 				>
 					<thead ref={headerRowRef}>
 						{/* Row 1: Main Groups */}
@@ -933,27 +1095,38 @@ const ProjectFinanceBySource = ({
 
 							{/* Number of Projects Group */}
 							{(!hiddenColumns.includes("requested_budget_count") ||
-								!hiddenColumns.includes("approved_budget_count")) && (
-								<th colSpan={2} data-column="projects_group">
+								!hiddenColumns.includes("approved_budget_count") ||
+								!hiddenColumns.includes("approval_rate")) && (
+								<th colSpan={3} data-column="projects_group">
 									{t("Number of Projects")}
 								</th>
 							)}
 
-							{/* Budget by Source Group - NOW INCLUDES TOTAL APPROVED */}
-							{(!hiddenColumns.includes("gov_approved") ||
-								!hiddenColumns.includes("support_approved") ||
+							{/* Government Budget Group */}
+							{(!hiddenColumns.includes("gov_approved_value") ||
+								!hiddenColumns.includes("gov_approved_percentage")) && (
+								<th colSpan={2} data-column="gov_budget_group">
+									{t("Government Budget")}
+								</th>
+							)}
+
+							{/* Budget by Source Group - NOW INCLUDES TOTAL APPROVED AND PERCENTAGE */}
+							{(!hiddenColumns.includes("support_approved") ||
 								!hiddenColumns.includes("credit_approved") ||
 								!hiddenColumns.includes("other_approved") ||
 								!hiddenColumns.includes("internal_approved") ||
-								!hiddenColumns.includes("total_approved")) && (
+								!hiddenColumns.includes("total_approved") ||
+								!hiddenColumns.includes("total_approved_percentage")) && (
 								<th
 									colSpan={
-										(!hiddenColumns.includes("gov_approved") ? 1 : 0) +
 										(!hiddenColumns.includes("support_approved") ? 1 : 0) +
 										(!hiddenColumns.includes("credit_approved") ? 1 : 0) +
 										(!hiddenColumns.includes("other_approved") ? 1 : 0) +
 										(!hiddenColumns.includes("internal_approved") ? 1 : 0) +
-										(!hiddenColumns.includes("total_approved") ? 1 : 0)
+										(!hiddenColumns.includes("total_approved") ? 1 : 0) +
+										(!hiddenColumns.includes("total_approved_percentage")
+											? 1
+											: 0)
 									}
 									data-column="budget_group"
 								>
@@ -971,11 +1144,19 @@ const ProjectFinanceBySource = ({
 							{!hiddenColumns.includes("approved_budget_count") && (
 								<th data-column="approved_budget_count">{t("Approved")}</th>
 							)}
-
-							{/* Budget by Source subgroups - NOW INCLUDES TOTAL APPROVED */}
-							{!hiddenColumns.includes("gov_approved") && (
-								<th data-column="gov_approved">{t("Government")}</th>
+							{!hiddenColumns.includes("approval_rate") && (
+								<th data-column="approval_rate">{t("Approval Rate")}</th>
 							)}
+
+							{/* Government Budget subgroups */}
+							{!hiddenColumns.includes("gov_approved_value") && (
+								<th data-column="gov_approved_value">{t("Government")}</th>
+							)}
+							{!hiddenColumns.includes("gov_approved_percentage") && (
+								<th data-column="gov_approved_percentage">{t("Gov %")}</th>
+							)}
+
+							{/* Budget by Source subgroups - NOW INCLUDES TOTAL APPROVED AND PERCENTAGE */}
 							{!hiddenColumns.includes("support_approved") && (
 								<th data-column="support_approved">{t("Support")}</th>
 							)}
@@ -990,6 +1171,9 @@ const ProjectFinanceBySource = ({
 							)}
 							{!hiddenColumns.includes("total_approved") && (
 								<th data-column="total_approved">{t("Total Approved")}</th>
+							)}
+							{!hiddenColumns.includes("total_approved_percentage") && (
+								<th data-column="total_approved_percentage">{t("Total %")}</th>
 							)}
 						</tr>
 					</thead>
@@ -1006,7 +1190,7 @@ const ProjectFinanceBySource = ({
 						) : (
 							<tr>
 								<td
-									colSpan={visibleColumns.length + 1} // +1 for group headers
+									colSpan={visibleColumns.length + 2} // +2 for additional group headers
 									style={{ textAlign: "center", padding: "2rem" }}
 								>
 									{searchTerm
