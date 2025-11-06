@@ -63,6 +63,11 @@ const StatisticalReport = () => {
 	const [localizedAggregatorTemplates, setLocalizedAggregatorTemplates] =
 		useState({});
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [exportSearchParams, setExportSearchParams] = useState({});
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
 
 	const { data: budgetYearData } = useFetchBudgetYears();
 	const budgetYearOptions = createSelectOptions(
@@ -436,6 +441,7 @@ const StatisticalReport = () => {
 
 												<PrintStatisticalReportPage
 													tableName={t(selectedEndpoint)}
+													exportSearchParams={exportSearchParams}
 												/>
 											</div>
 										</CardBody>
@@ -453,9 +459,11 @@ const StatisticalReport = () => {
 											additionalParams={projectParams}
 											setAdditionalParams={() => {}}
 											onSearchResult={handleSearchResults}
+											onSearchLabels={handleSearchLabels}
 											setIsSearchLoading={setIsSearchLoading}
 											setSearchResults={setSearchResults}
 											setShowSearchResult={setShowSearchResult}
+											setExportSearchParams={setExportSearchParams}
 											disabled={!isSearchEnabled}
 										/>
 									)}

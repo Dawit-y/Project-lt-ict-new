@@ -10,6 +10,7 @@ const PrintTable = ({
 	tableName = "Table",
 	dropdownItem = false,
 	pivotTableSelector = ".pvtOutput",
+	exportSearchParams = {},
 }) => {
 	const { t } = useTranslation();
 
@@ -301,6 +302,7 @@ const PrintTable = ({
 			: "";
 
 		return `
+    <div>
       <div class="report-header">
         ${logoHtml}
         <div class="header-content">
@@ -312,6 +314,25 @@ const PrintTable = ({
           </p>
         </div>
       </div>
+      ${
+				exportSearchParams && Object.keys(exportSearchParams).length > 0
+					? `
+      <div style="margin-bottom: 20px; font-size: 14px; color: #333;">
+        <strong>${t("search_criteria")}:</strong>
+        <ul>
+          ${Object.entries(exportSearchParams)
+						.map(
+							([key, value]) => `
+            <li>${t(key) || key}: ${value}</li>
+          `
+						)
+						.join("")}
+        </ul>
+      </div>`
+					: ""
+			}
+    </div>
+  
     `;
 	};
 

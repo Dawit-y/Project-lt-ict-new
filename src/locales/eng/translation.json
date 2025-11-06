@@ -2068,5 +2068,11 @@
 	"project_finance_by_status": "Project Finance By Status",
 	"project_finance_by_year": "Project Finance By Year",
 	"zone_finance_by_year": "Zone Finance By Year",
-	"zone_finance_by_cluster": "Zone Finance By Cluster"
+	"zone_finance_by_cluster": "Zone Finance By Cluster",
+	"prj_budget_year_id": "Budget Year",
+	"emp_budget_year_id": "Budget Year",
+	"pbs_budget_year_id": "Budget Year",
+	"cni_budget_year_id": "Budget Year",
+	"psh_budget_year_id": "Budget Year",
+	"prd_budget_year_id": "Budget Year"
 }
