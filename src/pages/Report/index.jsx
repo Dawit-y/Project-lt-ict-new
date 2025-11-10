@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import {
 	Row,
 	Col,
@@ -12,27 +12,6 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import TreeForLists from "../../components/Common/TreeForLists2";
 import { useSearchReport } from "../../queries/report_query";
-import Greenbook from "./ReportDesign/Greenbook";
-import FinancialProjectsTable from "../Report/ProjectFinanicialReportsTable";
-import FinancialProjectsTable2 from "../Report/ProjectFinanicialReportsTable2";
-import FinancialProjectsTable3 from "../Report/ProjectFinanicialReportsTable3";
-import ProjectPhysicalPerformanceReportsTable from "../Report/ProjectPhysicalPerformanceReportsTable";
-import ProjectFinancialPerformanceReportsTable from "../Report/ProjectFinancialPerformanceReportsTable";
-import ProjectPlanTable from "../Report/ProjectPlanTable";
-import ProjectEmployeeReportsTable from "../Report/ProjectEmployeeReportsTable";
-import ProjectsBudgetPlanTable from "../Report/ProjectsBudgetPlanTable";
-import ProjectsBudgetExpenditureTable from "../Report/ProjectsBudgetExpenditureTable";
-import ProjectsBudgetSourceTable from "../Report/ProjectsBudgetSourceTable";
-import ProjectsContractorTable from "../Report/ProjectsContractorTable";
-import ProjectsPaymentTable from "../Report/ProjectsPaymentTable";
-import ProgramsReport from "./ProgramsReport";
-import BudgetAllocationByZone from "./BudgetAllocationByZone";
-import ProjectFinanceBySource from "./ProjectFinanceBySource";
-import ProjectFinanceByStatus from "./ProjectFinanceByStatus";
-import ProjectFinanceByYear from "./ProjectFinanceByYear";
-import ZoneFinanceByCluster from "./ZoneFinanceByCluster";
-import ZoneFinanceByYear from "./ZoneFinanceByYear";
-
 import { useFetchBudgetYears } from "../../queries/budgetyear_query";
 import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
@@ -43,11 +22,65 @@ import {
 	createMultiSelectOptions,
 } from "../../utils/commonMethods";
 import { useTranslation } from "react-i18next";
+import { useAuthUser } from "../../hooks/useAuthUser";
+
+// Lazy loaded components
+const Greenbook = lazy(() => import("./ReportDesign/Greenbook"));
+const FinancialProjectsTable = lazy(
+	() => import("../Report/ProjectFinanicialReportsTable")
+);
+const FinancialProjectsTable2 = lazy(
+	() => import("../Report/ProjectFinanicialReportsTable2")
+);
+const FinancialProjectsTable3 = lazy(
+	() => import("../Report/ProjectFinanicialReportsTable3")
+);
+const ProjectPhysicalPerformanceReportsTable = lazy(
+	() => import("../Report/ProjectPhysicalPerformanceReportsTable")
+);
+const ProjectFinancialPerformanceReportsTable = lazy(
+	() => import("../Report/ProjectFinancialPerformanceReportsTable")
+);
+const ProjectPlanTable = lazy(() => import("../Report/ProjectPlanTable"));
+const ProjectEmployeeReportsTable = lazy(
+	() => import("../Report/ProjectEmployeeReportsTable")
+);
+const ProjectsBudgetPlanTable = lazy(
+	() => import("../Report/ProjectsBudgetPlanTable")
+);
+const ProjectsBudgetExpenditureTable = lazy(
+	() => import("../Report/ProjectsBudgetExpenditureTable")
+);
+const ProjectsBudgetSourceTable = lazy(
+	() => import("../Report/ProjectsBudgetSourceTable")
+);
+const ProjectsContractorTable = lazy(
+	() => import("../Report/ProjectsContractorTable")
+);
+const ProjectsPaymentTable = lazy(
+	() => import("../Report/ProjectsPaymentTable")
+);
+const ProgramsReport = lazy(() => import("./ProgramsReport"));
+const BudgetAllocationByZone = lazy(() => import("./BudgetAllocationByZone"));
+const ProjectFinanceBySource = lazy(() => import("./ProjectFinanceBySource"));
+const ProjectFinanceByStatus = lazy(() => import("./ProjectFinanceByStatus"));
+const ProjectFinanceByYear = lazy(() => import("./ProjectFinanceByYear"));
+const ZoneFinanceByCluster = lazy(() => import("./ZoneFinanceByCluster"));
+const ZoneFinanceByYear = lazy(() => import("./ZoneFinanceByYear"));
+
+// Loading component for lazy loading
+const TableLoading = () => (
+	<div className="d-flex justify-content-center p-4">
+		<Spinner color="primary" />
+	</div>
+);
 
 const Report = () => {
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 	const [exportSearchParams, setExportSearchParams] = useState({});
+	const { user } = useAuthUser();
+	const userType = user?.usr_user_type || null;
 
 	// Data hooks
 	const { data: budgetYearData } = useFetchBudgetYears();
@@ -109,367 +142,375 @@ const Report = () => {
 	const [locationZoneId, setLocationZoneId] = useState(null);
 	const [locationWoredaId, setLocationWoredaId] = useState(null);
 
-	// Endpoint configurations
-	const endpointConfigs = useMemo(
-		() => ({
-			project_stat: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				reportTypeIndex: 1,
-			},
-			employee_stat: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 2,
-			},
-			budget_plan_stat: {
-				textKeys: ["prj_name"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 3,
-			},
-			budget_expenditure_stat: {
-				textKeys: ["prj_name"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "pbe_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 4,
-			},
-			budget_source_stat: {
-				textKeys: ["prj_name"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 5,
-			},
-			budget_contractor_stat: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "cni_contractor_type_id",
-						options:
-							lang === "en"
-								? contractorTypeOptionsEn
-								: lang === "am"
-									? contractorTypeOptionsAm
-									: contractorTypeOptionsOr,
-					},
-				],
-				reportTypeIndex: 6,
-			},
-			project_payment_stat: {
-				dateKeys: ["payment_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "bdr_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 7,
-			},
-			project_financial_report: {
-				dateKeys: ["report_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 8,
-			},
-			project_financial_report2: {
-				dateKeys: ["report_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 9,
-			},
-			project_financial_report3: {
-				dateKeys: ["report_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 10,
-			},
+	// User type based endpoint filtering
+	const getUserEndpoints = useMemo(() => {
+		const allEndpoints = {
+			// Governmental endpoints (1-100)
+			project_stat: { reportTypeIndex: 1, userTypes: [1, 5] },
+			employee_stat: { reportTypeIndex: 2, userTypes: [1, 5] },
+			budget_plan_stat: { reportTypeIndex: 3, userTypes: [1, 5] },
+			budget_expenditure_stat: { reportTypeIndex: 4, userTypes: [1, 5] },
+			budget_source_stat: { reportTypeIndex: 5, userTypes: [1, 5] },
+			budget_contractor_stat: { reportTypeIndex: 6, userTypes: [1, 5] },
+			project_payment_stat: { reportTypeIndex: 7, userTypes: [1, 5] },
+			project_financial_report: { reportTypeIndex: 8, userTypes: [1, 5] },
+			project_financial_report2: { reportTypeIndex: 9, userTypes: [1, 5] },
+			project_financial_report3: { reportTypeIndex: 10, userTypes: [1, 5] },
 			project_physical_performance_report: {
-				dateKeys: ["report_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
 				reportTypeIndex: 11,
+				userTypes: [1, 5],
 			},
 			project_financial_performance_report: {
-				dateKeys: ["report_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-					{
-						key: "prj_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
 				reportTypeIndex: 12,
+				userTypes: [1, 5],
 			},
-			project_plan_report: {
+			project_plan_report: { reportTypeIndex: 13, userTypes: [1, 5] },
+			programs_report: { reportTypeIndex: 14, userTypes: [1, 5] },
+			budget_by_zone: { reportTypeIndex: 15, userTypes: [1, 5] },
+			project_finance_by_source: { reportTypeIndex: 16, userTypes: [1, 5] },
+			project_finance_by_status: { reportTypeIndex: 17, userTypes: [1, 5] },
+			project_finance_by_year: { reportTypeIndex: 18, userTypes: [1, 5] },
+			zone_finance_by_cluster: { reportTypeIndex: 19, userTypes: [1, 5] },
+			zone_finance_by_year: { reportTypeIndex: 20, userTypes: [1, 5] },
+
+			// CSO endpoints (101-200) - Add CSO specific endpoints here
+			// cso_report_1: { reportTypeIndex: 101, userTypes: [2, 4, 5] },
+			// cso_report_2: { reportTypeIndex: 102, userTypes: [2, 4, 5] },
+
+			// Citizenship endpoints (201-300) - Add citizenship specific endpoints here
+			// citizen_report_1: { reportTypeIndex: 201, userTypes: [3, 5] },
+			// citizen_report_2: { reportTypeIndex: 202, userTypes: [3, 5] },
+		};
+
+		if (!userType) return {};
+
+		const filteredEndpoints = {};
+		Object.keys(allEndpoints).forEach((key) => {
+			const endpoint = allEndpoints[key];
+			if (endpoint.userTypes.includes(parseInt(userType))) {
+				filteredEndpoints[key] = endpoint;
+			}
+		});
+
+		return filteredEndpoints;
+	}, [userType]);
+
+	// Endpoint configurations
+	const endpointConfigs = useMemo(() => {
+		const configs = {};
+
+		Object.keys(getUserEndpoints).forEach((key) => {
+			const baseConfig = {
+				// Common configuration for all endpoints
 				locationParams: {
 					region: "prj_location_region_id",
 					zone: "prj_location_zone_id",
 					woreda: "prj_location_woreda_id",
 				},
-				dropdownSearchKeys: [
-					{
-						key: "prj_project_category_id",
-						options:
-							lang === "en"
-								? projectCategoryOptionsEn
-								: lang === "am"
-									? projectCategoryOptionsAm
-									: projectCategoryOptionsOr,
-					},
-					{ key: "sector_category", options: sectorCategoryOptions },
-					{ key: "prp_budget_year_id", options: budgetYearOptions },
-				],
-				reportTypeIndex: 13,
-			},
-			programs_report: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "pri_sector_id",
-						options:
-							lang === "en"
-								? sectorInformationOptionsEn
-								: lang === "am"
-									? sectorInformationOptionsAm
-									: sectorInformationOptionsOr,
-					},
-				],
-				reportTypeIndex: 14,
-			},
-			budget_by_zone: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 15,
-			},
-			project_finance_by_source: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 16,
-			},
-			project_finance_by_status: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 17,
-			},
-			project_finance_by_year: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 18,
-			},
-			zone_finance_by_cluster: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 19,
-			},
-			zone_finance_by_year: {
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{ key: "bdr_budget_year_id", options: budgetYearOptions },
-					{ key: "sector_category", options: sectorCategoryOptions },
-				],
-				reportTypeIndex: 20,
-			},
-		}),
-		[
-			budgetYearOptions,
-			sectorInformationOptionsAm,
-			sectorInformationOptionsEn,
-			sectorInformationOptionsOr,
-			contractorTypeOptionsAm,
-			contractorTypeOptionsEn,
-			contractorTypeOptionsOr,
-			projectCategoryOptionsAm,
-			projectCategoryOptionsEn,
-			projectCategoryOptionsOr,
-			sectorCategoryOptions,
-		]
-	);
+				reportTypeIndex: getUserEndpoints[key].reportTypeIndex,
+			};
+
+			// Add endpoint-specific configurations
+			switch (key) {
+				case "project_stat":
+					configs[key] = baseConfig;
+					break;
+				case "employee_stat":
+					configs[key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "budget_plan_stat":
+					configs[key] = {
+						...baseConfig,
+						textKeys: ["prj_name"],
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "budget_expenditure_stat":
+					configs[key] = {
+						...baseConfig,
+						textKeys: ["prj_name"],
+						dropdownSearchKeys: [
+							{ key: "pbe_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "budget_source_stat":
+					configs[key] = {
+						...baseConfig,
+						textKeys: ["prj_name"],
+						dropdownSearchKeys: [
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "budget_contractor_stat":
+					configs[key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{
+								key: "cni_contractor_type_id",
+								options:
+									lang === "en"
+										? contractorTypeOptionsEn
+										: lang === "am"
+											? contractorTypeOptionsAm
+											: contractorTypeOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_payment_stat":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["payment_date"],
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_financial_report":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_financial_report2":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_financial_report3":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_physical_performance_report":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_financial_performance_report":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_plan_report":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{
+								key: "prj_project_category_id",
+								options:
+									lang === "en"
+										? projectCategoryOptionsEn
+										: lang === "am"
+											? projectCategoryOptionsAm
+											: projectCategoryOptionsOr,
+							},
+							{ key: "sector_category", options: sectorCategoryOptions },
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "programs_report":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{
+								key: "pri_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "budget_by_zone":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				case "project_finance_by_source":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				case "project_finance_by_status":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				case "project_finance_by_year":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				case "zone_finance_by_cluster":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				case "zone_finance_by_year":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
+					break;
+				default:
+					configs[key] = baseConfig;
+			}
+		});
+
+		return configs;
+	}, [
+		getUserEndpoints,
+		budgetYearOptions,
+		sectorInformationOptionsAm,
+		sectorInformationOptionsEn,
+		sectorInformationOptionsOr,
+		contractorTypeOptionsAm,
+		contractorTypeOptionsEn,
+		contractorTypeOptionsOr,
+		projectCategoryOptionsAm,
+		projectCategoryOptionsEn,
+		projectCategoryOptionsOr,
+		sectorCategoryOptions,
+		lang,
+	]);
 
 	// Current endpoint configuration
 	const currentConfig = useMemo(
@@ -531,7 +572,7 @@ const Report = () => {
 		setShowSearchResult(false);
 	};
 
-	// Table components mapping
+	// Table components mapping with lazy loading
 	const tableComponents = {
 		1: Greenbook,
 		2: ProjectEmployeeReportsTable,
@@ -577,13 +618,21 @@ const Report = () => {
 			t,
 		};
 
-		return <TableComponent {...commonProps} />;
+		return (
+			<Suspense fallback={<TableLoading />}>
+				<TableComponent {...commonProps} />
+			</Suspense>
+		);
 	};
 
-	// Endpoint options
-	const endpointOptions = Object.keys(endpointConfigs).map((key) => ({
-		name: key,
-	}));
+	// Filtered endpoint options based on user type
+	const endpointOptions = useMemo(
+		() =>
+			Object.keys(getUserEndpoints).map((key) => ({
+				name: key,
+			})),
+		[getUserEndpoints]
+	);
 
 	return (
 		<div className="page-content">

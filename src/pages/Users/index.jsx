@@ -910,6 +910,7 @@ const UsersModel = () => {
 											<option value={2}>{t("CSO")}</option>
 											<option value={4}>{t("CSO Director")}</option>
 											<option value={3}>{t("Citizenship")}</option>
+											<option value={5}>{t("Bureau of Finance")}</option>
 										</Input>
 										{validation.touched.usr_user_type &&
 										validation.errors.usr_user_type ? (
