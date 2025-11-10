@@ -963,6 +963,7 @@ const UsersModel = () => {
 												layout="vertical"
 												required={true}
 												colSizes={{ md: 6, sm: 12, lg: 4 }}
+												identifier="select"
 											/>
 										</Col>
 										<Col className="col-md-6 mb-3">

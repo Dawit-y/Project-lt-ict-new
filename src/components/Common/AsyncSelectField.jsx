@@ -32,49 +32,49 @@ const AsyncSelectField = ({
   const { t } = useTranslation();
 
   return (
-    <Col className={className}>
-      <Label htmlFor={fieldId}>
-        {label ? label : t(fieldId)}{" "}
-        {isRequired && <span className="text-danger">*</span>}
-      </Label>
+		<Col className={className}>
+			<Label htmlFor={fieldId}>
+				{label ? label : t(fieldId)}{" "}
+				{isRequired && <span className="text-danger">*</span>}
+			</Label>
 
-      <Input
-        name={fieldId}
-        type="select"
-        className="form-select"
-        id={fieldId}
-        disabled={isLoading || isError}
-        onChange={validation.handleChange}
-        onBlur={validation.handleBlur}
-        value={validation.values[fieldId] || ""}
-        invalid={
-          validation.touched[fieldId] && validation.errors[fieldId]
-            ? true
-            : false
-        }
-      >
-        {isLoading && <option value="">{t("Loading")}...</option>}
-        {isError && <option value="">{t("Failed to load options")}</option>}
+			<Input
+				name={fieldId}
+				type="select"
+				className="form-select"
+				id={`${fieldId}-select`}
+				disabled={isLoading || isError}
+				onChange={validation.handleChange}
+				onBlur={validation.handleBlur}
+				value={validation.values[fieldId] || ""}
+				invalid={
+					validation.touched[fieldId] && validation.errors[fieldId]
+						? true
+						: false
+				}
+			>
+				{isLoading && <option value="">{t("Loading")}...</option>}
+				{isError && <option value="">{t("Failed to load options")}</option>}
 
-        {!isLoading && !isError && (
-          <>
-            <option value="">
-              {t("Select")} {label ? label : t(fieldId)}
-            </option>
-            {Object.entries(optionMap).map(([value, label]) => (
-              <option key={value} value={value}>
-                {t(label)}
-              </option>
-            ))}
-          </>
-        )}
-      </Input>
+				{!isLoading && !isError && (
+					<>
+						<option value="">
+							{t("Select")} {label ? label : t(fieldId)}
+						</option>
+						{Object.entries(optionMap).map(([value, label]) => (
+							<option key={value} value={value}>
+								{t(label)}
+							</option>
+						))}
+					</>
+				)}
+			</Input>
 
-      {validation.touched[fieldId] && validation.errors[fieldId] && (
-        <FormFeedback>{validation.errors[fieldId]}</FormFeedback>
-      )}
-    </Col>
-  );
+			{validation.touched[fieldId] && validation.errors[fieldId] && (
+				<FormFeedback>{validation.errors[fieldId]}</FormFeedback>
+			)}
+		</Col>
+	);
 };
 
 AsyncSelectField.propTypes = {
