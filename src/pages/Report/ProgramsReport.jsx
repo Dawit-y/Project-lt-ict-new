@@ -26,7 +26,6 @@ const ProgramHierarchyTable = ({
 	t = (key) => key,
 	tableClass = "",
 }) => {
-	console.log("data", data);
 	const transformedData = useMemo(() => {
 		return transformProgramsBySector(data);
 	}, [data]);

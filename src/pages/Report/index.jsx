@@ -68,6 +68,8 @@ const ProjectFinanceByYear = lazy(() => import("./ProjectFinanceByYear"));
 const ZoneFinanceByCluster = lazy(() => import("./ZoneFinanceByCluster"));
 const ZoneFinanceByYear = lazy(() => import("./ZoneFinanceByYear"));
 
+const CsoProjectsReport = lazy(() => import("./CsoProjectsReport"));
+
 // Loading component for lazy loading
 const TableLoading = () => (
 	<div className="d-flex justify-content-center p-4">
@@ -174,7 +176,7 @@ const Report = () => {
 			zone_finance_by_year: { reportTypeIndex: 20, userTypes: [1, 5] },
 
 			// CSO endpoints (101-200) - Add CSO specific endpoints here
-			// cso_report_1: { reportTypeIndex: 101, userTypes: [2, 4, 5] },
+			cso_projects_report: { reportTypeIndex: 101, userTypes: [2, 4, 5] },
 			// cso_report_2: { reportTypeIndex: 102, userTypes: [2, 4, 5] },
 
 			// Citizenship endpoints (201-300) - Add citizenship specific endpoints here
@@ -489,6 +491,14 @@ const Report = () => {
 							{ key: "sector_category", options: sectorCategoryOptions },
 						],
 					};
+				case "cso_projects_report":
+					configs[key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
+							{ key: "sector_category", options: sectorCategoryOptions },
+						],
+					};
 					break;
 				default:
 					configs[key] = baseConfig;
@@ -594,6 +604,8 @@ const Report = () => {
 		18: ProjectFinanceByYear,
 		19: ZoneFinanceByCluster,
 		20: ZoneFinanceByYear,
+
+		101: CsoProjectsReport,
 	};
 
 	// Render appropriate table based on report type
