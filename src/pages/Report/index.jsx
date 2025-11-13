@@ -469,7 +469,6 @@ const Report = () => {
 					configs[key] = {
 						...baseConfig,
 						dropdownSearchKeys: [
-							{ key: "bdr_budget_year_id", options: budgetYearOptions },
 							{ key: "sector_category", options: sectorCategoryOptions },
 						],
 					};
@@ -479,7 +478,6 @@ const Report = () => {
 						...baseConfig,
 						dropdownSearchKeys: [
 							{ key: "bdr_budget_year_id", options: budgetYearOptions },
-							{ key: "sector_category", options: sectorCategoryOptions },
 						],
 					};
 					break;
@@ -488,15 +486,20 @@ const Report = () => {
 						...baseConfig,
 						dropdownSearchKeys: [
 							{ key: "bdr_budget_year_id", options: budgetYearOptions },
-							{ key: "sector_category", options: sectorCategoryOptions },
 						],
 					};
+					break;
 				case "cso_projects_report":
 					configs[key] = {
 						...baseConfig,
 						dropdownSearchKeys: [
-							{ key: "bdr_budget_year_id", options: budgetYearOptions },
-							{ key: "sector_category", options: sectorCategoryOptions },
+							{
+								key: "cso_type",
+								options: [
+									{ label: "Local", value: 1 },
+									{ label: "International", value: 2 },
+								],
+							},
 						],
 					};
 					break;

@@ -250,7 +250,7 @@ const UsersModel = () => {
 			usr_full_name: alphanumericValidation(3, 50, true),
 			usr_phone_number: phoneValidation(true),
 			usr_sector_id: dropdownValidation(1, 100, true),
-			usr_department_id: dropdownValidation(1, 100, true),
+			// usr_department_id: dropdownValidation(1, 100, true),
 			usr_region_id: Yup.number().required(t("usr_region_id")),
 			usr_user_type: Yup.number().required(t("usr_user_type")),
 			usr_owner_id: Yup.string().when("usr_user_type", {
@@ -975,7 +975,7 @@ const UsersModel = () => {
 												dropdown3name="usr_team_id"
 												dropdown4name="usr_officer_id"
 												isEdit={isEdit}
-												required={true}
+												required={false}
 											/>
 										</Col>
 									</Row>
