@@ -76,6 +76,22 @@ const ProjectModel = () => {
 	const [include, setInclude] = useState(0);
 	const [isCollapsed, setIsCollapsed] = useState(false);
 
+	const [exportSearchParams, setExportSearchParams] = useState({});
+
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		pageSize: 10,
+	});
+
+	const [paginationInfo, setPaginationInfo] = useState({
+		current_page: 1,
+		per_page: 10,
+		total: 0,
+		total_pages: 0,
+		has_next: false,
+		has_prev: false,
+	});
+
 	const [activeTab, setActiveTab] = useState("1");
 	const [tabErrors, setTabErrors] = useState({
 		tab1: false,
@@ -458,6 +474,12 @@ const ProjectModel = () => {
 				setPrjLocationWoredaId(node.id);
 			}
 
+			// Reset to first page when location changes
+			setPagination((prev) => ({
+				...prev,
+				currentPage: 1,
+			}));
+
 			if (showSearchResult) {
 				setShowSearchResult(false);
 			}
@@ -470,6 +492,59 @@ const ProjectModel = () => {
 			setShowSearchResult,
 		]
 	);
+
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setShowSearchResult(true);
+			// Update pagination info from API response
+			if (data?.pagination) {
+				setPaginationInfo(data.pagination);
+
+				setPagination((prev) => ({
+					...prev,
+					currentPage: data.pagination.current_page,
+				}));
+			}
+		},
+		[setSearchResults, setShowSearchResult]
+	);
+
+	// Handle page change
+	const handlePageChange = (newPage) => {
+		setPagination((prev) => ({
+			...prev,
+			currentPage: newPage,
+		}));
+	};
+
+	// Handle page size change
+	const handlePageSizeChange = (newSize) => {
+		setPagination({
+			currentPage: 1,
+			pageSize: newSize,
+		});
+
+		setPaginationInfo((prev) => ({
+			...prev,
+			per_page: newSize,
+			current_page: 1,
+		}));
+	};
+
+	// Reset pagination when search parameters change (except pagination itself)
+	useEffect(() => {
+		setPagination((prev) => ({
+			...prev,
+			currentPage: 1,
+		}));
+	}, [projectParams]); 
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
+
 	const handleProjectClick = (arg) => {
 		const project = arg;
 		setProject({
@@ -533,12 +608,6 @@ const ProjectModel = () => {
 		setIsEdit(false);
 		setProject("");
 		toggle();
-	};
-
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
 	};
 
 	const columnDefs = useMemo(() => {
@@ -722,10 +791,16 @@ const ProjectModel = () => {
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
 								setAdditionalParams={setProjectParams}
-								onSearchResult={handleSearchResults}
+								onSearchResult={handleSearch}
+								onSearchLabels={handleSearchLabels}
 								setIsSearchLoading={setIsSearchLoading}
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
+								setExportSearchParams={setExportSearchParams}
+								// Pass pagination state and callbacks
+								pagination={pagination}
+								onPaginationChange={setPagination}
+								setPaginationInfo={setPaginationInfo}
 							>
 								<AgGridContainer
 									rowData={showSearchResult ? searchResults?.data : []}
@@ -733,7 +808,8 @@ const ProjectModel = () => {
 									isLoading={isSearchLoading}
 									isAddButton={prjLocationWoredaId}
 									onAddClick={handleProjectClicks}
-									isPagination={true}
+									isPagination={false}
+									isServerSidePagination={true}
 									rowHeight={35}
 									paginationPageSize={10}
 									isGlobalFilter={true}
@@ -743,6 +819,10 @@ const ProjectModel = () => {
 									tableName="Projects"
 									includeKey={["prj_name", "prj_code"]}
 									excludeKey={["is_editable", "is_deletable"]}
+									exportSearchParams={exportSearchParams}
+									paginationInfo={paginationInfo}
+									onPageChange={handlePageChange}
+									onPageSizeChange={handlePageSizeChange}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>

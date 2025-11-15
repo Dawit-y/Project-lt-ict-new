@@ -1,9 +1,9 @@
 import React, {
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  useCallback,
+	useEffect,
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
 } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -20,176 +20,246 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { citizenshipProjectExportColumns } from "../../utils/exportColumnsForLists";
 
 const ProjectModel = () => {
-  document.title = "Citizenship Projects List ";
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+	document.title = "Citizenship Projects List ";
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
 
-  const [searchResults, setSearchResults] = useState(null);
-  const [isSearchLoading, setIsSearchLoading] = useState(false);
-  const [searchError, setSearchError] = useState(null);
-  const [showSearchResult, setShowSearchResult] = useState(false);
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searchError, setSearchError] = useState(null);
+	const [showSearchResult, setShowSearchResult] = useState(false);
 
-  const [projectParams, setProjectParams] = useState({});
-  const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-  const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-  const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-  const [include, setInclude] = useState(0);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+	const [projectParams, setProjectParams] = useState({});
+	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
+	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
+	const [include, setInclude] = useState(0);
+	const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const [params, setParams] = useState({});
-  const [searchParams, setSearchParams] = useState({});
+	const [params, setParams] = useState({});
+	const [searchParams, setSearchParams] = useState({});
+	const [exportSearchParams, setExportSearchParams] = useState({});
 
-  const [isAddressLoading, setIsAddressLoading] = useState(false);
-  const { data: projectCategoryData } = useFetchProjectCategorys();
-  const {
-    pct_name_en: projectCategoryOptionsEn,
-    pct_name_or: projectCategoryOptionsOr,
-    pct_name_am: projectCategoryOptionsAm,
-  } = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
-    "pct_name_en",
-    "pct_name_or",
-    "pct_name_am",
-  ]);
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		pageSize: 10,
+	});
 
-  useEffect(() => {
-    setProjectParams({
-      ...(prjLocationRegionId && {
-        prj_location_region_id: prjLocationRegionId,
-      }),
-      ...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-      ...(prjLocationWoredaId && {
-        prj_location_woreda_id: prjLocationWoredaId,
-      }),
-      ...(include === 1 && { include: include }),
-    });
-  }, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+	const [paginationInfo, setPaginationInfo] = useState({
+		current_page: 1,
+		per_page: 10,
+		total: 0,
+		total_pages: 0,
+		has_next: false,
+		has_prev: false,
+	});
 
-  const handleNodeSelect = useCallback(
-    (node) => {
-      if (node.level === "region") {
-        setPrjLocationRegionId(node.id);
-        setPrjLocationZoneId(null);
-        setPrjLocationWoredaId(null);
-      } else if (node.level === "zone") {
-        setPrjLocationZoneId(node.id);
-        setPrjLocationWoredaId(null);
-      } else if (node.level === "woreda") {
-        setPrjLocationWoredaId(node.id);
-      }
+	const [isAddressLoading, setIsAddressLoading] = useState(false);
+	const { data: projectCategoryData } = useFetchProjectCategorys();
+	const {
+		pct_name_en: projectCategoryOptionsEn,
+		pct_name_or: projectCategoryOptionsOr,
+		pct_name_am: projectCategoryOptionsAm,
+	} = createMultiSelectOptions(projectCategoryData?.data || [], "pct_id", [
+		"pct_name_en",
+		"pct_name_or",
+		"pct_name_am",
+	]);
 
-      if (showSearchResult) {
-        setShowSearchResult(false);
-      }
-    },
-    [
-      setPrjLocationRegionId,
-      setPrjLocationZoneId,
-      setPrjLocationWoredaId,
-      showSearchResult,
-      setShowSearchResult,
-    ],
-  );
+	useEffect(() => {
+		setProjectParams({
+			...(prjLocationRegionId && {
+				prj_location_region_id: prjLocationRegionId,
+			}),
+			...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+			...(prjLocationWoredaId && {
+				prj_location_woreda_id: prjLocationWoredaId,
+			}),
+			...(include === 1 && { include: include }),
+		});
+	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
 
-  const handleSearch = useCallback(({ data, error }) => {
-    setSearchResults(data);
-    setSearchError(error);
-    setShowSearchResult(true);
-  }, []);
+	const handleNodeSelect = useCallback(
+		(node) => {
+			if (node.level === "region") {
+				setPrjLocationRegionId(node.id);
+				setPrjLocationZoneId(null);
+				setPrjLocationWoredaId(null);
+			} else if (node.level === "zone") {
+				setPrjLocationZoneId(node.id);
+				setPrjLocationWoredaId(null);
+			} else if (node.level === "woreda") {
+				setPrjLocationWoredaId(node.id);
+			}
 
-  const columnDefs = useMemo(() => {
-    const baseColumnDefs = [
-      {
-        headerName: t("S.N"),
-        field: "sn",
-        valueGetter: (params) => params.node.rowIndex + 1,
-        sortable: false,
-        filter: false,
-        width: 60,
-      },
-      {
-        field: "prj_name",
-        headerName: t("prj_name"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-        flex: 1,
-        minWidth: 200,
-      },
-      {
-        field: "prj_code",
-        headerName: t("prj_code"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-        /*floatingFilter: true,*/
-        flex: 1,
-        minWidth: 150,
-      },
-      {
-        field: "zone_name",
-        headerName: t("prj_owner_zone_id"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-        width: 200,
-      },
-      {
-        field: "sector_name",
-        headerName: t("prj_sector_id"),
-        sortable: true,
-        filter: "agTextColumnFilter",
-        flex: 1,
-        minWidth: 200,
-      },
-      {
-        headerName: t("prs_status"),
-        field: "bdr_request_status",
-        sortable: true,
-        filter: true,
-        width: 150,
-        cellRenderer: (params) => {
-          const badgeClass = params.data.color_code;
-          return (
-            <Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-              {params.data.status_name}
-            </Badge>
-          );
-        },
-      },
-      {
-        field: "prj_total_estimate_budget",
-        headerName: t("prj_total_estimate_budget"),
-        width: 150,
-        valueFormatter: (params) => {
-          if (params.node.footer) {
-            return params.value
-              ? `$${params.value.toLocaleString()}` // Show total in footer
-              : "";
-          }
-          return params.value ? `${params.value.toLocaleString()}` : "";
-        },
-      },
-      {
-        headerName: t("view_details"),
-        sortable: false,
-        filter: false,
-        width: 100,
-        cellRenderer: (params) => {
-          if (params.node.footer) {
-            return ""; // Suppress button for footer
-          }
-          const { prj_id } = params.data || {};
-          return (
-            <Link to={`/citizenship_project_detail/${prj_id}`} target="_blank">
-              <Button type="button" className="btn-sm mb-1 default" outline>
-                <i className="fa fa-eye"></i>
-              </Button>
-            </Link>
-          );
-        },
-      },
-    ];
-    return baseColumnDefs;
-  }, [searchResults, t]);
+			// Reset to first page when location changes
+			setPagination((prev) => ({
+				...prev,
+				currentPage: 1,
+			}));
 
-  return (
+			if (showSearchResult) {
+				setShowSearchResult(false);
+			}
+		},
+		[
+			setPrjLocationRegionId,
+			setPrjLocationZoneId,
+			setPrjLocationWoredaId,
+			showSearchResult,
+			setShowSearchResult,
+		]
+	);
+
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setShowSearchResult(true);
+			// Update pagination info from API response
+			if (data?.pagination) {
+				setPaginationInfo(data.pagination);
+
+				// Sync local pagination state with server response
+				setPagination((prev) => ({
+					...prev,
+					currentPage: data.pagination.current_page,
+				}));
+			}
+		},
+		[setSearchResults, setShowSearchResult]
+	);
+
+	// Handle page change
+	const handlePageChange = (newPage) => {
+		setPagination((prev) => ({
+			...prev,
+			currentPage: newPage,
+		}));
+	};
+
+	// Handle page size change
+	const handlePageSizeChange = (newSize) => {
+		setPagination({
+			currentPage: 1, // Reset to first page when changing page size
+			pageSize: newSize,
+		});
+
+		// Also update pagination info
+		setPaginationInfo((prev) => ({
+			...prev,
+			per_page: newSize,
+			current_page: 1,
+		}));
+	};
+
+	// Reset pagination when search parameters change (except pagination itself)
+	useEffect(() => {
+		// Reset to first page when search criteria change
+		setPagination((prev) => ({
+			...prev,
+			currentPage: 1,
+		}));
+	}, [projectParams, params]); // Add dependencies that should trigger reset
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+  };
+  
+	const columnDefs = useMemo(() => {
+		const baseColumnDefs = [
+			{
+				headerName: t("S.N"),
+				field: "sn",
+				valueGetter: (params) => params.node.rowIndex + 1,
+				sortable: false,
+				filter: false,
+				width: 60,
+			},
+			{
+				field: "prj_name",
+				headerName: t("prj_name"),
+				sortable: true,
+				filter: "agTextColumnFilter",
+				flex: 1,
+				minWidth: 200,
+			},
+			{
+				field: "prj_code",
+				headerName: t("prj_code"),
+				sortable: true,
+				filter: "agTextColumnFilter",
+				/*floatingFilter: true,*/
+				flex: 1,
+				minWidth: 150,
+			},
+			{
+				field: "zone_name",
+				headerName: t("prj_owner_zone_id"),
+				sortable: true,
+				filter: "agTextColumnFilter",
+				width: 200,
+			},
+			{
+				field: "sector_name",
+				headerName: t("prj_sector_id"),
+				sortable: true,
+				filter: "agTextColumnFilter",
+				flex: 1,
+				minWidth: 200,
+			},
+			{
+				headerName: t("prs_status"),
+				field: "bdr_request_status",
+				sortable: true,
+				filter: true,
+				width: 150,
+				cellRenderer: (params) => {
+					const badgeClass = params.data.color_code;
+					return (
+						<Badge className={`font-size-12 badge-soft-${badgeClass}`}>
+							{params.data.status_name}
+						</Badge>
+					);
+				},
+			},
+			{
+				field: "prj_total_estimate_budget",
+				headerName: t("prj_total_estimate_budget"),
+				width: 150,
+				valueFormatter: (params) => {
+					if (params.node.footer) {
+						return params.value
+							? `$${params.value.toLocaleString()}` // Show total in footer
+							: "";
+					}
+					return params.value ? `${params.value.toLocaleString()}` : "";
+				},
+			},
+			{
+				headerName: t("view_details"),
+				sortable: false,
+				filter: false,
+				width: 100,
+				cellRenderer: (params) => {
+					if (params.node.footer) {
+						return ""; // Suppress button for footer
+					}
+					const { prj_id } = params.data || {};
+					return (
+						<Link to={`/citizenship_project_detail/${prj_id}`} target="_blank">
+							<Button type="button" className="btn-sm mb-1 default" outline>
+								<i className="fa fa-eye"></i>
+							</Button>
+						</Link>
+					);
+				},
+			},
+		];
+		return baseColumnDefs;
+	}, [searchResults, t]);
+
+	return (
 		<React.Fragment>
 			<div className="page-content">
 				<div>
@@ -223,17 +293,24 @@ const ProjectModel = () => {
 								setAdditionalParams={setProjectParams}
 								setSearchResults={handleSearch}
 								onSearchResult={handleSearch}
+								onSearchLabels={handleSearchLabels}
 								setShowSearchResult={setShowSearchResult}
 								setIsSearchLoading={setIsSearchLoading}
 								params={params}
 								setParams={setParams}
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
+								setExportSearchParams={setExportSearchParams}
+								// Pass pagination state and callbacks
+								pagination={pagination}
+								onPaginationChange={setPagination}
+								setPaginationInfo={setPaginationInfo}
 							>
 								<AgGridContainer
 									rowData={showSearchResult ? searchResults?.data : []}
 									columnDefs={columnDefs}
-									isPagination={true}
+									isPagination={false}
+									isServerSidePagination={true}
 									paginationPageSize={30}
 									isGlobalFilter={true}
 									isAddButton={false}
@@ -241,8 +318,12 @@ const ProjectModel = () => {
 									isExcelExport={true}
 									isPdfExport={true}
 									isPrint={true}
-									tableName="Projects"
+									tableName="Citizenship Projects"
 									exportColumns={citizenshipProjectExportColumns}
+									exportSearchParams={exportSearchParams}
+									paginationInfo={paginationInfo}
+									onPageChange={handlePageChange}
+									onPageSizeChange={handlePageSizeChange}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -252,7 +333,9 @@ const ProjectModel = () => {
 		</React.Fragment>
 	);
 };
+
 ProjectModel.propTypes = {
-  preGlobalFilteredRows: PropTypes.any,
+	preGlobalFilteredRows: PropTypes.any,
 };
+
 export default ProjectModel;

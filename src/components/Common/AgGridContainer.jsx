@@ -230,7 +230,7 @@ const PaginationComponent = ({
 						onChange={handlePageSizeChange}
 						style={{ width: "90px" }}
 						disabled={isLoading}
-						size={"sm"}
+						bsSize={"sm"}
 					>
 						{[10, 20, 30, 50, 100].map((size) => (
 							<option key={size} value={size}>
