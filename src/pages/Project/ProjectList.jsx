@@ -50,6 +50,20 @@ const ProjectList = () => {
 	const [selectedProject, setSelectedProject] = useState(null);
 	const [selectedNode, setSelectedNode] = useState(null);
 
+	const [pagination, setPagination] = useState({
+		currentPage: 1,
+		pageSize: 10,
+	});
+
+	const [paginationInfo, setPaginationInfo] = useState({
+		current_page: 1,
+		per_page: 10,
+		total: 0,
+		total_pages: 0,
+		has_next: false,
+		has_prev: false,
+	});
+
 	const advancedSearchRef = useRef(null);
 
 	// Mutation hook for updating project
@@ -110,6 +124,7 @@ const ProjectList = () => {
 		["prs_status_name_en", "prs_status_name_or", "prs_status_name_am"]
 	);
 
+	// Refresh data when tree node is selected (reset to page 1)
 	const handleNodeSelect = useCallback(
 		(node) => {
 			if (node.level === "region") {
@@ -122,6 +137,12 @@ const ProjectList = () => {
 			} else if (node.level === "woreda") {
 				setPrjLocationWoredaId(node.id);
 			}
+
+			// Reset to first page when location changes
+			setPagination((prev) => ({
+				...prev,
+				currentPage: 1,
+			}));
 
 			if (showSearchResult) {
 				setShowSearchResult(false);
@@ -141,9 +162,51 @@ const ProjectList = () => {
 			setSearchResults(data);
 			setSearchError(error);
 			setShowSearchResult(true);
+			// Update pagination info from API response
+			if (data?.pagination) {
+				setPaginationInfo(data.pagination);
+
+				// Sync local pagination state with server response
+				setPagination((prev) => ({
+					...prev,
+					currentPage: data.pagination.current_page,
+				}));
+			}
 		},
 		[setSearchResults, setShowSearchResult]
 	);
+
+	// Handle page change
+	const handlePageChange = (newPage) => {
+		setPagination((prev) => ({
+			...prev,
+			currentPage: newPage,
+		}));
+	};
+
+	// Handle page size change
+	const handlePageSizeChange = (newSize) => {
+		setPagination({
+			currentPage: 1, // Reset to first page when changing page size
+			pageSize: newSize,
+		});
+
+		// Also update pagination info
+		setPaginationInfo((prev) => ({
+			...prev,
+			per_page: newSize,
+			current_page: 1,
+		}));
+	};
+
+	// Reset pagination when search parameters change (except pagination itself)
+	useEffect(() => {
+		// Reset to first page when search criteria change
+		setPagination((prev) => ({
+			...prev,
+			currentPage: 1,
+		}));
+	}, [projectParams, params]); // Add dependencies that should trigger reset
 
 	const handleSearchLabels = (labels) => {
 		setExportSearchParams(labels);
@@ -419,11 +482,18 @@ const ProjectList = () => {
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
 								setExportSearchParams={setExportSearchParams}
+								// Pass pagination state and callbacks
+								pagination={pagination}
+								onPaginationChange={setPagination}
+								setPaginationInfo={setPaginationInfo}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}
 									showSearchResult={showSearchResult}
 									exportSearchParams={exportSearchParams}
+									paginationInfo={paginationInfo}
+									onPageChange={handlePageChange}
+									onPageSizeChange={handlePageSizeChange}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -442,6 +512,9 @@ const TableWrapper = ({
 	columnDefs,
 	showSearchResult,
 	exportSearchParams,
+	paginationInfo,
+	onPageChange,
+	onPageSizeChange,
 }) => {
 	return (
 		<>
@@ -449,7 +522,8 @@ const TableWrapper = ({
 				rowData={showSearchResult ? data?.data || [] : []}
 				columnDefs={columnDefs}
 				isLoading={isLoading}
-				isPagination={true}
+				isPagination={false}
+				isServerSidePagination={true}
 				paginationPageSize={10}
 				isGlobalFilter={true}
 				isAddButton={false}
@@ -461,6 +535,10 @@ const TableWrapper = ({
 				tableName="Projects"
 				exportColumns={projectExportColumns}
 				exportSearchParams={exportSearchParams}
+				// New pagination props
+				paginationInfo={paginationInfo}
+				onPageChange={onPageChange}
+				onPageSizeChange={onPageSizeChange}
 			/>
 		</>
 	);

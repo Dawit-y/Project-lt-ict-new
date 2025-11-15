@@ -43,6 +43,9 @@ const AdvancedSearch = forwardRef(
 			setSearchResults,
 			setShowSearchResult,
 			setExportSearchParams,
+			onPaginationChange,
+			pagination = { currentPage: 1, pageSize: 10 },
+			setPaginationInfo,
 			children,
 		},
 		ref
@@ -166,6 +169,8 @@ const AdvancedSearch = forwardRef(
 				...params,
 				...transformedValues,
 				...(additionalParams || {}),
+				page: pagination.currentPage, 
+				per_page: pagination.pageSize, 
 			};
 
 			// Map helper
@@ -258,6 +263,23 @@ const AdvancedSearch = forwardRef(
 			if (setExportSearchParams) {
 				setExportSearchParams({});
 			}
+			if (onPaginationChange) {
+				onPaginationChange((prev) => ({
+					...prev,
+					currentPage: 1,
+				}));
+			}
+
+			if (setPaginationInfo) {
+				setPaginationInfo({
+					current_page: 1,
+					per_page: 10,
+					total: 0,
+					total_pages: 0,
+					has_next: false,
+					has_prev: false,
+				});
+			}
 		};
 
 		const isButtonDisabled = () => {
@@ -280,6 +302,22 @@ const AdvancedSearch = forwardRef(
 		useImperativeHandle(ref, () => ({
 			refreshSearch: async () => refetch(),
 		}));
+
+		// Refetch when pagination changes
+		useEffect(() => {
+			if (Object.keys(searchParams).length > 0) {
+				handleSearch();
+			}
+		}, [pagination.currentPage, pagination.pageSize]);
+
+		useEffect(() => {
+			if (onPaginationChange) {
+				onPaginationChange((prev) => ({
+					...prev,
+					currentPage: 1,
+				}));
+			}
+		}, [params]);
 
 		const inputStyles = { width: "100%", maxWidth: "100%" };
 

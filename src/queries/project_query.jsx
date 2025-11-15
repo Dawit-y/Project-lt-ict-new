@@ -1,4 +1,9 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+	useQuery,
+	useMutation,
+	useQueryClient,
+	keepPreviousData,
+} from "@tanstack/react-query";
 import {
 	getProject,
 	fetchProject,
@@ -28,9 +33,10 @@ export const useSearchOnlyProjects = (param = {}) => {
 		queryKey: [...PROJECT_QUERY_KEY, "list", param],
 		queryFn: () => getSearchProject(param),
 		staleTime: 1000 * 60 * 5,
+		gcTime: 1000 * 60 * 6,
 		refetchOnWindowFocus: false,
 		refetchOnMount: true,
-		enabled: false,
+		placeholderData: keepPreviousData,
 	});
 };
 
