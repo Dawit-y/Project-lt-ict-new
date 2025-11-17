@@ -65,6 +65,7 @@ const ProjectList = () => {
 	});
 
 	const advancedSearchRef = useRef(null);
+	const treeRef = useRef(null);
 
 	// Mutation hook for updating project
 	const updateProject = useUpdateProject();
@@ -156,6 +157,12 @@ const ProjectList = () => {
 			setShowSearchResult,
 		]
 	);
+
+	const clearTreeSelection = useCallback(() => {
+		if (treeRef.current) {
+			treeRef.current.clearSelection();
+		}
+	}, []);
 
 	const handleSearch = useCallback(
 		({ data, error }) => {
@@ -429,6 +436,7 @@ const ProjectList = () => {
 					<div className="d-flex gap-2 flex-nowrap">
 						{/* Sidebar - Tree */}
 						<TreeForLists
+							ref={treeRef}
 							onNodeSelect={handleNodeSelect}
 							setInclude={setInclude}
 							setIsCollapsed={setIsCollapsed}
@@ -486,6 +494,7 @@ const ProjectList = () => {
 								pagination={pagination}
 								onPaginationChange={setPagination}
 								setPaginationInfo={setPaginationInfo}
+								clearTreeSelection={clearTreeSelection}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}

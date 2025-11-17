@@ -46,6 +46,7 @@ const AdvancedSearch = forwardRef(
 			onPaginationChange,
 			pagination = { currentPage: 1, pageSize: 10 },
 			setPaginationInfo,
+			clearTreeSelection,
 			children,
 		},
 		ref
@@ -169,8 +170,8 @@ const AdvancedSearch = forwardRef(
 				...params,
 				...transformedValues,
 				...(additionalParams || {}),
-				page: pagination.currentPage, 
-				per_page: pagination.pageSize, 
+				page: pagination.currentPage,
+				per_page: pagination.pageSize,
 			};
 
 			// Map helper
@@ -246,7 +247,7 @@ const AdvancedSearch = forwardRef(
 			setParams({});
 			setSearchParams({});
 			setParamsWithLabels({});
-			setSearchResults([]);
+			setSearchResults(null);
 			setShowSearchResult(false);
 			validation.resetForm();
 
@@ -279,6 +280,9 @@ const AdvancedSearch = forwardRef(
 					has_next: false,
 					has_prev: false,
 				});
+			}
+			if (clearTreeSelection) {
+				clearTreeSelection();
 			}
 		};
 
