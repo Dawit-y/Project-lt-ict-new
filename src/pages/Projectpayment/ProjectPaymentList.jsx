@@ -52,6 +52,7 @@ const ProjectPaymentList = () => {
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
 
 	const [exportSearchParams, setExportSearchParams] = useState({});
+	const treeRef = useRef(null);
 
 	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
 	const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
@@ -122,6 +123,16 @@ const ProjectPaymentList = () => {
 			setShowSearchResult(false);
 		}
 	};
+
+	const clearTreeSelection = useCallback(() => {
+		if (treeRef.current) {
+			treeRef.current.clearSelection();
+		}
+		setProjectParams({});
+		setPrjLocationRegionId(null);
+		setPrjLocationZoneId(null);
+		setPrjLocationWoredaId(null);
+	}, []);
 
 	const toggleSingleAnalysisModal = () => {
 		setSingleAnalysisModal(!singleAnalysisModal);
@@ -245,6 +256,7 @@ const ProjectPaymentList = () => {
 					/>
 					<div className="w-100 d-flex gap-2">
 						<TreeForLists
+							ref={treeRef}
 							onNodeSelect={handleNodeSelect}
 							setIsAddressLoading={setIsAddressLoading}
 							setInclude={setInclude}
@@ -277,6 +289,7 @@ const ProjectPaymentList = () => {
 								setSearchResults={setSearchResults}
 								setShowSearchResult={setShowSearchResult}
 								setExportSearchParams={setExportSearchParams}
+								clearTreeSelection={clearTreeSelection}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}

@@ -162,6 +162,10 @@ const ProjectList = () => {
 		if (treeRef.current) {
 			treeRef.current.clearSelection();
 		}
+		setProjectParams({});
+		setPrjLocationRegionId(null);
+		setPrjLocationZoneId(null);
+		setPrjLocationWoredaId(null);
 	}, []);
 
 	const handleSearch = useCallback(
@@ -485,8 +489,6 @@ const ProjectList = () => {
 								onSearchLabels={handleSearchLabels}
 								setShowSearchResult={setShowSearchResult}
 								setIsSearchLoading={setIsSearchLoading}
-								params={params}
-								setParams={setParams}
 								searchParams={searchParams}
 								setSearchParams={setSearchParams}
 								setExportSearchParams={setExportSearchParams}
@@ -514,6 +516,7 @@ const ProjectList = () => {
 };
 
 export default ProjectList;
+
 
 const TableWrapper = ({
 	data,

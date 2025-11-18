@@ -3,6 +3,7 @@ import React, {
 	useEffect,
 	forwardRef,
 	useImperativeHandle,
+	useMemo,
 } from "react";
 import {
 	Card,
@@ -286,7 +287,7 @@ const AdvancedSearch = forwardRef(
 			}
 		};
 
-		const isButtonDisabled = () => {
+		const isButtonDisabled = useMemo(() => {
 			// Check if any search parameter has a value
 			const hasAnyValue = Object.values({
 				...params,
@@ -300,7 +301,7 @@ const AdvancedSearch = forwardRef(
 			});
 
 			return !hasAnyValue;
-		};
+		}, [params, validation.values, additionalParams]);
 
 		// Expose method to get search values
 		useImperativeHandle(ref, () => ({
@@ -500,7 +501,7 @@ const AdvancedSearch = forwardRef(
 												type="button"
 												className="btn btn-primary h-100 w-100 p-2"
 												onClick={handleSearch}
-												disabled={isButtonDisabled()}
+												disabled={isButtonDisabled}
 											>
 												<i className="bx bx-search-alt align-middle"></i>
 											</button>
