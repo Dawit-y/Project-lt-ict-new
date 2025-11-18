@@ -54,12 +54,24 @@ const StatisticalReport = () => {
 			{ key: "budget_request", reportTypeIndex: 13, userTypes: [1, 5] },
 
 			// CSO endpoints (101-200) - Add your CSO specific endpoints here
-			// { key: "cso_project_report", reportTypeIndex: 101, userTypes: [2, 4, 5] },
-			// { key: "cso_budget_report", reportTypeIndex: 102, userTypes: [2, 4, 5] },
+			{ key: "cso_project_report", reportTypeIndex: 101, userTypes: [2, 4, 5] },
+			{
+				key: "cso_information_report",
+				reportTypeIndex: 102,
+				userTypes: [2, 4, 5],
+			},
 
 			// Citizenship endpoints (201-300) - Add your citizenship specific endpoints here
-			// { key: "citizen_project_view", reportTypeIndex: 201, userTypes: [3, 5] },
-			// { key: "citizen_budget_view", reportTypeIndex: 202, userTypes: [3, 5] },
+			{
+				key: "citizen_project_by_location_report",
+				reportTypeIndex: 201,
+				userTypes: [3, 5],
+			},
+			{
+				key: "citizen_project_by_category_report",
+				reportTypeIndex: 202,
+				userTypes: [3, 5],
+			},
 		];
 
 		if (!userType) return [];
@@ -235,6 +247,45 @@ const StatisticalReport = () => {
 						textKeys: ["prd_name"],
 						dropdownSearchKeys: [
 							{ key: "prd_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "cso_project_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "cso_information_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{
+								key: "cso_type",
+								options: [
+									{ label: "Local", value: 1 },
+									{ label: "International", value: 2 },
+								],
+							},
+						],
+					};
+					break;
+
+				case "citizen_project_by_location_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "citizen_project_by_category_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
 						],
 					};
 					break;
@@ -424,6 +475,7 @@ const StatisticalReport = () => {
 								<Col xs="8" sm="8" lg="8">
 									{selectedEndpoint && (
 										<AdvancedSearch
+											key={selectedEndpoint}
 											searchHook={useSearchStatisticalReport}
 											textSearchKeys={textSearchKeys}
 											dateSearchKeys={dateSearchKeys}

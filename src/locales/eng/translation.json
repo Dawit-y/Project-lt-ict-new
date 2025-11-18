@@ -2074,5 +2074,10 @@
 	"pbs_budget_year_id": "Budget Year",
 	"cni_budget_year_id": "Budget Year",
 	"psh_budget_year_id": "Budget Year",
-	"prd_budget_year_id": "Budget Year"
+	"prd_budget_year_id": "Budget Year",
+	"cso_project_report": "CSO Project Report",
+	"cso_information_report": "CSO Information Report",
+	"citizen_project_by_location_report": "Citizen Project by Location Report",
+	"citizen_project_by_category_report": "Citizen Project by Category Report",
+	"budget_year_id": "Budget Year"
 }
