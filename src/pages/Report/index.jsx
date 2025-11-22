@@ -168,9 +168,10 @@ const Report = () => {
 			},
 			project_plan_report: { reportTypeIndex: 13, userTypes: [1, 5] },
 			programs_report: { reportTypeIndex: 14, userTypes: [1, 5] },
-			budget_by_zone: { reportTypeIndex: 15, userTypes: [1, 5] },
+
 			project_finance_by_source: { reportTypeIndex: 16, userTypes: [1, 5] },
 			project_finance_by_status: { reportTypeIndex: 17, userTypes: [1, 5] },
+			budget_by_zone: { reportTypeIndex: 15, userTypes: [1, 5] },
 			project_finance_by_year: { reportTypeIndex: 18, userTypes: [1, 5] },
 			zone_finance_by_cluster: { reportTypeIndex: 19, userTypes: [1, 5] },
 			zone_finance_by_year: { reportTypeIndex: 20, userTypes: [1, 5] },
