@@ -1,4 +1,4 @@
-import React, { useRef, useState, memo } from "react";
+import React, { useRef, useState, memo, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Row, Col, Input, Button } from "reactstrap";
 import ExportToExcel from "./ExportToExcel";
@@ -64,6 +64,43 @@ const AgGridContainer = ({
 		})
 	);
 	const { layoutModeType } = useSelector(selectLayoutProperties);
+
+	// Enhanced rowData with server-side serial numbers
+	const enhancedRowData = useMemo(() => {
+		if (!isServerSidePagination || !paginationInfo || !rowData) {
+			return rowData;
+		}
+
+		const { current_page = 1, per_page = 10 } = paginationInfo;
+		const startNumber = (current_page - 1) * per_page + 1;
+
+		return rowData.map((item, index) => ({
+			...item,
+			server_sn: startNumber + index,
+		}));
+	}, [rowData, isServerSidePagination, paginationInfo]);
+
+	// Enhanced columnDefs to handle server-side serial numbers
+	const enhancedColumnDefs = useMemo(() => {
+		if (!isServerSidePagination) {
+			return columnDefs;
+		}
+
+		return columnDefs.map((col) => {
+			if (
+				col.field === "sn" ||
+				col.headerName?.toLowerCase().includes("s.n") ||
+				col.headerName?.toLowerCase().includes("serial")
+			) {
+				return {
+					...col,
+					field: "server_sn",
+					valueGetter: undefined, 
+				};
+			}
+			return col;
+		});
+	}, [columnDefs, isServerSidePagination]);
 
 	return (
 		<div
@@ -149,8 +186,8 @@ const AgGridContainer = ({
 			<div style={{ minHeight: "200px" }}>
 				<AgGridReact
 					ref={gridRef}
-					rowData={rowData}
-					columnDefs={columnDefs}
+					rowData={enhancedRowData}
+					columnDefs={enhancedColumnDefs}
 					loading={isLoading}
 					loadingOverlayComponent={LoadingOverlay}
 					overlayNoRowsTemplate={t("no_rows_to_show")}
