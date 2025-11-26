@@ -1,10 +1,10 @@
 import {
-	PROJECT_LIST_SET_TREE_STATE,
-	PROJECT_LIST_SET_SEARCH_STATE,
-	PROJECT_LIST_SET_PAGINATION_STATE,
-	PROJECT_LIST_SET_UI_STATE,
-	PROJECT_LIST_CLEAR_TREE_SELECTION,
-	PROJECT_LIST_RESET_STATE,
+	LIST_SET_TREE_STATE,
+	LIST_SET_SEARCH_STATE,
+	LIST_SET_PAGINATION_STATE,
+	LIST_SET_UI_STATE,
+	LIST_CLEAR_TREE_SELECTION,
+	LIST_RESET_STATE,
 } from "./actionTypes";
 
 const initialState = {
@@ -35,21 +35,26 @@ const initialState = {
 	showSearchResult: false,
 };
 
-const projectListReducer = (state = initialState, action) => {
+const listReducer = (state = initialState, action) => {
+	// Only process if action has matching namespace
+	if (!action.meta || !action.meta.namespace) {
+		return state;
+	}
+
 	switch (action.type) {
-		case PROJECT_LIST_SET_TREE_STATE:
+		case LIST_SET_TREE_STATE:
 			return {
 				...state,
 				...action.payload,
 			};
 
-		case PROJECT_LIST_SET_SEARCH_STATE:
+		case LIST_SET_SEARCH_STATE:
 			return {
 				...state,
 				...action.payload,
 			};
 
-		case PROJECT_LIST_SET_PAGINATION_STATE:
+		case LIST_SET_PAGINATION_STATE:
 			return {
 				...state,
 				pagination: {
@@ -58,13 +63,13 @@ const projectListReducer = (state = initialState, action) => {
 				},
 			};
 
-		case PROJECT_LIST_SET_UI_STATE:
+		case LIST_SET_UI_STATE:
 			return {
 				...state,
 				...action.payload,
 			};
 
-		case PROJECT_LIST_CLEAR_TREE_SELECTION:
+		case LIST_CLEAR_TREE_SELECTION:
 			return {
 				...state,
 				prjLocationRegionId: null,
@@ -72,7 +77,7 @@ const projectListReducer = (state = initialState, action) => {
 				prjLocationWoredaId: null,
 			};
 
-		case PROJECT_LIST_RESET_STATE:
+		case LIST_RESET_STATE:
 			return {
 				...initialState,
 			};
@@ -82,4 +87,4 @@ const projectListReducer = (state = initialState, action) => {
 	}
 };
 
-export default projectListReducer;
+export default listReducer;

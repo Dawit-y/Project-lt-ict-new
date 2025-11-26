@@ -1,36 +1,42 @@
 import {
-	PROJECT_LIST_SET_TREE_STATE,
-	PROJECT_LIST_SET_SEARCH_STATE,
-	PROJECT_LIST_SET_PAGINATION_STATE,
-	PROJECT_LIST_SET_UI_STATE,
-	PROJECT_LIST_CLEAR_TREE_SELECTION,
-	PROJECT_LIST_RESET_STATE,
+	LIST_SET_TREE_STATE,
+	LIST_SET_SEARCH_STATE,
+	LIST_SET_PAGINATION_STATE,
+	LIST_SET_UI_STATE,
+	LIST_CLEAR_TREE_SELECTION,
+	LIST_RESET_STATE,
 } from "./actionTypes";
 
-export const setProjectListTreeState = (treeState) => ({
-	type: PROJECT_LIST_SET_TREE_STATE,
-	payload: treeState,
+export const setListTreeState = (namespace, payload) => ({
+	type: LIST_SET_TREE_STATE,
+	payload,
+	meta: { namespace },
 });
 
-export const setProjectListSearchState = (searchState) => ({
-	type: PROJECT_LIST_SET_SEARCH_STATE,
-	payload: searchState,
+export const setListSearchState = (namespace, payload) => ({
+	type: LIST_SET_SEARCH_STATE,
+	payload,
+	meta: { namespace },
 });
 
-export const setProjectListPaginationState = (paginationState) => ({
-	type: PROJECT_LIST_SET_PAGINATION_STATE,
-	payload: paginationState,
+export const setListPaginationState = (namespace, payload) => ({
+	type: LIST_SET_PAGINATION_STATE,
+	payload,
+	meta: { namespace },
 });
 
-export const setProjectListUIState = (uiState) => ({
-	type: PROJECT_LIST_SET_UI_STATE,
-	payload: uiState,
+export const setListUIState = (namespace, payload) => ({
+	type: LIST_SET_UI_STATE,
+	payload,
+	meta: { namespace },
 });
 
-export const clearProjectListTreeSelection = () => ({
-	type: PROJECT_LIST_CLEAR_TREE_SELECTION,
+export const clearListTreeSelection = (namespace) => ({
+	type: LIST_CLEAR_TREE_SELECTION,
+	meta: { namespace },
 });
 
-export const resetProjectListState = () => ({
-	type: PROJECT_LIST_RESET_STATE,
+export const resetListState = (namespace) => ({
+	type: LIST_RESET_STATE,
+	meta: { namespace },
 });
