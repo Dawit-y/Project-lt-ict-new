@@ -99,7 +99,6 @@ const TreeForLists = forwardRef(
 		// Safe restore helper: tries to find the node and select/open parents.
 		const restoreSelectionSafe = useCallback(
 			(selection) => {
-				console.log("selection", selection);
 				if (!selection || !selection.id) {
 					isRestoringSelectionRef.current = false;
 					return;
@@ -111,9 +110,9 @@ const TreeForLists = forwardRef(
 						if (!tree) return;
 						const node = tree.get(selection.id);
 						if (node) {
-							tree.select(selection.id)
-							tree.open(selection.id)
-							tree.openParents(selection.id)
+							tree.select(selection.id);
+							tree.open(selection.id);
+							tree.openParents(selection.id);
 							// node.openParents && node.openParents();
 							setSelectedNode({
 								...selection,

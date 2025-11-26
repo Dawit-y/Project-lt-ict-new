@@ -11,7 +11,9 @@ import {
 
 export const useCitizenProjectListState = () => {
 	const dispatch = useDispatch();
-	const citizenProjectListState = useSelector((state) => state.citizenProjectList);
+	const citizenProjectListState = useSelector(
+		(state) => state.citizenProjectList
+	);
 	const namespace = "citizenProjectList";
 
 	const setTreeState = useCallback(

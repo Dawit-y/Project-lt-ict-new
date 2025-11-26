@@ -10,52 +10,74 @@ import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useSearchProjects } from "../../queries/citizenship_project_query";
-import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
+import { useSearchProjectCategorys } from "../../queries/projectcategory_query";
 import { useTranslation } from "react-i18next";
-import { Button, Col, Row, Input, Badge } from "reactstrap";
+import { Button, Badge } from "reactstrap";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
-import TreeForLists from "../../components/Common/TreeForLists2";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import TreeForLists from "../../components/Common/TreeForLists3";
+import AdvancedSearch from "../../components/Common/AdvancedSearch2";
 import { citizenshipProjectExportColumns } from "../../utils/exportColumnsForLists";
+import { useCitizenProjectListState } from "../../hooks/useCitizenProjectListState";
 
-const ProjectModel = () => {
+const CitizenProjectList = () => {
 	document.title = "Citizenship Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 
+	// Redux state management
+	const {
+		citizenProjectListState,
+		setTreeState,
+		setSearchState,
+		setPaginationState,
+		setUIState,
+		clearTreeSelection: clearTreeSelectionRedux,
+	} = useCitizenProjectListState();
+
+	// Extract state from Redux
+	const {
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		nodeId,
+		include,
+		isCollapsed,
+		searchParams,
+		projectParams,
+		exportSearchParams,
+		pagination: reduxPagination,
+		showSearchResult,
+	} = citizenProjectListState;
+
+	// Local state that doesn't need persistence
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-	const [include, setInclude] = useState(0);
-	const [isCollapsed, setIsCollapsed] = useState(false);
-
-	const [params, setParams] = useState({});
-	const [searchParams, setSearchParams] = useState({});
-	const [exportSearchParams, setExportSearchParams] = useState({});
-
-	const [pagination, setPagination] = useState({
-		currentPage: 1,
-		pageSize: 10,
-	});
-
-	const [paginationInfo, setPaginationInfo] = useState({
-		current_page: 1,
-		per_page: 10,
-		total: 0,
-		total_pages: 0,
-		has_next: false,
-		has_prev: false,
-	});
-
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const { data: projectCategoryData } = useFetchProjectCategorys();
+
+	const advancedSearchRef = useRef(null);
+	const treeRef = useRef(null);
+
+	// Create paginationInfo from Redux state for table component
+	const paginationInfo = useMemo(
+		() => ({
+			current_page: reduxPagination.currentPage,
+			per_page: reduxPagination.pageSize,
+			total: reduxPagination.total || 0,
+			total_pages: reduxPagination.totalPages || 0,
+			has_next: reduxPagination.hasNext,
+			has_prev: reduxPagination.hasPrev,
+		}),
+		[reduxPagination]
+	);
+
+	const param = { owner_type_id: "3" };
+	const {
+		data: projectCategoryData,
+		isLoading: prCategoryLoading,
+		isError: prCategoryIsError,
+	} = useSearchProjectCategorys(param);
 	const {
 		pct_name_en: projectCategoryOptionsEn,
 		pct_name_or: projectCategoryOptionsOr,
@@ -66,8 +88,9 @@ const ProjectModel = () => {
 		"pct_name_am",
 	]);
 
+	// Update projectParams when tree state changes
 	useEffect(() => {
-		setProjectParams({
+		const newProjectParams = {
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
 			}),
@@ -76,96 +99,90 @@ const ProjectModel = () => {
 				prj_location_woreda_id: prjLocationWoredaId,
 			}),
 			...(include === 1 && { include: include }),
-		});
-	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+		};
 
+		setSearchState({ projectParams: newProjectParams });
+	}, [
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		include,
+		setSearchState,
+	]);
+
+	// Update tree selection handler
 	const handleNodeSelect = useCallback(
 		(node) => {
+			const treeState = { nodeId: node.id };
+
 			if (node.level === "region") {
-				setPrjLocationRegionId(node.id);
-				setPrjLocationZoneId(null);
-				setPrjLocationWoredaId(null);
+				treeState.prjLocationRegionId = node.id;
+				treeState.prjLocationZoneId = null;
+				treeState.prjLocationWoredaId = null;
 			} else if (node.level === "zone") {
-				setPrjLocationZoneId(node.id);
-				setPrjLocationWoredaId(null);
+				treeState.prjLocationZoneId = node.id;
+				treeState.prjLocationWoredaId = null;
 			} else if (node.level === "woreda") {
-				setPrjLocationWoredaId(node.id);
+				treeState.prjLocationWoredaId = node.id;
 			}
 
-			// Reset to first page when location changes
-			setPagination((prev) => ({
-				...prev,
-				currentPage: 1,
-			}));
-
-			if (showSearchResult) {
-				setShowSearchResult(false);
-			}
+			setTreeState(treeState);
+			setUIState({ showSearchResult: false });
 		},
-		[
-			setPrjLocationRegionId,
-			setPrjLocationZoneId,
-			setPrjLocationWoredaId,
-			showSearchResult,
-			setShowSearchResult,
-		]
+		[setTreeState, setUIState]
 	);
 
+	// Update clear tree selection
+	const clearTreeSelection = useCallback(() => {
+		if (treeRef.current) {
+			treeRef.current.clearSelection();
+		}
+		clearTreeSelectionRedux();
+		setSearchState({ projectParams: {} });
+	}, [clearTreeSelectionRedux, setSearchState]);
+
+	// Update search handler
 	const handleSearch = useCallback(
 		({ data, error }) => {
 			setSearchResults(data);
 			setSearchError(error);
-			setShowSearchResult(true);
-			// Update pagination info from API response
-			if (data?.pagination) {
-				setPaginationInfo(data.pagination);
+			setUIState({ showSearchResult: true });
 
-				// Sync local pagination state with server response
-				setPagination((prev) => ({
-					...prev,
+			if (data?.pagination) {
+				// Update Redux pagination with server data
+				setPaginationState({
 					currentPage: data.pagination.current_page,
-				}));
+					pageSize: data.pagination.per_page,
+					total: data.pagination.total,
+					totalPages: data.pagination.total_pages,
+				});
 			}
 		},
-		[setSearchResults, setShowSearchResult]
+		[setUIState, setPaginationState]
 	);
 
-	// Handle page change
-	const handlePageChange = (newPage) => {
-		setPagination((prev) => ({
-			...prev,
-			currentPage: newPage,
-		}));
-	};
+	// Update pagination handlers using Redux actions
+	const handlePageChange = useCallback(
+		(newPage) => {
+			setPaginationState({ currentPage: newPage });
+		},
+		[setPaginationState]
+	);
 
-	// Handle page size change
-	const handlePageSizeChange = (newSize) => {
-		setPagination({
-			currentPage: 1, // Reset to first page when changing page size
-			pageSize: newSize,
-		});
-
-		// Also update pagination info
-		setPaginationInfo((prev) => ({
-			...prev,
-			per_page: newSize,
-			current_page: 1,
-		}));
-	};
-
-	// Reset pagination when search parameters change (except pagination itself)
-	useEffect(() => {
-		// Reset to first page when search criteria change
-		setPagination((prev) => ({
-			...prev,
-			currentPage: 1,
-		}));
-	}, [projectParams, params]); // Add dependencies that should trigger reset
+	const handlePageSizeChange = useCallback(
+		(newSize) => {
+			setPaginationState({
+				currentPage: 1,
+				pageSize: newSize,
+			});
+		},
+		[setPaginationState]
+	);
 
 	const handleSearchLabels = (labels) => {
-		setExportSearchParams(labels);
-  };
-  
+		setSearchState({ exportSearchParams: labels });
+	};
+
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -175,6 +192,7 @@ const ProjectModel = () => {
 				sortable: false,
 				filter: false,
 				width: 60,
+				pinned: "left",
 			},
 			{
 				field: "prj_name",
@@ -183,13 +201,13 @@ const ProjectModel = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 200,
+				pinned: "left",
 			},
 			{
 				field: "prj_code",
 				headerName: t("prj_code"),
 				sortable: true,
 				filter: "agTextColumnFilter",
-				/*floatingFilter: true,*/
 				flex: 1,
 				minWidth: 150,
 			},
@@ -229,9 +247,7 @@ const ProjectModel = () => {
 				width: 150,
 				valueFormatter: (params) => {
 					if (params.node.footer) {
-						return params.value
-							? `$${params.value.toLocaleString()}` // Show total in footer
-							: "";
+						return params.value ? `$${params.value.toLocaleString()}` : "";
 					}
 					return params.value ? `${params.value.toLocaleString()}` : "";
 				},
@@ -241,13 +257,14 @@ const ProjectModel = () => {
 				sortable: false,
 				filter: false,
 				width: 100,
+				pinned: "right",
 				cellRenderer: (params) => {
 					if (params.node.footer) {
-						return ""; // Suppress button for footer
+						return "";
 					}
 					const { prj_id } = params.data || {};
 					return (
-						<Link to={`/citizenship_project_detail/${prj_id}`} target="_blank">
+						<Link to={`/citizenship_project_detail/${prj_id}`}>
 							<Button type="button" className="btn-sm mb-1 default" outline>
 								<i className="fa fa-eye"></i>
 							</Button>
@@ -263,18 +280,38 @@ const ProjectModel = () => {
 		<React.Fragment>
 			<div className="page-content">
 				<div>
-					<Breadcrumbs title={t("project")} breadcrumbItem={t("project")} />
+					<Breadcrumbs />
 					<div className="w-100 d-flex gap-2">
 						<TreeForLists
+							ref={treeRef}
 							onNodeSelect={handleNodeSelect}
 							setIsAddressLoading={setIsAddressLoading}
-							setInclude={setInclude}
+							setInclude={(newInclude) => setTreeState({ include: newInclude })}
+							setIsCollapsed={(collapsed) =>
+								setUIState({ isCollapsed: collapsed })
+							}
 							isCollapsed={isCollapsed}
-							setIsCollapsed={setIsCollapsed}
+							initialSelection={{
+								id:
+									prjLocationRegionId ||
+									prjLocationZoneId ||
+									prjLocationWoredaId,
+								nodeId: nodeId || null,
+								level: prjLocationWoredaId
+									? "woreda"
+									: prjLocationZoneId
+										? "zone"
+										: "region",
+								add_name_en: "",
+								add_name_am: "",
+								name: "",
+							}}
+							initialInclude={include}
 						/>
 						{/* Main Content */}
 						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
+								ref={advancedSearchRef}
 								searchHook={useSearchProjects}
 								textSearchKeys={["prj_name", "prj_code"]}
 								dropdownSearchKeys={[
@@ -290,36 +327,34 @@ const ProjectModel = () => {
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
-								setAdditionalParams={setProjectParams}
-								setSearchResults={handleSearch}
+								setAdditionalParams={(params) =>
+									setSearchState({ projectParams: params })
+								}
+								setSearchResults={setSearchResults}
 								onSearchResult={handleSearch}
 								onSearchLabels={handleSearchLabels}
-								setShowSearchResult={setShowSearchResult}
+								setShowSearchResult={(show) =>
+									setUIState({ showSearchResult: show })
+								}
 								setIsSearchLoading={setIsSearchLoading}
-								params={params}
-								setParams={setParams}
 								searchParams={searchParams}
-								setSearchParams={setSearchParams}
-								setExportSearchParams={setExportSearchParams}
-								// Pass pagination state and callbacks
-								pagination={pagination}
-								onPaginationChange={setPagination}
-								setPaginationInfo={setPaginationInfo}
+								getSearchParams={(params) =>
+									setSearchState({ searchParams: params })
+								}
+								setExportSearchParams={(params) =>
+									setSearchState({ exportSearchParams: params })
+								}
+								// Pass persisted pagination from Redux
+								pagination={reduxPagination}
+								onPaginationChange={setPaginationState}
+								clearTreeSelection={clearTreeSelection}
+								initialSearchParams={searchParams}
+								initialAdditionalParams={projectParams}
+								initialPagination={reduxPagination}
 							>
-								<AgGridContainer
-									rowData={showSearchResult ? searchResults?.data : []}
+								<TableWrapper
 									columnDefs={columnDefs}
-									isPagination={false}
-									isServerSidePagination={true}
-									paginationPageSize={30}
-									isGlobalFilter={true}
-									isAddButton={false}
-									addButtonText="Add"
-									isExcelExport={true}
-									isPdfExport={true}
-									isPrint={true}
-									tableName="Citizenship Projects"
-									exportColumns={citizenshipProjectExportColumns}
+									showSearchResult={showSearchResult}
 									exportSearchParams={exportSearchParams}
 									paginationInfo={paginationInfo}
 									onPageChange={handlePageChange}
@@ -334,8 +369,45 @@ const ProjectModel = () => {
 	);
 };
 
-ProjectModel.propTypes = {
+CitizenProjectList.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
 
-export default ProjectModel;
+export default CitizenProjectList;
+
+const TableWrapper = ({
+	data,
+	isLoading,
+	columnDefs,
+	showSearchResult,
+	exportSearchParams,
+	paginationInfo,
+	onPageChange,
+	onPageSizeChange,
+}) => {
+	return (
+		<>
+			<AgGridContainer
+				rowData={showSearchResult ? data?.data || [] : []}
+				columnDefs={columnDefs}
+				isLoading={isLoading}
+				isPagination={false}
+				isServerSidePagination={true}
+				paginationPageSize={10}
+				isGlobalFilter={true}
+				isAddButton={false}
+				rowHeight={36}
+				addButtonText="Add"
+				isExcelExport={true}
+				isPdfExport={true}
+				isPrint={true}
+				tableName="Citizenship Projects"
+				exportColumns={citizenshipProjectExportColumns}
+				exportSearchParams={exportSearchParams}
+				paginationInfo={paginationInfo}
+				onPageChange={onPageChange}
+				onPageSizeChange={onPageSizeChange}
+			/>
+		</>
+	);
+};
