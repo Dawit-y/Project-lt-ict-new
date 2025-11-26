@@ -20,7 +20,7 @@ import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import { citizenshipProjectExportColumns } from "../../utils/exportColumnsForLists";
 
 const ProjectModel = () => {
-	document.title = "Citizenship Projects List ";
+	document.title = "Citizenship Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 

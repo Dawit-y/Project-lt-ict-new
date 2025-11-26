@@ -7,7 +7,8 @@ const rootReducer = combineReducers({
 	Layout,
 	Auth: authReducer,
 	projectList: listReducer,
-	citizenshipProjectList: listReducer,
+	citizenProjectList: listReducer,
+	citizenProject: listReducer,
 	csoProjectList: listReducer,
 });
 
