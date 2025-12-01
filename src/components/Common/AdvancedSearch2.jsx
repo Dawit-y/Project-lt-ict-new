@@ -48,7 +48,7 @@ const AdvancedSearch = forwardRef(
 			onPaginationChange,
 			pagination = { currentPage: 1, pageSize: 10 },
 			setPaginationInfo,
-			clearTreeSelection,
+			onClear,
 			children,
 
 			initialSearchParams = {},
@@ -315,8 +315,8 @@ const AdvancedSearch = forwardRef(
 					has_prev: false,
 				});
 			}
-			if (clearTreeSelection) {
-				clearTreeSelection();
+			if (onClear) {
+				onClear()
 			}
 		};
 

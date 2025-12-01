@@ -43,6 +43,7 @@ const ProjectModel = () => {
 		setPaginationState,
 		setUIState,
 		clearTreeSelection: clearTreeSelectionRedux,
+		resetProjectListState,
 	} = useCitizenProjectState();
 
 	// Extract state from Redux
@@ -239,6 +240,11 @@ const ProjectModel = () => {
 
 	const handleSearchLabels = (labels) => {
 		setSearchState({ exportSearchParams: labels });
+	};
+
+	const handleClear = () => {
+		clearTreeSelection();
+		resetProjectListState();
 	};
 
 	const handleProjectClick = (arg) => {
@@ -469,7 +475,7 @@ const ProjectModel = () => {
 								// Pass persisted pagination from Redux
 								pagination={reduxPagination}
 								onPaginationChange={setPaginationState}
-								clearTreeSelection={clearTreeSelection}
+								onClear={handleClear}
 								initialSearchParams={searchParams}
 								initialAdditionalParams={projectParams}
 								initialPagination={reduxPagination}

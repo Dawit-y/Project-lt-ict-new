@@ -38,6 +38,7 @@ const ProjectList = () => {
 		setPaginationState,
 		setUIState,
 		clearTreeSelection: clearTreeSelectionRedux,
+		resetProjectListState
 	} = useProjectListState();
 
 	// Extract state from Redux
@@ -173,6 +174,11 @@ const ProjectList = () => {
 
 	const handleSearchLabels = (labels) => {
 		setSearchState({ exportSearchParams: labels });
+	};
+
+	const handleClear = () => {
+		clearTreeSelection(); 
+		resetProjectListState(); 
 	};
 
 	const toggleEditModal = () => {
@@ -512,7 +518,7 @@ const ProjectList = () => {
 								// Pass persisted pagination from Redux
 								pagination={reduxPagination}
 								onPaginationChange={setPaginationState}
-								clearTreeSelection={clearTreeSelection}
+								onClear={handleClear}
 								initialSearchParams={searchParams}
 								initialAdditionalParams={projectParams}
 								initialPagination={reduxPagination}
