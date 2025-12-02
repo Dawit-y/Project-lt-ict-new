@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
-import { Col, Label, Input, FormFeedback } from "reactstrap";
+import { Col, Label, Input, FormFeedback, Button } from "reactstrap";
 import { useTranslation } from "react-i18next";
+import { FaSync } from "react-icons/fa";
 
 /**
  * AsyncSelectField renders a select input based on a key-value map.
@@ -16,27 +17,51 @@ import { useTranslation } from "react-i18next";
  * @param {Object.<string|number, string>} props.optionMap - Map of value-label pairs.
  * @param {boolean} [props.isLoading=false] - Show loading placeholder.
  * @param {boolean} [props.isError=false] - Show error placeholder.
+ * @param {Function} [props.refetch] - Optional refetch function for retrying failed loads.
  *
  * @returns {JSX.Element}
  */
 const AsyncSelectField = ({
-  fieldId,
-  validation,
-  isRequired = false,
-  className,
-  label,
-  optionMap = {},
-  isLoading = false,
-  isError = false,
+	fieldId,
+	validation,
+	isRequired = false,
+	className,
+	label,
+	optionMap = {},
+	isLoading = false,
+	isError = false,
+	refetch,
 }) => {
-  const { t } = useTranslation();
+	const { t } = useTranslation();
 
-  return (
+	const handleRefetch = () => {
+		if (refetch && typeof refetch === "function") {
+			refetch();
+		}
+	};
+
+	return (
 		<Col className={className}>
-			<Label htmlFor={fieldId}>
-				{label ? label : t(fieldId)}{" "}
-				{isRequired && <span className="text-danger">*</span>}
-			</Label>
+			<div className="d-flex justify-content-between align-items-center mb-1">
+				<Label htmlFor={fieldId} className="mb-0">
+					{label ? label : t(fieldId)}{" "}
+					{isRequired && <span className="text-danger">*</span>}
+				</Label>
+
+				{refetch && isError && (
+					<Button
+						color="link"
+						size="sm"
+						onClick={handleRefetch}
+						className="p-0"
+						title={t("Retry loading options")}
+						style={{ fontSize: "0.875rem" }}
+					>
+						<FaSync className="me-1" />
+						{t("Retry")}
+					</Button>
+				)}
+			</div>
 
 			<Input
 				name={fieldId}
@@ -54,7 +79,11 @@ const AsyncSelectField = ({
 				}
 			>
 				{isLoading && <option value="">{t("Loading")}...</option>}
-				{isError && <option value="">{t("Failed to load options")}</option>}
+				{isError && (
+					<option value="">
+						{refetch ? t("Failed to load options") : t("No options available")}
+					</option>
+				)}
 
 				{!isLoading && !isError && (
 					<>
@@ -78,21 +107,22 @@ const AsyncSelectField = ({
 };
 
 AsyncSelectField.propTypes = {
-  fieldId: PropTypes.string.isRequired,
-  validation: PropTypes.shape({
-    values: PropTypes.object.isRequired,
-    handleChange: PropTypes.func.isRequired,
-    handleBlur: PropTypes.func.isRequired,
-    touched: PropTypes.object,
-    errors: PropTypes.object,
-  }).isRequired,
-  isRequired: PropTypes.bool,
-  className: PropTypes.string,
-  optionMap: PropTypes.objectOf(
-    PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-  ).isRequired,
-  isLoading: PropTypes.bool,
-  isError: PropTypes.bool,
+	fieldId: PropTypes.string.isRequired,
+	validation: PropTypes.shape({
+		values: PropTypes.object.isRequired,
+		handleChange: PropTypes.func.isRequired,
+		handleBlur: PropTypes.func.isRequired,
+		touched: PropTypes.object,
+		errors: PropTypes.object,
+	}).isRequired,
+	isRequired: PropTypes.bool,
+	className: PropTypes.string,
+	optionMap: PropTypes.objectOf(
+		PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+	).isRequired,
+	isLoading: PropTypes.bool,
+	isError: PropTypes.bool,
+	refetch: PropTypes.func,
 };
 
 export default AsyncSelectField;
