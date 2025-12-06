@@ -283,7 +283,7 @@ const UserRoleModel = (props) => {
         cell: (cellProps) => {
           return (
 						<div className="d-flex gap-1">
-							{cellProps.row.original.is_editable && (
+							{cellProps.row.original.is_editable ==1 && (
                 <Button
                   size="sm"
 									color="Link"
@@ -300,7 +300,7 @@ const UserRoleModel = (props) => {
 								</Button>
 							)}
 
-							{cellProps.row.original.is_deletable && (
+							{cellProps.row.original.is_deletable ==1 && (
                 <Button
                   size="sm"
 									color="Link"
@@ -352,7 +352,7 @@ const UserRoleModel = (props) => {
           columns={columns}
           data={data?.data}
           isGlobalFilter={true}
-          isAddButton={true}
+          isAddButton={data?.previledge?.is_role_can_add == 1}
           isCustomPageSize={true}
           handleUserClick={handleUserRoleClicks}
           isPagination={true}

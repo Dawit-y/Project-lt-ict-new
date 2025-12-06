@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { Row, Col, Input, Card, CardBody, Spinner } from "reactstrap";
 import PivotTableUI from "react-pivottable/PivotTableUI";
 import "react-pivottable/pivottable.css";
@@ -15,31 +15,71 @@ import { useSearchStatisticalReport } from "../../queries/statisticalreport_quer
 import "./statistical.css";
 import { createSelectOptions } from "../../utils/commonMethods";
 import PrintStatisticalReportPage from "../../components/Common/PrintStatisticalReportPage";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const PlotlyRenderers = createPlotlyRenderers(Plot);
 
+// Loading component for lazy loading
+const PivotLoading = () => (
+	<div className="d-flex justify-content-center p-4">
+		<Spinner color="primary" />
+	</div>
+);
+
 const StatisticalReport = () => {
 	const { t, i18n } = useTranslation();
+	const { user } = useAuthUser();
+	const userType = user?.usr_user_type || null;
 
-	// Simplified endpoints state - removed unused url property
-	const endpoints = useMemo(
-		() => [
-			"project",
-			"project_employee",
-			"project_budget_plan",
-			"project_budget_expenditure",
-			"budget_source",
-			"project_contractor",
-			"project_payment",
-			"project_performance",
-			"project_stakeholder",
-			"project_supplimentary",
-			"project_variation",
-			"project_handover",
-			"budget_request",
-		],
-		[]
-	);
+	// User type based endpoint filtering
+	const getUserEndpoints = useMemo(() => {
+		const allEndpoints = [
+			// Governmental endpoints (1-100)
+			{ key: "project", reportTypeIndex: 1, userTypes: [1, 5] },
+			{ key: "project_employee", reportTypeIndex: 2, userTypes: [1, 5] },
+			{ key: "project_budget_plan", reportTypeIndex: 3, userTypes: [1, 5] },
+			{
+				key: "project_budget_expenditure",
+				reportTypeIndex: 4,
+				userTypes: [1, 5],
+			},
+			{ key: "budget_source", reportTypeIndex: 5, userTypes: [1, 5] },
+			{ key: "project_contractor", reportTypeIndex: 6, userTypes: [1, 5] },
+			{ key: "project_payment", reportTypeIndex: 7, userTypes: [1, 5] },
+			{ key: "project_performance", reportTypeIndex: 8, userTypes: [1, 5] },
+			{ key: "project_stakeholder", reportTypeIndex: 9, userTypes: [1, 5] },
+			{ key: "project_supplimentary", reportTypeIndex: 10, userTypes: [1, 5] },
+			{ key: "project_variation", reportTypeIndex: 11, userTypes: [1, 5] },
+			{ key: "project_handover", reportTypeIndex: 12, userTypes: [1, 5] },
+			{ key: "budget_request", reportTypeIndex: 13, userTypes: [1, 5] },
+
+			// CSO endpoints (101-200) - Add your CSO specific endpoints here
+			{ key: "cso_project_report", reportTypeIndex: 101, userTypes: [2, 4, 5] },
+			{
+				key: "cso_information_report",
+				reportTypeIndex: 102,
+				userTypes: [2, 4, 5],
+			},
+
+			// Citizenship endpoints (201-300) - Add your citizenship specific endpoints here
+			{
+				key: "citizen_project_by_location_report",
+				reportTypeIndex: 201,
+				userTypes: [3, 5],
+			},
+			{
+				key: "citizen_project_by_category_report",
+				reportTypeIndex: 202,
+				userTypes: [3, 5],
+			},
+		];
+
+		if (!userType) return [];
+
+		return allEndpoints.filter((endpoint) =>
+			endpoint.userTypes.includes(parseInt(userType))
+		);
+	}, [userType]);
 
 	const [searchResults, setSearchResults] = useState([]);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -63,6 +103,11 @@ const StatisticalReport = () => {
 	const [localizedAggregatorTemplates, setLocalizedAggregatorTemplates] =
 		useState({});
 	const [isCollapsed, setIsCollapsed] = useState(false);
+	const [exportSearchParams, setExportSearchParams] = useState({});
+
+	const handleSearchLabels = (labels) => {
+		setExportSearchParams(labels);
+	};
 
 	const { data: budgetYearData } = useFetchBudgetYears();
 	const budgetYearOptions = createSelectOptions(
@@ -72,207 +117,185 @@ const StatisticalReport = () => {
 	);
 
 	// Endpoint configurations
-	const endpointConfigs = useMemo(
-		() => ({
-			project: {
+	const endpointConfigs = useMemo(() => {
+		const configs = {};
+
+		getUserEndpoints.forEach((endpoint) => {
+			const baseConfig = {
 				locationParams: {
 					region: "prj_location_region_id",
 					zone: "prj_location_zone_id",
 					woreda: "prj_location_woreda_id",
 				},
-				dropdownSearchKeys: [
-					{
-						key: "prj_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 1,
-			},
-			project_employee: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "emp_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 2,
-			},
-			project_budget_plan: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "bpl_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 3,
-			},
-			project_budget_expenditure: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "pbe_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 4,
-			},
-			budget_source: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "pbs_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 5,
-			},
-			project_contractor: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "cni_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 6,
-			},
-			project_payment: {
-				dateKeys: ["payment_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prp_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 7,
-			},
-			project_performance: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prp_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 8,
-			},
-			project_stakeholder: {
-				textKeys: ["prj_name", "prj_code"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "psh_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 9,
-			},
-			project_supplimentary: {
-				textKeys: ["prj_name", "prj_code"],
-				dateKeys: ["payment_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prs_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 10,
-			},
-			project_variation: {
-				textKeys: ["prj_name", "prj_code"],
-				dateKeys: ["payment_date"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prv_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 11,
-			},
-			project_handover: {
-				textKeys: ["prh_name", ""],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prh_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 12,
-			},
-			budget_request: {
-				textKeys: ["prd_name"],
-				locationParams: {
-					region: "prj_location_region_id",
-					zone: "prj_location_zone_id",
-					woreda: "prj_location_woreda_id",
-				},
-				dropdownSearchKeys: [
-					{
-						key: "prd_budget_year_id",
-						options: budgetYearOptions,
-					},
-				],
-				reportTypeIndex: 13,
-			},
-		}),
-		[budgetYearOptions]
-	);
+				reportTypeIndex: endpoint.reportTypeIndex,
+			};
+
+			// Add endpoint-specific configurations
+			switch (endpoint.key) {
+				case "project":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "prj_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_employee":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "emp_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_budget_plan":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "bpl_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_budget_expenditure":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "pbe_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "budget_source":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "pbs_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_contractor":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "cni_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_payment":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dateKeys: ["payment_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_performance":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_stakeholder":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dropdownSearchKeys: [
+							{ key: "psh_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_supplimentary":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dateKeys: ["payment_date"],
+						dropdownSearchKeys: [
+							{ key: "prs_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_variation":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prj_name", "prj_code"],
+						dateKeys: ["payment_date"],
+						dropdownSearchKeys: [
+							{ key: "prv_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "project_handover":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prh_name", ""],
+						dropdownSearchKeys: [
+							{ key: "prh_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "budget_request":
+					configs[endpoint.key] = {
+						...baseConfig,
+						textKeys: ["prd_name"],
+						dropdownSearchKeys: [
+							{ key: "prd_budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "cso_project_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "cso_information_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{
+								key: "cso_type",
+								options: [
+									{ label: "Local", value: 1 },
+									{ label: "International", value: 2 },
+								],
+							},
+						],
+					};
+					break;
+
+				case "citizen_project_by_location_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				case "citizen_project_by_category_report":
+					configs[endpoint.key] = {
+						...baseConfig,
+						dropdownSearchKeys: [
+							{ key: "budget_year_id", options: budgetYearOptions },
+						],
+					};
+					break;
+				default:
+					configs[endpoint.key] = baseConfig;
+			}
+		});
+
+		return configs;
+	}, [getUserEndpoints, budgetYearOptions]);
 
 	// Project params derived from location selections and report type
 	const projectParams = useMemo(() => {
@@ -391,6 +414,12 @@ const StatisticalReport = () => {
 	// Check if search should be enabled
 	const isSearchEnabled = !!selectedEndpoint;
 
+	// Filtered endpoint options for dropdown
+	const endpointOptions = useMemo(
+		() => getUserEndpoints.map((endpoint) => endpoint.key),
+		[getUserEndpoints]
+	);
+
 	return (
 		<div className="page-content">
 			<div className="">
@@ -427,7 +456,7 @@ const StatisticalReport = () => {
 													onChange={handleEndpointChange}
 												>
 													<option value="">{t("select_stat")}</option>
-													{endpoints.map((endpoint, index) => (
+													{endpointOptions.map((endpoint, index) => (
 														<option key={index} value={endpoint}>
 															{t(endpoint)}
 														</option>
@@ -435,10 +464,8 @@ const StatisticalReport = () => {
 												</Input>
 
 												<PrintStatisticalReportPage
-													tableData={searchResults}
-													tablename={t("Statistical Report")}
-													excludeKey={["is_editable", "is_deletable"]}
-													disabled={searchResults.length === 0}
+													tableName={t(selectedEndpoint)}
+													exportSearchParams={exportSearchParams}
 												/>
 											</div>
 										</CardBody>
@@ -448,17 +475,20 @@ const StatisticalReport = () => {
 								<Col xs="8" sm="8" lg="8">
 									{selectedEndpoint && (
 										<AdvancedSearch
+											key={selectedEndpoint}
 											searchHook={useSearchStatisticalReport}
 											textSearchKeys={textSearchKeys}
 											dateSearchKeys={dateSearchKeys}
 											dropdownSearchKeys={dropdownSearchKeys}
 											checkboxSearchKeys={[]}
 											additionalParams={projectParams}
-											setAdditionalParams={() => {}} // Can be removed if not used
+											setAdditionalParams={() => {}}
 											onSearchResult={handleSearchResults}
+											onSearchLabels={handleSearchLabels}
 											setIsSearchLoading={setIsSearchLoading}
 											setSearchResults={setSearchResults}
 											setShowSearchResult={setShowSearchResult}
+											setExportSearchParams={setExportSearchParams}
 											disabled={!isSearchEnabled}
 										/>
 									)}
@@ -477,17 +507,19 @@ const StatisticalReport = () => {
 												<Card>
 													<CardBody>
 														<div className="overflow-x-auto">
-															<PivotTableUI
-																key={selectedEndpoint || "default"}
-																data={searchResults}
-																onChange={setPivotState}
-																renderers={localizedRenderersUI}
-																aggregators={localizedAggregatorTemplates}
-																aggregatorName={
-																	Object.keys(localizedAggregatorTemplates)[0]
-																}
-																{...pivotState}
-															/>
+															<Suspense fallback={<PivotLoading />}>
+																<PivotTableUI
+																	key={selectedEndpoint || "default"}
+																	data={searchResults}
+																	onChange={setPivotState}
+																	renderers={localizedRenderersUI}
+																	aggregators={localizedAggregatorTemplates}
+																	aggregatorName={
+																		Object.keys(localizedAggregatorTemplates)[0]
+																	}
+																	{...pivotState}
+																/>
+															</Suspense>
 														</div>
 													</CardBody>
 												</Card>

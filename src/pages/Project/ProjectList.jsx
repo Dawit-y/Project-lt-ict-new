@@ -16,47 +16,74 @@ import { useTranslation } from "react-i18next";
 import { Button, Badge } from "reactstrap";
 import { createMultiSelectOptions } from "../../utils/commonMethods";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
-import TreeForLists from "../../components/Common/TreeForLists2";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import TreeForLists from "../../components/Common/TreeForLists3";
+import AdvancedSearch from "../../components/Common/AdvancedSearch2";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import { getUserSectorList } from "../../queries/usersector_query";
 import { projectExportColumns } from "../../utils/exportColumnsForLists";
 import ProjectFormModal from "./ProjectFormModal";
 import { toast } from "react-toastify";
+import { useProjectListState } from "../../hooks/useProjectListsState";
 
 const ProjectList = () => {
 	document.title = "Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 
-	// State variables
+	const {
+		projectListState,
+		setTreeState,
+		setSearchState,
+		setPaginationState,
+		setUIState,
+		clearTreeSelection: clearTreeSelectionRedux,
+		resetProjectListState
+	} = useProjectListState();
+
+	// Extract state from Redux
+	const {
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		nodeId,
+		include,
+		isCollapsed,
+		searchParams,
+		projectParams,
+		exportSearchParams,
+		pagination: reduxPagination,
+		showSearchResult,
+	} = projectListState;
+
+	// Local state that doesn't need persistence
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-	const [include, setInclude] = useState(0);
-	const [isCollapsed, setIsCollapsed] = useState(false);
-	const [params, setParams] = useState({});
-	const [searchParams, setSearchParams] = useState({});
-	const [exportSearchParams, setExportSearchParams] = useState({});
-
-	// Modal state variables
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedProject, setSelectedProject] = useState(null);
 	const [selectedNode, setSelectedNode] = useState(null);
 
 	const advancedSearchRef = useRef(null);
-
-	// Mutation hook for updating project
+	const treeRef = useRef(null);
 	const updateProject = useUpdateProject();
 
+	// Create paginationInfo from Redux state for table component
+	const paginationInfo = useMemo(
+		() => ({
+			current_page: reduxPagination.currentPage,
+			per_page: reduxPagination.pageSize,
+			total: reduxPagination.total || 0,
+			total_pages: reduxPagination.totalPages || 0,
+			has_next: reduxPagination.hasNext,
+			has_prev: reduxPagination.hasPrev,
+		}),
+		[reduxPagination]
+	);
+
+	// Update projectParams when tree state changes
 	useEffect(() => {
-		setProjectParams({
+		const newProjectParams = {
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
 			}),
@@ -65,8 +92,101 @@ const ProjectList = () => {
 				prj_location_woreda_id: prjLocationWoredaId,
 			}),
 			...(include === 1 && { include: include }),
-		});
-	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
+		};
+
+		setSearchState({ projectParams: newProjectParams });
+	}, [
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		include,
+		setSearchState,
+	]);
+
+	// Update tree selection handler
+	const handleNodeSelect = useCallback(
+		(node) => {
+			const treeState = { nodeId: node.id };
+
+			if (node.level === "region") {
+				treeState.prjLocationRegionId = node.id;
+				treeState.prjLocationZoneId = null;
+				treeState.prjLocationWoredaId = null;
+			} else if (node.level === "zone") {
+				treeState.prjLocationZoneId = node.id;
+				treeState.prjLocationWoredaId = null;
+			} else if (node.level === "woreda") {
+				treeState.prjLocationWoredaId = node.id;
+			}
+
+			setTreeState(treeState);
+			setUIState({ showSearchResult: false });
+		},
+		[setTreeState, setUIState]
+	);
+
+	// Update clear tree selection
+	const clearTreeSelection = useCallback(() => {
+		if (treeRef.current) {
+			treeRef.current.clearSelection();
+		}
+		clearTreeSelectionRedux();
+		setSearchState({ projectParams: {} });
+	}, [clearTreeSelectionRedux, setSearchState]);
+
+	// Update search handler
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setUIState({ showSearchResult: true });
+
+			if (data?.pagination) {
+				// Update Redux pagination with server data
+				setPaginationState({
+					currentPage: data.pagination.current_page,
+					pageSize: data.pagination.per_page,
+					total: data.pagination.total,
+					totalPages: data.pagination.total_pages,
+				});
+			}
+		},
+		[setUIState, setPaginationState]
+	);
+
+	// Update pagination handlers using Redux actions
+	const handlePageChange = useCallback(
+		(newPage) => {
+			setPaginationState({ currentPage: newPage });
+		},
+		[setPaginationState]
+	);
+
+	const handlePageSizeChange = useCallback(
+		(newSize) => {
+			setPaginationState({
+				currentPage: 1,
+				pageSize: newSize,
+			});
+		},
+		[setPaginationState]
+	);
+
+	const handleSearchLabels = (labels) => {
+		setSearchState({ exportSearchParams: labels });
+	};
+
+	const handleClear = () => {
+		clearTreeSelection(); 
+		resetProjectListState(); 
+	};
+
+	const toggleEditModal = () => {
+		setIsEditModalOpen(!isEditModalOpen);
+		if (isEditModalOpen) {
+			setSelectedProject(null);
+		}
+	};
 
 	// sector information
 	const { data: sectorInformationData } = getUserSectorList();
@@ -110,57 +230,8 @@ const ProjectList = () => {
 		["prs_status_name_en", "prs_status_name_or", "prs_status_name_am"]
 	);
 
-	const handleNodeSelect = useCallback(
-		(node) => {
-			if (node.level === "region") {
-				setPrjLocationRegionId(node.id);
-				setPrjLocationZoneId(null);
-				setPrjLocationWoredaId(null);
-			} else if (node.level === "zone") {
-				setPrjLocationZoneId(node.id);
-				setPrjLocationWoredaId(null);
-			} else if (node.level === "woreda") {
-				setPrjLocationWoredaId(node.id);
-			}
-
-			if (showSearchResult) {
-				setShowSearchResult(false);
-			}
-		},
-		[
-			setPrjLocationRegionId,
-			setPrjLocationZoneId,
-			setPrjLocationWoredaId,
-			showSearchResult,
-			setShowSearchResult,
-		]
-	);
-
-	const handleSearch = useCallback(
-		({ data, error }) => {
-			setSearchResults(data);
-			setSearchError(error);
-			setShowSearchResult(true);
-		},
-		[setSearchResults, setShowSearchResult]
-	);
-
-	const handleSearchLabels = (labels) => {
-		setExportSearchParams(labels);
-	};
-
-	// Modal handlers
-	const toggleEditModal = () => {
-		setIsEditModalOpen(!isEditModalOpen);
-		if (isEditModalOpen) {
-			setSelectedProject(null);
-		}
-	};
-
 	const handleEditClick = (projectData) => {
 		setSelectedProject(projectData);
-
-		// Create a mock selectedNode based on the project data
 		const mockNode = {
 			data: {
 				pri_id: projectData.parent_id || 0,
@@ -366,10 +437,29 @@ const ProjectList = () => {
 					<div className="d-flex gap-2 flex-nowrap">
 						{/* Sidebar - Tree */}
 						<TreeForLists
+							ref={treeRef}
 							onNodeSelect={handleNodeSelect}
-							setInclude={setInclude}
-							setIsCollapsed={setIsCollapsed}
+							setInclude={(newInclude) => setTreeState({ include: newInclude })}
+							setIsCollapsed={(collapsed) =>
+								setUIState({ isCollapsed: collapsed })
+							}
 							isCollapsed={isCollapsed}
+							initialSelection={{
+								id:
+									prjLocationRegionId ||
+									prjLocationZoneId ||
+									prjLocationWoredaId,
+								nodeId: nodeId || null,
+								level: prjLocationWoredaId
+									? "woreda"
+									: prjLocationZoneId
+										? "zone"
+										: "region",
+								add_name_en: "", // You might want to store these in Redux too
+								add_name_am: "",
+								name: "",
+							}}
+							initialInclude={include}
 						/>
 						{/* Main Content */}
 						<SearchTableContainer isCollapsed={isCollapsed}>
@@ -408,22 +498,38 @@ const ProjectList = () => {
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
-								setAdditionalParams={setProjectParams}
+								setAdditionalParams={(params) =>
+									setSearchState({ projectParams: params })
+								}
 								setSearchResults={setSearchResults}
 								onSearchResult={handleSearch}
 								onSearchLabels={handleSearchLabels}
-								setShowSearchResult={setShowSearchResult}
+								setShowSearchResult={(show) =>
+									setUIState({ showSearchResult: show })
+								}
 								setIsSearchLoading={setIsSearchLoading}
-								params={params}
-								setParams={setParams}
 								searchParams={searchParams}
-								setSearchParams={setSearchParams}
-								setExportSearchParams={setExportSearchParams}
+								getSearchParams={(params) =>
+									setSearchState({ searchParams: params })
+								}
+								setExportSearchParams={(params) =>
+									setSearchState({ exportSearchParams: params })
+								}
+								// Pass persisted pagination from Redux
+								pagination={reduxPagination}
+								onPaginationChange={setPaginationState}
+								onClear={handleClear}
+								initialSearchParams={searchParams}
+								initialAdditionalParams={projectParams}
+								initialPagination={reduxPagination}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}
 									showSearchResult={showSearchResult}
 									exportSearchParams={exportSearchParams}
+									paginationInfo={paginationInfo}
+									onPageChange={handlePageChange}
+									onPageSizeChange={handlePageSizeChange}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -442,6 +548,9 @@ const TableWrapper = ({
 	columnDefs,
 	showSearchResult,
 	exportSearchParams,
+	paginationInfo,
+	onPageChange,
+	onPageSizeChange,
 }) => {
 	return (
 		<>
@@ -449,7 +558,8 @@ const TableWrapper = ({
 				rowData={showSearchResult ? data?.data || [] : []}
 				columnDefs={columnDefs}
 				isLoading={isLoading}
-				isPagination={true}
+				isPagination={false}
+				isServerSidePagination={true}
 				paginationPageSize={10}
 				isGlobalFilter={true}
 				isAddButton={false}
@@ -461,6 +571,9 @@ const TableWrapper = ({
 				tableName="Projects"
 				exportColumns={projectExportColumns}
 				exportSearchParams={exportSearchParams}
+				paginationInfo={paginationInfo}
+				onPageChange={onPageChange}
+				onPageSizeChange={onPageSizeChange}
 			/>
 		</>
 	);

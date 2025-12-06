@@ -227,7 +227,9 @@ const ExportToExcel = ({
 
 			// Pre-create rows to avoid "A Cell needs a Row" error during merge styling
 			for (let i = 0; i < headerRows.length; i++) {
-				worksheet.getRow(headerStartRow + i) || worksheet.addRow({});
+				const row =
+					worksheet.getRow(headerStartRow + i) || worksheet.addRow({});
+				row.height = 45;
 			}
 
 			// Utility function for applying header styles

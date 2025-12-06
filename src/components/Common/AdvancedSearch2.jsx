@@ -43,21 +43,30 @@ const AdvancedSearch = forwardRef(
 			setIsSearchLoading,
 			setSearchResults,
 			setShowSearchResult,
+			getSearchParams,
 			setExportSearchParams,
 			onPaginationChange,
 			pagination = { currentPage: 1, pageSize: 10 },
 			setPaginationInfo,
-			clearTreeSelection,
+			onClear,
 			children,
+
+			initialSearchParams = {},
+			initialAdditionalParams = {},
+			initialPagination = { currentPage: 1, pageSize: 10 },
 		},
 		ref
 	) => {
+
 		const { t } = useTranslation();
 		const [isOpen, setIsOpen] = useState(false);
 		const toggle = () => setIsOpen(!isOpen);
-		const [params, setParams] = useState({});
+
+		const [params, setParams] = useState(initialSearchParams ?? {});
 		const [searchParams, setSearchParams] = useState({});
 		const [paramsWithLabels, setParamsWithLabels] = useState({});
+
+		const [initialized, setInitialized] = useState(false);
 
 		const { userId } = useAuthUser();
 		const { regions, zones, woredas } = useFetchAddressStructures(userId);
@@ -85,22 +94,22 @@ const AdvancedSearch = forwardRef(
 			// Add text search fields
 			if (textSearchKeys) {
 				textSearchKeys.forEach((key) => {
-					values[key] = "";
+					values[key] = initialSearchParams[key] || "";
 				});
 			}
 
 			// Add dropdown search fields
 			if (dropdownSearchKeys) {
 				dropdownSearchKeys.forEach(({ key }) => {
-					values[key] = "";
+					values[key] = initialSearchParams[key] || "";
 				});
 			}
 
 			// Add date search fields
 			if (dateSearchKeys) {
 				dateSearchKeys.forEach((key) => {
-					values[`${key}_start`] = "";
-					values[`${key}_end`] = "";
+					values[`${key}_start`] = initialSearchParams[`${key}_start`] || "";
+					values[`${key}_end`] = initialSearchParams[`${key}_end`] || "";
 				});
 			}
 
@@ -116,7 +125,6 @@ const AdvancedSearch = forwardRef(
 
 		// Handle updates for all input types
 		const handleSearchKey = (key, value, type = "text", label = "") => {
-			// Also update the formik values
 			validation.setFieldValue(key, value);
 
 			// Update params (values)
@@ -152,8 +160,7 @@ const AdvancedSearch = forwardRef(
 			});
 		};
 
-		const handleSearch = () => {
-			// Get ALL form values including component values
+		const handleSearch = (resetToPageOne = false) => {
 			const allValues = validation.values;
 
 			// Filter out empty values and convert numbers
@@ -166,19 +173,23 @@ const AdvancedSearch = forwardRef(
 					])
 			);
 
+			// Use current pagination from Redux, unless we're resetting to page 1
+			const currentPage = resetToPageOne ? 1 : pagination.currentPage;
+			const pageSize = pagination.pageSize;
+
 			// Combine values (IDs)
 			const combinedParams = {
 				...params,
 				...transformedValues,
 				...(additionalParams || {}),
-				page: pagination.currentPage,
-				per_page: pagination.pageSize,
+				page: currentPage, 
+				per_page: pageSize,
 			};
 
 			// Map helper
 			const findLabel = (list, id) => {
 				const match = list?.find((item) => String(item.id) === String(id));
-				return match ? match.name : id; // fallback to ID if not found
+				return match ? match.name : id;
 			};
 
 			// Build labels
@@ -209,6 +220,17 @@ const AdvancedSearch = forwardRef(
 			if (onSearchLabels) {
 				onSearchLabels(combinedParamsLabels);
 			}
+			if (getSearchParams) {
+				getSearchParams(combinedParams);
+			}
+
+			// Only reset to page 1 if explicitly requested (for new searches)
+			if (resetToPageOne && onPaginationChange) {
+				onPaginationChange({
+					...pagination,
+					currentPage: 1,
+				});
+			}
 		};
 
 		// Refetch whenever searchParams changes
@@ -231,18 +253,35 @@ const AdvancedSearch = forwardRef(
 			}
 		}, [searchParams]);
 
+		// Initialize with existing search params and pagination
 		useEffect(() => {
-			if (dropdownSearchKeys) {
-				const defaultParams = {};
-				dropdownSearchKeys.forEach(({ key, defaultValue }) => {
-					if (defaultValue !== undefined) {
-						defaultParams[key] = defaultValue;
-						validation.setFieldValue(key, defaultValue);
+			if (
+				!initialized &&
+				(Object.keys(initialSearchParams).length > 0 ||
+					Object.keys(initialAdditionalParams).length > 0)
+			) {
+				// Set form values from initial search params
+				Object.entries(initialSearchParams).forEach(([key, value]) => {
+					if (value !== "" && value != null) {
+						validation.setFieldValue(key, value);
 					}
 				});
-				setParams((prev) => ({ ...defaultParams, ...prev }));
+
+				// Set params state
+				setParams(initialSearchParams);
+
+				// Trigger search with current pagination
+				const searchParamsToSet = {
+					...initialSearchParams,
+					...initialAdditionalParams,
+					page: initialPagination.currentPage,
+					per_page: initialPagination.pageSize,
+				};
+
+				setSearchParams(searchParamsToSet);
+				setInitialized(true);
 			}
-		}, []);
+		}, [initialSearchParams, initialAdditionalParams, initialized]);
 
 		const handleClear = () => {
 			setParams({});
@@ -265,12 +304,6 @@ const AdvancedSearch = forwardRef(
 			if (setExportSearchParams) {
 				setExportSearchParams({});
 			}
-			if (onPaginationChange) {
-				onPaginationChange((prev) => ({
-					...prev,
-					currentPage: 1,
-				}));
-			}
 
 			if (setPaginationInfo) {
 				setPaginationInfo({
@@ -282,8 +315,8 @@ const AdvancedSearch = forwardRef(
 					has_prev: false,
 				});
 			}
-			if (clearTreeSelection) {
-				clearTreeSelection();
+			if (onClear) {
+				onClear()
 			}
 		};
 
@@ -306,23 +339,20 @@ const AdvancedSearch = forwardRef(
 		// Expose method to get search values
 		useImperativeHandle(ref, () => ({
 			refreshSearch: async () => refetch(),
+			searchWithCurrentPagination: () => handleSearch(false),
 		}));
 
-		// Refetch when pagination changes
+		// Refetch when pagination changes - use current pagination
 		useEffect(() => {
-			if (Object.keys(searchParams).length > 0) {
-				handleSearch();
+			if (Object.keys(searchParams).length > 0 && initialized) {
+				const updatedSearchParams = {
+					...searchParams,
+					page: pagination.currentPage,
+					per_page: pagination.pageSize,
+				};
+				setSearchParams(updatedSearchParams);
 			}
 		}, [pagination.currentPage, pagination.pageSize]);
-
-		useEffect(() => {
-			if (onPaginationChange) {
-				onPaginationChange((prev) => ({
-					...prev,
-					currentPage: 1,
-				}));
-			}
-		}, [params]);
 
 		const inputStyles = { width: "100%", maxWidth: "100%" };
 
@@ -500,7 +530,7 @@ const AdvancedSearch = forwardRef(
 												id="search-icon"
 												type="button"
 												className="btn btn-primary h-100 w-100 p-2"
-												onClick={handleSearch}
+												onClick={() => handleSearch(true)} // Reset to page 1 for new searches
 												disabled={isButtonDisabled}
 											>
 												<i className="bx bx-search-alt align-middle"></i>

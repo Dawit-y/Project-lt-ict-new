@@ -18,6 +18,7 @@ const CascadingDropdowns = ({
 	disabled,
 	layout = "horizontal", // 'vertical' or 'horizontal'
 	colSizes = { md: 4 }, // default column sizes for horizontal layout
+	identifier = "",
 }) => {
 	const { t } = useTranslation();
 	const OROMIA_ID = "1";
@@ -77,7 +78,7 @@ const CascadingDropdowns = ({
 				<Input
 					type="select"
 					name={dropdown1name}
-					id={dropdown1name}
+					id={`${dropdown1name}-${identifier}`}
 					value={validation?.values?.[dropdown1name] || ""}
 					onChange={handleRegionChange}
 					onBlur={validation?.handleBlur}
@@ -107,7 +108,7 @@ const CascadingDropdowns = ({
 				<Input
 					type="select"
 					name={dropdown2name}
-					id={dropdown2name}
+					id={`${dropdown2name}-${identifier}`}
 					value={validation?.values?.[dropdown2name] || ""}
 					onChange={handleZoneChange}
 					onBlur={validation?.handleBlur}
@@ -146,7 +147,7 @@ const CascadingDropdowns = ({
 				<Input
 					type="select"
 					name={dropdown3name}
-					id={dropdown3name}
+					id={`${dropdown3name}-${identifier}`}
 					value={validation?.values?.[dropdown3name] || ""}
 					onChange={validation?.handleChange}
 					onBlur={validation?.handleBlur}
@@ -191,7 +192,7 @@ const CascadingDropdowns = ({
 					<Input
 						type="select"
 						name={dropdown1name}
-						id={dropdown1name}
+						id={`${dropdown1name}-${identifier}`}
 						value={validation?.values?.[dropdown1name] || ""}
 						onChange={handleRegionChange}
 						onBlur={validation?.handleBlur}
@@ -222,7 +223,7 @@ const CascadingDropdowns = ({
 					<Input
 						type="select"
 						name={dropdown2name}
-						id={dropdown2name}
+						id={`${dropdown2name}-${identifier}`}
 						value={validation?.values?.[dropdown2name] || ""}
 						onChange={handleZoneChange}
 						onBlur={validation?.handleBlur}
@@ -263,7 +264,7 @@ const CascadingDropdowns = ({
 					<Input
 						type="select"
 						name={dropdown3name}
-						id={dropdown3name}
+						id={`${dropdown3name}-${identifier}`}
 						value={validation?.values?.[dropdown3name] || ""}
 						onChange={validation?.handleChange}
 						onBlur={validation?.handleBlur}

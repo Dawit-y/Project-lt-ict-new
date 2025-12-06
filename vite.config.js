@@ -8,16 +8,16 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     server: {
+      port: env.FRONT_PORT,
+      strictPort: true,
+
       proxy: {
         "/api": {
-          target: env.VITE_BASE_API_FILE,
+          target: env.VITE_BASE_PROXY,
           changeOrigin: true,
           secure: false,
-          configure: (proxy) => {
-            proxy.on("proxyReq", (proxyReq) => {
-              proxyReq.setHeader("origin", env.VITE_BASE_API_FILE);
-            });
-          },
+          cookieDomainRewrite: { "*": "" },
+          rewrite: (path) => path.replace(/^\/api/, "/api"),
         },
       },
     },
