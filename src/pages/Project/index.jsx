@@ -18,6 +18,8 @@ import { toast } from "react-toastify";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import TreeForProject from "./TreeForProject";
 import ProjectFormModal from "./ProjectFormModal";
+import ProjectRegionalStructureModal from "./ProjectRegionalStructureModal";
+import { FaAlignLeft } from "react-icons/fa";
 
 const ProjectModel = () => {
 	document.title = "Projects";
@@ -27,6 +29,7 @@ const ProjectModel = () => {
 	const [isEdit, setIsEdit] = useState(false);
 	const [project, setProject] = useState(null);
 	const [selectedNode, setSelectedNode] = useState(null);
+	const [isStructureModalOpen, setIsStructureModalOpen] = useState(false);
 
 	const { param, isValidParam } = useMemo(() => {
 		const param = {
@@ -150,6 +153,20 @@ const ProjectModel = () => {
 		}
 	};
 
+	const handleStructureSubmit = async (values) => {
+		try {
+			await updateProject.mutateAsync(values);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			setIsStructureModalOpen(false);
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
+			}
+		}
+	};
+
 	const handleAddProject = async (data) => {
 		try {
 			await addProject.mutateAsync(data);
@@ -235,6 +252,11 @@ const ProjectModel = () => {
 		setProject(project);
 		setIsEdit(true);
 		toggle();
+	};
+
+	const handleOpenStructureModal = (project) => {
+		setProject(project);
+		setIsStructureModalOpen(true);
 	};
 
 	//delete projects
@@ -394,6 +416,14 @@ const ProjectModel = () => {
 										</UncontrolledTooltip>
 									</Button>
 								)}
+							<Button
+								color="None"
+								size="sm"
+								className="text-success"
+								onClick={() => handleOpenStructureModal(cellProps.row.original)}
+							>
+								<FaAlignLeft size={18} />
+							</Button>
 						</div>
 					);
 				},
@@ -413,6 +443,13 @@ const ProjectModel = () => {
 				onDeleteClick={handleDeleteProject}
 				onCloseClick={() => setDeleteModal(false)}
 				isLoading={deleteProject.isPending}
+			/>
+			<ProjectRegionalStructureModal
+				isOpen={isStructureModalOpen}
+				toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
+				project={project}
+				onSubmit={handleStructureSubmit}
+				isLoading={updateProject.isPending}
 			/>
 			<ProjectFormModal
 				isOpen={modal}
