@@ -7,6 +7,7 @@ import { useSearchCsoInfos } from "../queries/csoinfo_query";
 import { useAuthUser } from "../hooks/useAuthUser";
 import { useIsRestoring } from "@tanstack/react-query";
 import NoRoleAssigned from "../components/Common/NoRoleAssigned";
+import CsoDataNotFound from "../components/Common/CsoDataNotFound";
 
 // these are paths that are allowed if the user is authenticated
 const allowedPathsIfAuthenticated = [
@@ -41,9 +42,12 @@ const AuthMiddleware = ({ children }) => {
 	const currentPath = location.pathname;
 
 	const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
-	const { data: sidedata = [], isLoading: sideDataLoading } =
-    useFetchSideData(userId);
-  
+	const {
+		data: sidedata = [],
+		isLoading: sideDataLoading,
+		isError,
+	} = useFetchSideData(userId);
+
 	const ownerId = storedUser?.usr_owner_id;
 	const userType = storedUser?.usr_user_type;
 
@@ -64,6 +68,11 @@ const AuthMiddleware = ({ children }) => {
 		param,
 		isValidParam
 	);
+
+	if (data?.data?.length === 0 && userType !== 4) {
+		return <CsoDataNotFound />;
+	}
+
 	const csoStatus = data?.data?.length > 0 ? data.data[0].cso_status : null;
 
 	const authPaths = extractAuthPaths(authProtectedRoutes);
@@ -98,6 +107,15 @@ const AuthMiddleware = ({ children }) => {
 
 	if (!isAuthenticated) {
 		return <Navigate to="/login" state={{ from: location }} />;
+	}
+
+	if (
+		isAuthenticated &&
+		!sideDataLoading &&
+		sidedata.length === 0 &&
+		!isError
+	) {
+		return <NoRoleAssigned />;
 	}
 
 	if ((csoStatus === null || csoStatus === 0) && userType !== 4) {

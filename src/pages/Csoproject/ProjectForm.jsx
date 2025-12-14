@@ -134,8 +134,8 @@ const ProjectForm = ({
 		<Modal isOpen={isOpen} toggle={toggle} className="modal-xl">
 			<ModalHeader toggle={toggle} tag="h4">
 				{!!isEdit
-					? t("edit") + " " + t(activeTabName)
-					: t("add") + " " + t(activeTabName)}
+					? t("edit") + " " + t("project")
+					: t("add") + " " + t("project")}
 			</ModalHeader>
 			<ModalBody>
 				<Form
