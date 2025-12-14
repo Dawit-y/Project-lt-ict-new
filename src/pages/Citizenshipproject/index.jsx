@@ -487,6 +487,8 @@ const ProjectModel = () => {
 									paginationInfo={paginationInfo}
 									onPageChange={handlePageChange}
 									onPageSizeChange={handlePageSizeChange}
+									isAddButton={!!prjLocationWoredaId}
+									onAddClick={() => setModal(true)}
 								/>
 							</AdvancedSearch>
 						</SearchTableContainer>
@@ -530,6 +532,8 @@ const TableWrapper = ({
 	paginationInfo,
 	onPageChange,
 	onPageSizeChange,
+	isAddButton,
+	onAddClick,
 }) => {
 	return (
 		<>
@@ -541,7 +545,8 @@ const TableWrapper = ({
 				isServerSidePagination={true}
 				paginationPageSize={10}
 				isGlobalFilter={true}
-				isAddButton={false}
+				isAddButton={isAddButton}
+				onAddClick={onAddClick}
 				rowHeight={36}
 				addButtonText="Add"
 				isExcelExport={true}

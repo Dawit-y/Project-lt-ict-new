@@ -26,7 +26,7 @@ const useErrorMessages = () => {
 };
 
 // Function to extract API error message
-const GetErrorMessage = ({ error }) => {
+const getErrorMessage = ({ error }) => {
 	const statusMessages = useErrorMessages();
 	if (error?.response?.status) {
 		return `${statusMessages[error?.response?.status]}`;

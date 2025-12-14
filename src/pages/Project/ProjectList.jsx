@@ -25,6 +25,8 @@ import { projectExportColumns } from "../../utils/exportColumnsForLists";
 import ProjectFormModal from "./ProjectFormModal";
 import { toast } from "react-toastify";
 import { useProjectListState } from "../../hooks/useProjectListsState";
+import { FaAlignLeft } from "react-icons/fa";
+import ProjectRegionalStructureModal from "./ProjectRegionalStructureModal";
 
 const ProjectList = () => {
 	document.title = "Projects List";
@@ -38,7 +40,7 @@ const ProjectList = () => {
 		setPaginationState,
 		setUIState,
 		clearTreeSelection: clearTreeSelectionRedux,
-		resetProjectListState
+		resetProjectListState,
 	} = useProjectListState();
 
 	// Extract state from Redux
@@ -61,6 +63,7 @@ const ProjectList = () => {
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
 	const [searchError, setSearchError] = useState(null);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+	const [isStructureModalOpen, setIsStructureModalOpen] = useState(false);
 	const [selectedProject, setSelectedProject] = useState(null);
 	const [selectedNode, setSelectedNode] = useState(null);
 
@@ -177,8 +180,8 @@ const ProjectList = () => {
 	};
 
 	const handleClear = () => {
-		clearTreeSelection(); 
-		resetProjectListState(); 
+		clearTreeSelection();
+		resetProjectListState();
 	};
 
 	const toggleEditModal = () => {
@@ -247,6 +250,11 @@ const ProjectList = () => {
 		setIsEditModalOpen(true);
 	};
 
+	const handleOpenStructureModal = (project) => {
+		setSelectedProject(project);
+		setIsStructureModalOpen(true);
+	};
+
 	const handleSubmit = async (values, isEdit, project, selectedNode) => {
 		if (isEdit) {
 			try {
@@ -271,8 +279,8 @@ const ProjectList = () => {
 					prj_location_kebele_id: values.prj_location_kebele_id,
 					prj_location_description: values.prj_location_description,
 					prj_owner_region_id: Number(values.prj_owner_region_id),
-					prj_owner_zone_id: Number(values.prj_owner_region_id),
-					prj_owner_woreda_id: Number(values.prj_owner_region_id),
+					prj_owner_zone_id: Number(values.prj_owner_zone_id),
+					prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
 					prj_owner_kebele_id: values.prj_owner_kebele_id,
 					prj_owner_description: values.prj_owner_description,
 					prj_start_date_et: values.prj_start_date_et,
@@ -309,6 +317,23 @@ const ProjectList = () => {
 				if (!error.handledByMutationCache) {
 					toast.error(t("update_failure"), { autoClose: 3000 });
 				}
+			}
+		}
+	};
+
+	const handleStructureSubmit = async (values) => {
+		try {
+			await updateProject.mutateAsync(values);
+			toast.success(t("update_success"), {
+				autoClose: 3000,
+			});
+			setIsStructureModalOpen(false);
+			if (showSearchResult && advancedSearchRef.current) {
+				await advancedSearchRef.current.refreshSearch();
+			}
+		} catch (error) {
+			if (!error.handledByMutationCache) {
+				toast.error(t("update_failure"), { autoClose: 3000 });
 			}
 		}
 	};
@@ -390,7 +415,7 @@ const ProjectList = () => {
 				headerName: t("Action"),
 				sortable: false,
 				filter: false,
-				width: 120,
+				width: 150,
 				pinned: "right",
 				cellRenderer: (params) => {
 					if (params.node.footer) {
@@ -405,6 +430,14 @@ const ProjectList = () => {
 								onClick={() => handleEditClick(params.data)}
 							>
 								<i className="mdi mdi-pencil font-size-18" />
+							</Button>
+							<Button
+								color="None"
+								size="sm"
+								className="text-success"
+								onClick={() => handleOpenStructureModal(params.data)}
+							>
+								<FaAlignLeft size={18} />
 							</Button>
 							<Link to={`/projectdetail/${params.data.prj_id}`}>
 								<Button type="button" className="btn-sm mb-1 default" outline>
@@ -424,6 +457,13 @@ const ProjectList = () => {
 			<div className="page-content">
 				<div className="w-100">
 					<Breadcrumbs />
+					<ProjectRegionalStructureModal
+						isOpen={isStructureModalOpen}
+						toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
+						project={selectedProject}
+						onSubmit={handleStructureSubmit}
+						isLoading={updateProject.isPending}
+					/>
 					<ProjectFormModal
 						isOpen={isEditModalOpen}
 						toggle={toggleEditModal}

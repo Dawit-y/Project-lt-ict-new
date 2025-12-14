@@ -29,6 +29,7 @@ import {
 	addYears,
 	createKeyValueMap,
 } from "../../utils/commonMethods";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 
 // utils/dateUtils.js
 export const parseFormDate = (dateValue) => {
@@ -105,6 +106,25 @@ const ProjectForm = ({
 			(item) => item.psc_cso_active === 1
 		);
 	}, [sectorCategories]);
+
+	const {
+		data: projectStatusData,
+		isLoading: isStatusLoading,
+		isError: isStatusError,
+	} = useFetchProjectStatuss();
+	const projectStatusMap = useMemo(() => {
+		return (
+			projectStatusData?.data?.reduce((acc, status) => {
+				acc[status.prs_id] =
+					lang === "en"
+						? status.prs_status_name_en
+						: lang === "am"
+							? status.prs_status_name_am
+							: status.prs_status_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [projectStatusData, lang]);
 
 	const startDate = parseFormDate(validation.values.prj_start_date_plan_gc);
 	const minEndDate = startDate ? addMonths(startDate, 1) : null;
@@ -214,6 +234,16 @@ const ProjectForm = ({
 									isLoading={isSectorCatLoading}
 									isError={isSectorCatError}
 									placeholder={t("select_cluster")}
+								/>
+								<AsyncSelectField
+									fieldId="prj_project_status_id"
+									validation={validation}
+									isRequired
+									className="col-md-4 mb-3"
+									optionMap={projectStatusMap}
+									isLoading={isStatusLoading}
+									isError={isStatusError}
+									placeholder={t("select_status")}
 								/>
 							</Row>
 						</CardBody>
@@ -337,7 +367,7 @@ const ProjectForm = ({
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_direct_ben_male"}
-									isRequired={true}
+									isRequired={false}
 									className="col-md-3 mb-3"
 									allowDecimal={false}
 									placeholder={t("direct_male_beneficiaries")}
@@ -345,7 +375,7 @@ const ProjectForm = ({
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_direct_ben_female"}
-									isRequired={true}
+									isRequired={false}
 									className="col-md-3 mb-3"
 									allowDecimal={false}
 									placeholder={t("direct_female_beneficiaries")}
@@ -353,7 +383,7 @@ const ProjectForm = ({
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_indirect_ben_male"}
-									isRequired={true}
+									isRequired={false}
 									className="col-md-3 mb-3"
 									allowDecimal={false}
 									placeholder={t("indirect_male_beneficiaries")}
@@ -361,7 +391,7 @@ const ProjectForm = ({
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_indirect_ben_female"}
-									isRequired={true}
+									isRequired={false}
 									className="col-md-3 mb-3"
 									allowDecimal={false}
 									placeholder={t("indirect_female_beneficiaries")}

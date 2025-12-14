@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import {
 	FormGroup,
 	Label,
@@ -91,16 +91,8 @@ const extractProgramHierarchy = (programTree) => {
 	return programs;
 };
 
-const getClustersWithId = (clustersWithSectors) => {
-	return clustersWithSectors.map((cluster) => ({
-		...cluster,
-		id: cluster.psc_id, // Add id attribute with psc_id value
-	}));
-};
-
 const ProgramCascadingDropdowns = ({
 	validation,
-	// Field names for each level
 	regionField = "region_id",
 	zoneField = "zone_id",
 	woredaField = "woreda_id",
@@ -109,205 +101,86 @@ const ProgramCascadingDropdowns = ({
 	programField = "program_id",
 	subProgramField = "sub_program_id",
 	outputField = "output_id",
-
 	required = false,
-	disabled = false,
-	layout = "vertical",
-	colSizes = { md: 6 },
-
-	defaultRegion = "1",
 }) => {
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 	const { userId } = useAuthUser();
 
-	// Fetch clusters and sectors in tree format
-	const {
-		data: clustersWithSectors = [],
-		isLoading: loadingClustersSectors,
-		isError: isClusterError,
-		error: clusterError,
-	} = getUserSectorListTree(userId);
-	const clustersWithId = React.useMemo(() => {
-		return getClustersWithId(clustersWithSectors);
-	}, [clustersWithSectors]);
+	// 1. SELECTORS FROM FORMIK STATE
+	const selectedRegion = validation.values[regionField];
+	const selectedZone = validation.values[zoneField];
+	const selectedWoreda = validation.values[woredaField];
+	const selectedCluster = validation.values[clusterField];
+	const selectedSector = validation.values[sectorField];
+	const selectedProgram = validation.values[programField];
+	const selectedSubProgram = validation.values[subProgramField];
 
-	// Fetch zones for selected region
-	const {
-		data: zones = [],
-		isLoading: loadingZones,
-		refetch: refetchZones,
-	} = useQuery({
-		queryKey: ["zones", validation?.values?.[regionField]],
+	const { data: clustersWithSectors = [], isLoading: loadingClustersSectors } =
+		getUserSectorListTree(userId);
+
+	const { data: zones = [], isLoading: loadingZones } = useQuery({
+		queryKey: ["zones", selectedRegion],
+		queryFn: () => fetchAddressByParent(selectedRegion),
+		enabled: !!selectedRegion,
 		staleTime: 1000 * 60 * 5,
-		queryFn: () => fetchAddressByParent(validation?.values?.[regionField]),
-		enabled: !!validation?.values?.[regionField],
 	});
 
-	// Fetch woredas for selected zone
-	const {
-		data: woredas = [],
-		isLoading: loadingWoredas,
-		refetch: refetchWoredas,
-	} = useQuery({
-		queryKey: ["woredas", validation?.values?.[zoneField]],
+	const { data: woredas = [], isLoading: loadingWoredas } = useQuery({
+		queryKey: ["woredas", selectedZone],
+		queryFn: () => fetchAddressByParent(selectedZone),
+		enabled: !!selectedZone,
 		staleTime: 1000 * 60 * 5,
-		queryFn: () => fetchAddressByParent(validation?.values?.[zoneField]),
-		enabled: !!validation?.values?.[zoneField],
 	});
 
-	// Fetch program tree for selected sector
-	const {
-		data: programTreeData = [],
-		isLoading: loadingPrograms,
-		refetch: refetchPrograms,
-	} = useQuery({
-		queryKey: ["program-tree", validation?.values?.[sectorField]],
+	const { data: programTreeData = [], isLoading: loadingPrograms } = useQuery({
+		queryKey: ["program-tree", selectedSector],
+		queryFn: () => fetchProgramTree(selectedSector),
+		enabled: !!selectedSector,
 		staleTime: 1000 * 60 * 5,
-		queryFn: () => fetchProgramTree(validation?.values?.[sectorField]),
-		enabled: !!validation?.values?.[sectorField],
 	});
 
-	// Extract programs hierarchy from program tree
-	const programsHierarchy = React.useMemo(() => {
-		return extractProgramHierarchy(programTreeData);
-	}, [programTreeData]);
+	// 3. DERIVED DATA (useMemo)
+	const clustersWithId = useMemo(
+		() => clustersWithSectors.map((c) => ({ ...c, id: c.psc_id })),
+		[clustersWithSectors]
+	);
+	const programsHierarchy = useMemo(
+		() => extractProgramHierarchy(programTreeData),
+		[programTreeData]
+	);
 
-	// Get subprograms for selected program
-	const subPrograms = React.useMemo(() => {
-		const selectedProgramId = validation?.values?.[programField];
-		if (!selectedProgramId || !programsHierarchy.length) return [];
-
-		const selectedProgram = programsHierarchy.find(
-			(prog) => prog.id == selectedProgramId
+	const sectorsForSelectedCluster = useMemo(() => {
+		const cluster = clustersWithSectors.find(
+			(c) => c.psc_id == selectedCluster
 		);
-		return selectedProgram?.children || [];
-	}, [programsHierarchy, validation?.values?.[programField]]);
+		return (cluster?.children || []).map((s) => ({ ...s, id: s.sci_id }));
+	}, [clustersWithSectors, selectedCluster]);
 
-	// Get outputs for selected subprogram
-	const outputs = React.useMemo(() => {
-		const selectedSubProgramId = validation?.values?.[subProgramField];
-		if (!selectedSubProgramId || !subPrograms.length) return [];
+	const subPrograms = useMemo(() => {
+		const prog = programsHierarchy.find((p) => p.id == selectedProgram);
+		return prog?.children || [];
+	}, [programsHierarchy, selectedProgram]);
 
-		const selectedSubProgram = subPrograms.find(
-			(sub) => sub.id == selectedSubProgramId
-		);
-		return selectedSubProgram?.children || [];
-	}, [subPrograms, validation?.values?.[subProgramField]]);
+	const outputs = useMemo(() => {
+		const sub = subPrograms.find((s) => s.id == selectedSubProgram);
+		return sub?.children || [];
+	}, [subPrograms, selectedSubProgram]);
 
-	// Get sectors for selected cluster
-	const sectorsForSelectedCluster = React.useMemo(() => {
-		const selectedClusterId = validation?.values?.[clusterField];
+	const createHandler = (currentField, fieldsToReset) => (e) => {
+		const newValue = e.target.value;
 
-		if (!selectedClusterId || !clustersWithSectors.length) return [];
+		// Set the current field and trigger validation immediately
+		validation.setFieldValue(currentField, newValue, true);
+		validation.setFieldTouched(currentField, true, false);
 
-		const selectedCluster = clustersWithSectors.find(
-			(cluster) => cluster.psc_id == selectedClusterId
-		);
-
-		const sectors = selectedCluster?.children || [];
-		return sectors.map((sector) => ({
-			...sector,
-			id: sector.sci_id,
-		}));
-	}, [clustersWithSectors, validation?.values?.[clusterField]]);
-
-	// Set default region on initial load
-	useEffect(() => {
-		if (!validation?.values?.[regionField] && defaultRegion) {
-			validation?.setFieldValue?.(regionField, defaultRegion);
-		}
-	}, [regionField, defaultRegion, validation]);
-
-	// Handler functions with cascade reset
-	const handleRegionChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(regionField, value);
-		validation?.setFieldTouched?.(regionField, true, true);
-		validation?.setFieldValue?.(zoneField, "");
-		validation?.setFieldValue?.(woredaField, "");
-		validation?.setFieldValue?.(clusterField, "");
-		validation?.setFieldValue?.(sectorField, "");
-		validation?.setFieldValue?.(programField, "");
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		refetchZones();
-		validation.validateForm();
+		// Reset dependent fields
+		fieldsToReset.forEach((field) => {
+			validation.setFieldValue(field, "", false);
+			validation.setFieldTouched(field, false, false);
+		});
 	};
 
-	const handleZoneChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(zoneField, value);
-		validation?.setFieldTouched?.(zoneField, true, true);
-		validation?.setFieldValue?.(woredaField, "");
-		validation?.setFieldValue?.(clusterField, "");
-		validation?.setFieldValue?.(sectorField, "");
-		validation?.setFieldValue?.(programField, "");
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		refetchWoredas();
-		validation.validateForm();
-	};
-
-	const handleWoredaChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(woredaField, value);
-		validation?.setFieldTouched?.(woredaField, true, true);
-		validation?.setFieldValue?.(clusterField, "");
-		validation?.setFieldValue?.(sectorField, "");
-		validation?.setFieldValue?.(programField, "");
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		validation.validateForm();
-	};
-
-	const handleClusterChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(clusterField, value);
-		validation?.setFieldTouched?.(clusterField, true, true);
-		validation?.setFieldValue?.(sectorField, "");
-		validation?.setFieldValue?.(programField, "");
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		validation.validateForm();
-	};
-
-	const handleSectorChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(sectorField, value);
-		validation?.setFieldTouched?.(sectorField, true, true);
-		validation?.setFieldValue?.(programField, "");
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		refetchPrograms();
-		validation.validateForm();
-	};
-
-	const handleProgramChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(programField, value);
-		validation?.setFieldTouched?.(programField, true, true);
-		validation?.setFieldValue?.(subProgramField, "");
-		validation?.setFieldValue?.(outputField, "");
-		validation.validateForm();
-	};
-
-	const handleSubProgramChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(subProgramField, value);
-		validation?.setFieldTouched?.(subProgramField, true, true);
-		validation?.setFieldValue?.(outputField, "");
-		validation.validateForm();
-	};
-
-	const handleOutputChange = (e) => {
-		const value = e.target.value;
-		validation?.setFieldValue?.(outputField, value);
-		validation?.setFieldTouched?.(outputField, true, true);
-		validation.validateForm();
-	};
-
-	// Helper function to get the best available name field based on language and validity
 	const getBestNameField = (item, lang, nameFields = {}) => {
 		const {
 			en = "pri_name_en",
@@ -315,7 +188,6 @@ const ProgramCascadingDropdowns = ({
 			or = "pri_name_or",
 		} = nameFields;
 
-		// Define the priority order based on current language
 		const priorityOrder =
 			lang === "en"
 				? [en, or, am, "name"]
@@ -323,16 +195,13 @@ const ProgramCascadingDropdowns = ({
 					? [or, en, am, "name"]
 					: [am, en, or, "name"];
 
-		// Check each field in priority order
 		for (const field of priorityOrder) {
 			const value = item[field];
-			// Check if value exists and doesn't contain only hyphens (minimum 3 hyphens)
 			if (value && !/^-{3,}$/.test(value)) {
 				return value;
 			}
 		}
 
-		// If all fields contain ---, return the first available one
 		for (const field of priorityOrder) {
 			const value = item[field];
 			if (value) {
@@ -340,11 +209,9 @@ const ProgramCascadingDropdowns = ({
 			}
 		}
 
-		// Fallback to name field or empty string
 		return item.name || "";
 	};
 
-	// Helper function to render dropdown options
 	const renderOptions = (
 		data,
 		loading,
@@ -376,8 +243,7 @@ const ProgramCascadingDropdowns = ({
 		loading,
 		emptyMessage,
 		disabled: localDisabled,
-		lang, // Pass the current language
-		nameFields = {}, // Object with en, am, or field names
+		nameFields = {}, 
 	}) => (
 		<FormGroup>
 			<Label for={name}>
@@ -402,343 +268,120 @@ const ProgramCascadingDropdowns = ({
 		</FormGroup>
 	);
 
-	// Vertical layout
-	const renderVerticalLayout = () => (
+	return (
 		<>
-			{/* Region */}
 			<Dropdown
 				name={regionField}
-				label={"owner_region"}
-				value={validation?.values?.[regionField]}
-				onChange={handleRegionChange}
-				onBlur={validation?.handleBlur}
+				label="owner_region"
+				value={selectedRegion}
+				onChange={createHandler(regionField, [
+					zoneField,
+					woredaField,
+					clusterField,
+					sectorField,
+					programField,
+					subProgramField,
+					outputField,
+				])}
 				options={[{ id: "1", name: "Oromia" }]}
 				loading={false}
-				emptyMessage="no_regions_available"
-				disabled={disabled}
 			/>
 
-			{/* Zone */}
 			<Dropdown
 				name={zoneField}
-				label={"owner_zone"}
-				value={validation?.values?.[zoneField]}
-				onChange={handleZoneChange}
-				onBlur={validation?.handleBlur}
+				label="owner_zone"
+				value={selectedZone}
+				onChange={createHandler(zoneField, [
+					woredaField,
+					clusterField,
+					sectorField,
+					programField,
+					subProgramField,
+					outputField,
+				])}
 				options={zones}
 				loading={loadingZones}
-				emptyMessage="no_zones_available"
-				disabled={loadingZones || zones.length === 0 || disabled}
+				disabled={!selectedRegion || loadingZones}
 			/>
 
-			{/* Woreda */}
 			<Dropdown
 				name={woredaField}
-				label={"owner_woreda"}
-				value={validation?.values?.[woredaField]}
-				onChange={handleWoredaChange}
-				onBlur={validation?.handleBlur}
+				label="owner_woreda"
+				value={selectedWoreda}
+				onChange={createHandler(woredaField, [
+					clusterField,
+					sectorField,
+					programField,
+					subProgramField,
+					outputField,
+				])}
 				options={woredas}
 				loading={loadingWoredas}
-				emptyMessage="no_woredas_available"
-				disabled={loadingWoredas || woredas.length === 0 || disabled}
+				disabled={!selectedZone || loadingWoredas}
 			/>
 
-			{/* Cluster */}
 			<Dropdown
 				name={clusterField}
 				label="Cluster"
-				value={validation?.values?.[clusterField]}
-				onChange={handleClusterChange}
-				onBlur={validation?.handleBlur}
+				value={selectedCluster}
+				onChange={createHandler(clusterField, [
+					sectorField,
+					programField,
+					subProgramField,
+					outputField,
+				])}
 				options={clustersWithId}
 				loading={loadingClustersSectors}
-				emptyMessage="no_clusters_available"
-				disabled={
-					loadingClustersSectors ||
-					clustersWithSectors.length === 0 ||
-					!validation?.values?.[woredaField] ||
-					disabled
-				}
-				lang={lang}
-				nameFields={{
-					en: "psc_name",
-					or: "psc_name",
-					am: "psc_name",
-				}}
+				disabled={!selectedWoreda || loadingClustersSectors}
+				nameFields={{ en: "psc_name", or: "psc_name", am: "psc_name" }}
 			/>
 
-			{/* Sector */}
 			<Dropdown
 				name={sectorField}
-				label={"Sector"}
-				value={validation?.values?.[sectorField]}
-				onChange={handleSectorChange}
-				onBlur={validation?.handleBlur}
+				label="Sector"
+				value={selectedSector}
+				onChange={createHandler(sectorField, [
+					programField,
+					subProgramField,
+					outputField,
+				])}
 				options={sectorsForSelectedCluster}
-				loading={false}
-				emptyMessage="no_sectors_available"
-				disabled={
-					sectorsForSelectedCluster.length === 0 ||
-					!validation?.values?.[clusterField] ||
-					disabled
-				}
-				lang={lang}
-				nameFields={{
-					en: "sci_name_en",
-					or: "sci_name_or",
-					am: "sci_name_am",
-				}}
+				disabled={!selectedCluster}
+				nameFields={{ en: "sci_name_en", or: "sci_name_or", am: "sci_name_am" }}
 			/>
 
-			{/* Program */}
 			<Dropdown
 				name={programField}
 				label="Program"
-				value={validation?.values?.[programField]}
-				onChange={handleProgramChange}
-				onBlur={validation?.handleBlur}
+				value={selectedProgram}
+				onChange={createHandler(programField, [subProgramField, outputField])}
 				options={programsHierarchy}
 				loading={loadingPrograms}
-				emptyMessage="no_programs_available"
-				disabled={
-					loadingPrograms ||
-					programsHierarchy.length === 0 ||
-					!validation?.values?.[sectorField] ||
-					disabled
-				}
-				lang={lang}
-				nameFields={{
-					en: "pri_name_en",
-					or: "pri_name_or",
-					am: "pri_name_am",
-				}}
+				disabled={!selectedSector || loadingPrograms}
 			/>
 
-			{/* Sub Program */}
 			<Dropdown
 				name={subProgramField}
 				label="sub_program"
-				value={validation?.values?.[subProgramField]}
-				onChange={handleSubProgramChange}
-				onBlur={validation?.handleBlur}
+				value={selectedSubProgram}
+				onChange={createHandler(subProgramField, [outputField])}
 				options={subPrograms}
-				loading={false}
-				emptyMessage="no_sub_programs_available"
-				disabled={
-					subPrograms.length === 0 ||
-					!validation?.values?.[programField] ||
-					disabled
-				}
-				lang={lang}
-				nameFields={{
-					en: "pri_name_en",
-					or: "pri_name_or",
-					am: "pri_name_am",
-				}}
+				disabled={!selectedProgram}
 			/>
 
-			{/* Output */}
 			<Dropdown
 				name={outputField}
 				label="Output"
-				value={validation?.values?.[outputField]}
-				onChange={handleOutputChange}
-				onBlur={validation?.handleBlur}
-				options={outputs}
-				loading={false}
-				emptyMessage="no_outputs_available"
-				disabled={
-					outputs.length === 0 ||
-					!validation?.values?.[subProgramField] ||
-					disabled
-				}
-				lang={lang}
-				nameFields={{
-					en: "pri_name_en",
-					or: "pri_name_or",
-					am: "pri_name_am",
+				value={validation.values[outputField]}
+				onChange={(e) => {
+					validation.setFieldValue(outputField, e.target.value, true);
+					validation.setFieldTouched(outputField, true, false);
 				}}
+				options={outputs}
+				disabled={!selectedSubProgram}
 			/>
 		</>
 	);
-
-	// Horizontal layout with rows
-	const renderHorizontalLayout = () => (
-		<>
-			<Row>
-				<Col {...colSizes}>
-					<Dropdown
-						name={regionField}
-						label={regionField}
-						value={validation?.values?.[regionField]}
-						onChange={handleRegionChange}
-						onBlur={validation?.handleBlur}
-						options={[{ id: "1", name: "Oromia" }]}
-						loading={false}
-						emptyMessage="no_regions_available"
-						disabled={disabled}
-					/>
-				</Col>
-				<Col {...colSizes}>
-					<Dropdown
-						name={zoneField}
-						label={zoneField}
-						value={validation?.values?.[zoneField]}
-						onChange={handleZoneChange}
-						onBlur={validation?.handleBlur}
-						options={zones}
-						loading={loadingZones}
-						emptyMessage="no_zones_available"
-						disabled={loadingZones || zones.length === 0 || disabled}
-					/>
-				</Col>
-			</Row>
-
-			<Row>
-				<Col {...colSizes}>
-					<Dropdown
-						name={woredaField}
-						label={woredaField}
-						value={validation?.values?.[woredaField]}
-						onChange={handleWoredaChange}
-						onBlur={validation?.handleBlur}
-						options={woredas}
-						loading={loadingWoredas}
-						emptyMessage="no_woredas_available"
-						disabled={loadingWoredas || woredas.length === 0 || disabled}
-					/>
-				</Col>
-				<Col {...colSizes}>
-					<Dropdown
-						name={clusterField}
-						label="Cluster"
-						value={validation?.values?.[clusterField]}
-						onChange={handleClusterChange}
-						onBlur={validation?.handleBlur}
-						options={clustersWithId}
-						loading={loadingClustersSectors}
-						emptyMessage="no_clusters_available"
-						disabled={
-							loadingClustersSectors ||
-							clustersWithSectors.length === 0 ||
-							!validation?.values?.[woredaField] ||
-							disabled
-						}
-						lang={lang}
-						nameFields={{
-							en: "psc_name",
-							or: "psc_name",
-							am: "psc_name",
-						}}
-					/>
-				</Col>
-			</Row>
-
-			<Row>
-				<Col {...colSizes}>
-					<Dropdown
-						name={sectorField}
-						label={sectorField}
-						value={validation?.values?.[sectorField]}
-						onChange={handleSectorChange}
-						onBlur={validation?.handleBlur}
-						options={sectorsForSelectedCluster}
-						loading={false}
-						emptyMessage="no_sectors_available"
-						disabled={
-							sectorsForSelectedCluster.length === 0 ||
-							!validation?.values?.[clusterField] ||
-							disabled
-						}
-						lang={lang}
-						nameFields={{
-							en: "sci_name_en",
-							or: "sci_name_or",
-							am: "sci_name_am",
-						}}
-					/>
-				</Col>
-				<Col {...colSizes}>
-					<Dropdown
-						name={programField}
-						label="Program"
-						value={validation?.values?.[programField]}
-						onChange={handleProgramChange}
-						onBlur={validation?.handleBlur}
-						options={programsHierarchy}
-						loading={loadingPrograms}
-						emptyMessage="no_programs_available"
-						disabled={
-							loadingPrograms ||
-							programsHierarchy.length === 0 ||
-							!validation?.values?.[sectorField] ||
-							disabled
-						}
-						lang={lang}
-						nameFields={{
-							en: "pri_name_en",
-							or: "pri_name_or",
-							am: "pri_name_am",
-						}}
-					/>
-				</Col>
-			</Row>
-
-			<Row>
-				<Col {...colSizes}>
-					<Dropdown
-						name={subProgramField}
-						label="sub_program"
-						value={validation?.values?.[subProgramField]}
-						onChange={handleSubProgramChange}
-						onBlur={validation?.handleBlur}
-						options={subPrograms}
-						loading={false}
-						emptyMessage="no_sub_programs_available"
-						disabled={
-							subPrograms.length === 0 ||
-							!validation?.values?.[programField] ||
-							disabled
-						}
-						lang={lang}
-						nameFields={{
-							en: "pri_name_en",
-							or: "pri_name_or",
-							am: "pri_name_am",
-						}}
-					/>
-				</Col>
-				<Col {...colSizes}>
-					<Dropdown
-						name={outputField}
-						label="Output"
-						value={validation?.values?.[outputField]}
-						onChange={handleOutputChange}
-						onBlur={validation?.handleBlur}
-						options={outputs}
-						loading={false}
-						emptyMessage="no_outputs_available"
-						disabled={
-							outputs.length === 0 ||
-							!validation?.values?.[subProgramField] ||
-							disabled
-						}
-						lang={lang}
-						nameFields={{
-							en: "pri_name_en",
-							or: "pri_name_or",
-							am: "pri_name_am",
-						}}
-					/>
-				</Col>
-			</Row>
-		</>
-	);
-
-	return layout === "horizontal"
-		? renderHorizontalLayout()
-		: renderVerticalLayout();
 };
 
 export default ProgramCascadingDropdowns;
