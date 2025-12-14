@@ -168,7 +168,7 @@ const ProjectModel = () => {
 		prj_location_woreda_id: Yup.string().required(t("prj_location_woreda_id")),
 		prj_urban_ben_number: numberValidation(0, 1000000000000, false),
 		prj_rural_ben_number: numberValidation(0, 1000000000000, false),
-		prj_admin_cost: numberValidation(0, 1000000000000, true).test(
+		prj_admin_cost: formattedAmountValidation(0, 1000000000000, true).test(
 			"admin-program-budget-check-admin",
 			t(
 				"Sum of admin cost and program cost should be equal with total actual budget"
@@ -178,12 +178,13 @@ const ProjectModel = () => {
 				const programCost = prj_program_cost || 0;
 				const total = (adminCost || 0) + programCost;
 				const budget = prj_total_actual_budget || 0;
-
-				return total == budget;
+				const approxTotal = parseInt(total);
+				const approxBudget = parseInt(budget);
+				return approxTotal == approxBudget;
 			}
 		),
 
-		prj_program_cost: numberValidation(0, 1000000000000, true).test(
+		prj_program_cost: formattedAmountValidation(0, 1000000000000, true).test(
 			"admin-program-budget-check-program",
 			t(
 				"Sum of admin cost and program cost should be equal with total actual budget"
@@ -193,8 +194,9 @@ const ProjectModel = () => {
 				const adminCost = prj_admin_cost || 0;
 				const total = adminCost + (programCost || 0);
 				const budget = prj_total_actual_budget || 0;
-
-				return total == budget;
+				const approxTotal = parseInt(total);
+				const approxBudget = parseInt(budget);
+				return approxTotal == approxBudget;
 			}
 		),
 		prj_male_participant: numberValidation(0, 1000000000000, true),
@@ -296,7 +298,7 @@ const ProjectModel = () => {
 					prj_name_am: values.prj_name_am,
 					prj_name_en: values.prj_name_en,
 					prj_code: values.prj_code,
-					prj_project_status_id: values.prj_project_status_id,
+					prj_project_status_id: Number(values.prj_project_status_id),
 					prj_project_category_id: values.prj_project_category_id,
 					prj_cluster_id: values.prj_cluster_id,
 					prj_project_budget_source_id: values.prj_project_budget_source_id,
@@ -357,7 +359,7 @@ const ProjectModel = () => {
 					prj_name_am: values.prj_name_am,
 					prj_name_en: values.prj_name_en,
 					prj_code: values.prj_code,
-					prj_project_status_id: values.prj_project_status_id,
+					prj_project_status_id: Number(values.prj_project_status_id),
 					prj_project_category_id: values.prj_project_category_id,
 					prj_cluster_id: values.prj_cluster_id,
 					prj_project_budget_source_id: values.prj_project_budget_source_id,
