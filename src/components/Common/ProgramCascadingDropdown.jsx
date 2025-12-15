@@ -232,7 +232,9 @@ const ProgramCascadingDropdowns = ({
 		));
 	};
 
-	// Single dropdown component
+
+	const INDENT_STEP = 25;
+
 	const Dropdown = ({
 		name,
 		label,
@@ -243,11 +245,20 @@ const ProgramCascadingDropdowns = ({
 		loading,
 		emptyMessage,
 		disabled: localDisabled,
-		nameFields = {}, 
+		nameFields = {},
+		level = 0, 
 	}) => (
-		<FormGroup>
-			<Label for={name}>
-				{t(label)} {required && <span className="text-danger">*</span>}
+		<FormGroup
+			style={{
+				paddingLeft: `${level * INDENT_STEP}px`,
+				borderLeft: level > 0 ? "2px solid #dee2e6" : "none",
+				marginLeft: level > 0 ? "10px" : "0px",
+				marginBottom: "1.5rem",
+			}}
+		>
+			<Label for={name} className={level > 0 ? "ps-2" : ""}>
+				{level > 0 && "↳ "} {t(label)}{" "}
+				{required && <span className="text-danger">*</span>}
 			</Label>
 			<Input
 				type="select"
@@ -258,12 +269,15 @@ const ProgramCascadingDropdowns = ({
 				onBlur={onBlur}
 				invalid={!!(validation?.touched?.[name] && validation?.errors?.[name])}
 				disabled={localDisabled}
+				className="ms-2"
 			>
 				<option value="">{t(`select_${label.toLowerCase()}`)}</option>
 				{renderOptions(options, loading, emptyMessage, lang, nameFields)}
 			</Input>
 			{validation?.touched?.[name] && validation?.errors?.[name] ? (
-				<FormFeedback>{validation?.errors?.[name]}</FormFeedback>
+				<FormFeedback className="ms-2">
+					{validation?.errors?.[name]}
+				</FormFeedback>
 			) : null}
 		</FormGroup>
 	);
@@ -271,56 +285,39 @@ const ProgramCascadingDropdowns = ({
 	return (
 		<>
 			<Dropdown
+				level={0}
 				name={regionField}
 				label="owner_region"
 				value={selectedRegion}
-				onChange={createHandler(regionField, [
-					zoneField,
-					woredaField,
-					clusterField,
-					sectorField,
-					programField,
-					subProgramField,
-					outputField,
-				])}
+				onChange={createHandler(regionField, [zoneField, woredaField])}
 				options={[{ id: "1", name: "Oromia" }]}
 				loading={false}
 			/>
 
 			<Dropdown
+				level={1}
 				name={zoneField}
 				label="owner_zone"
 				value={selectedZone}
-				onChange={createHandler(zoneField, [
-					woredaField,
-					clusterField,
-					sectorField,
-					programField,
-					subProgramField,
-					outputField,
-				])}
+				onChange={createHandler(zoneField, [woredaField])}
 				options={zones}
 				loading={loadingZones}
 				disabled={!selectedRegion || loadingZones}
 			/>
 
 			<Dropdown
+				level={2}
 				name={woredaField}
 				label="owner_woreda"
 				value={selectedWoreda}
-				onChange={createHandler(woredaField, [
-					clusterField,
-					sectorField,
-					programField,
-					subProgramField,
-					outputField,
-				])}
+				onChange={createHandler(woredaField, [])}
 				options={woredas}
 				loading={loadingWoredas}
 				disabled={!selectedZone || loadingWoredas}
 			/>
 
 			<Dropdown
+				level={3}
 				name={clusterField}
 				label="Cluster"
 				value={selectedCluster}
@@ -332,11 +329,12 @@ const ProgramCascadingDropdowns = ({
 				])}
 				options={clustersWithId}
 				loading={loadingClustersSectors}
-				disabled={!selectedWoreda || loadingClustersSectors}
+				disabled={loadingClustersSectors}
 				nameFields={{ en: "psc_name", or: "psc_name", am: "psc_name" }}
 			/>
 
 			<Dropdown
+				level={4}
 				name={sectorField}
 				label="Sector"
 				value={selectedSector}
@@ -351,6 +349,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
+				level={5}
 				name={programField}
 				label="Program"
 				value={selectedProgram}
@@ -361,6 +360,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
+				level={6}
 				name={subProgramField}
 				label="sub_program"
 				value={selectedSubProgram}
@@ -370,6 +370,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
+				level={7}
 				name={outputField}
 				label="Output"
 				value={validation.values[outputField]}
