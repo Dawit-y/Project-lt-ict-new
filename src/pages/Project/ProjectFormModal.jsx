@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -161,14 +161,14 @@ const ProjectFormModal = ({
 			prj_location_description: alphanumericValidation(3, 425, false),
 			prj_remark: alphanumericValidation(3, 425, false),
 
-			prj_owner_region_id: Yup.string().required(t("val_required")),
-			prj_owner_zone_id: Yup.string().required(t("val_required")),
-			prj_owner_woreda_id: Yup.string().required(t("val_required")),
-			prj_cluster_id: Yup.string().required(t("val_required")),
-			prj_sector_id: Yup.string().required(t("val_required")),
-			prj_program_id: Yup.string().required(t("val_required")),
-			prj_sub_program_id: Yup.string().required(t("val_required")),
-			prj_parent_id: Yup.string().required(t("val_required")),
+			// prj_owner_region_id: Yup.string().required(t("val_required")),
+			// prj_owner_zone_id: Yup.string().required(t("val_required")),
+			// prj_owner_woreda_id: Yup.string().required(t("val_required")),
+			// prj_cluster_id: Yup.string().required(t("val_required")),
+			// prj_sector_id: Yup.string().required(t("val_required")),
+			// prj_program_id: Yup.string().required(t("val_required")),
+			// prj_sub_program_id: Yup.string().required(t("val_required")),
+			// prj_parent_id: Yup.string().required(t("val_required")),
 		}),
 		validateOnBlur: true,
 		validateOnChange: true,
