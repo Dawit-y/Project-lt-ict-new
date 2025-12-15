@@ -699,21 +699,21 @@ const ProjectFinancialPerformanceTable = ({
               </th>
             </tr>
             <tr>
-              <th data-column="q1_month1">{t("Sep")}</th>
-              <th data-column="q1_month2">{t("Oct")}</th>
-              <th data-column="q1_month3">{t("Nov")}</th>
+            <th data-column="q1_month1">{t("Jul")}</th>
+              <th data-column="q1_month2">{t("Aug")}</th>
+              <th data-column="q1_month3">{t("Sep")}</th>
               <th data-column="q1_sum">{t("Sum")}</th>
-              <th data-column="q2_month1">{t("Dec")}</th>
-              <th data-column="q2_month2">{t("Jan")}</th>
-              <th data-column="q2_month3">{t("Feb")}</th>
+              <th data-column="q2_month1">{t("Oct")}</th>
+              <th data-column="q2_month2">{t("Nov")}</th>              
+              <th data-column="q2_month3">{t("Dec")}</th>
               <th data-column="q2_sum">{t("Sum")}</th>
-              <th data-column="q3_month1">{t("Mar")}</th>
-              <th data-column="q3_month2">{t("Apr")}</th>
-              <th data-column="q3_month3">{t("May")}</th>
-              <th data-column="q3_sum">{t("Sum")}</th>
-              <th data-column="q4_month1">{t("Jun")}</th>
-              <th data-column="q4_month2">{t("Jul")}</th>
-              <th data-column="q4_month3">{t("Aug")}</th>
+              <th data-column="q3_month1">{t("Jan")}</th>
+              <th data-column="q3_month2">{t("Feb")}</th>
+              <th data-column="q3_month3">{t("Mar")}</th>
+              <th data-column="q3_sum">{t("Sum")}</th>                
+              <th data-column="q3_month1">{t("Apr")}</th>
+              <th data-column="q3_month2">{t("May")}</th>
+              <th data-column="q4_month3">{t("Jun")}</th>
               <th data-column="q4_sum">{t("Sum")}</th>
             </tr>
           </thead>
@@ -808,55 +808,53 @@ const ProjectFinancialPerformanceTable = ({
                     <td data-column="prp_physical_planned">
                       {row.prp_physical_planned}
                     </td>
-
                     <td data-column="q1_month1">
-                      {row.prp_finan_planned_month_1 || " "}
+                      {row.prp_finan_planned_month_11 || " "}
                     </td>
                     <td data-column="q1_month2">
-                      {row.prp_finan_planned_month_2 || " "}
+                      {row.prp_finan_planned_month_12 || " "}
                     </td>
                     <td data-column="q1_month3">
-                      {row.prp_finan_planned_month_3 || " "}
+                      {row.prp_finan_planned_month_1 || " "}
                     </td>
                     <td data-column="q1_sum">
                       <strong>{row.quarter1total || " "}</strong>
                     </td>
-
                     <td data-column="q2_month1">
-                      {row.prp_finan_planned_month_4 || " "}
+                      {row.prp_finan_planned_month_2 || " "}
                     </td>
                     <td data-column="q2_month2">
-                      {row.prp_finan_planned_month_5 || " "}
+                      {row.prp_finan_planned_month_3 || " "}
                     </td>
-                    <td data-column="q2_month3">
-                      {row.prp_finan_planned_month_6 || " "}
+                    <td data-column="q2_month1">
+                      {row.prp_finan_planned_month_4 || " "}
                     </td>
                     <td data-column="q2_sum">
                       <strong>{row.quarter2total || " "}</strong>
                     </td>
-
                     <td data-column="q3_month1">
-                      {row.prp_finan_planned_month_7 || " "}
+                      {row.prp_finan_planned_month_5 || " "}
                     </td>
                     <td data-column="q3_month2">
-                      {row.prp_finan_planned_month_8 || " "}
+                      {row.prp_finan_planned_month_6 || " "}
                     </td>
                     <td data-column="q3_month3">
-                      {row.prp_finan_planned_month_9 || " "}
-                    </td>
-                    <td data-column="q3_sum">
-                      <strong>{row.quarter3total || " "}</strong>
+                      {row.prp_finan_planned_month_7 || " "}
                     </td>
 
+                    <td data-column="q3_sum">
+                      <strong>{row.quarter3total || " "}</strong>
+                    </td>                    
                     <td data-column="q4_month1">
-                      {row.prp_finan_planned_month_10 || " "}
+                      {row.prp_finan_planned_month_8 || " "}
                     </td>
                     <td data-column="q4_month2">
-                      {row.prp_finan_planned_month_11 || " "}
+                      {row.prp_finan_planned_month_9 || " "}
                     </td>
+
                     <td data-column="q4_month3">
-                      {row.prp_finan_planned_month_12 || " "}
-                    </td>
+                      {row.prp_finan_planned_month_10 || " "}
+                    </td>                    
                     <td data-column="q4_sum">
                       <strong>{row.quarter4total || " "}</strong>
                     </td>

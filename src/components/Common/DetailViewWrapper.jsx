@@ -26,7 +26,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url,
 ).toString();
 
-const API_URL = import.meta.env.VITE_BASE_API_FILE;
+//const API_URL = import.meta.env.VITE_BASE_API_FILE;
+const API_URL = import.meta.env.VITE_BASE_API_FILE+"public/";
 
 export const TabWrapper = ({ tabs }) => {
   const [activeTab, setActiveTab] = useState(tabs[0]?.id);
