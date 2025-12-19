@@ -78,6 +78,7 @@ const TableLoading = () => (
 );
 
 const Report = () => {
+	document.title = "Reports";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
 	const [exportSearchParams, setExportSearchParams] = useState({});
