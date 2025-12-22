@@ -104,30 +104,39 @@ const UserSectorModel = ({ passedId, isActive }) => {
 						return acc;
 					}, {}) || {};
 
-				const updates = payload
-					.filter(
-						(sector) =>
-							userSectorMap[sector.usc_sector_id] &&
-							Boolean(userSectorMap[sector.usc_sector_id].usc_status) !==
-								Boolean(sector.usc_status)
-					)
-					.map((sector) => ({
-						...sector,
-						usc_id: userSectorMap[sector.usc_sector_id]?.usc_id,
-					}));
+				const allSectorIds = new Set([
+					...Object.keys(values.sectors),
+					...Object.keys(initialSectors),
+				]);
 
-				const inserts = payload
-					.filter(
-						(sector) =>
-							!initialSectors.hasOwnProperty(sector.usc_sector_id) &&
-							sector.usc_status === 1
-					)
-					.map((sector) => ({ ...sector, usc_id: 0 }));
+				const allPayloads = [];
 
-				const allPayloads = [...updates, ...inserts];
-				if (allPayloads.length > 0)
+				Array.from(allSectorIds).forEach((sectorId) => {
+					const id = Number(sectorId);
+					const currentStatus = values.sectors[sectorId] ? 1 : 0;
+					const initialStatus = initialSectors[sectorId] ? 1 : 0;
+					const existingSector = userSectorMap[id];
+
+					if (
+						currentStatus !== initialStatus ||
+						(!existingSector && currentStatus === 1)
+					) {
+						const payload = {
+							usc_sector_id: id,
+							usc_user_id: Number(passedId),
+							usc_status: currentStatus,
+							usc_id: existingSector?.usc_id || 0,
+						};
+						allPayloads.push(payload);
+					}
+				});
+
+				if (allPayloads.length > 0) {
 					await updateUserSector.mutateAsync(allPayloads);
-				toast.success(t("update_success"), { autoClose: 3000 });
+					toast.success(t("update_success"), { autoClose: 3000 });
+				} else {
+					toast.info(t("no_changes_detected"), { autoClose: 3000 });
+				}
 			} catch (error) {
 				toast.error(t("update_failure"), { autoClose: 3000 });
 			}
