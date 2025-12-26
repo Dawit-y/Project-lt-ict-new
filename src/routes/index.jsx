@@ -1,10 +1,10 @@
 import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 
-import Dashboard from "../pages/Dashboard/index";
-import Login from "../pages/Authentication/Login";
-import ResetPassword from "../pages/Authentication/ResetPassword.jsx";
-import ResetPasswordForm from "../pages/Authentication/ResetPasswordForm.jsx";
+const Dashboard = lazy(() => import("../pages/Dashboard/index"));
+const Login = lazy(() => import("../pages/Authentication/Login"));
+const ResetPassword = lazy(() => import("../pages/Authentication/ResetPassword.jsx"));
+const ResetPasswordForm = lazy(() => import("../pages/Authentication/ResetPasswordForm.jsx"));
 
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(

@@ -506,7 +506,9 @@ const StatisticalReport = () => {
 											showSearchResult && (
 												<Card>
 													<CardBody>
-														<div className="overflow-x-auto">
+														<div className="overflow-x-auto" style={{
+								minHeight: "600px"
+							}}>
 															<Suspense fallback={<PivotLoading />}>
 																<PivotTableUI
 																	key={selectedEndpoint || "default"}

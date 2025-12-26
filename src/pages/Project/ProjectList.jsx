@@ -337,7 +337,10 @@ const ProjectList = () => {
 			}
 		}
 	};
-
+	const canEditOrDelete = useMemo(
+	() => searchResults?.previledge?.is_role_editable === 1,
+	[searchResults]
+);
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -365,6 +368,7 @@ const ProjectList = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 150,
+				cellDataType: "text"
 			},
 			{
 				field: "zone_name",
@@ -404,6 +408,7 @@ const ProjectList = () => {
 			{
 				field: "prj_total_estimate_budget",
 				headerName: t("prj_total_estimate_budget"),
+				filter: true,
 				valueFormatter: (params) => {
 					if (params.node.footer) {
 						return params.value ? `$${params.value.toLocaleString()}` : "";
@@ -421,36 +426,43 @@ const ProjectList = () => {
 					if (params.node.footer) {
 						return ""; // Suppress button for footer
 					}
-					return (
-						<div className="d-flex gap-1">
-							<Button
-								color="None"
-								size="sm"
-								className="text-success"
-								onClick={() => handleEditClick(params.data)}
-							>
-								<i className="mdi mdi-pencil font-size-18" />
-							</Button>
-							<Button
-								color="None"
-								size="sm"
-								className="text-success"
-								onClick={() => handleOpenStructureModal(params.data)}
-							>
-								<FaAlignLeft size={18} />
-							</Button>
-							<Link to={`/projectdetail/${params.data.prj_id}`}>
-								<Button type="button" className="btn-sm mb-1 default" outline>
-									<i className="fa fa-eye"></i>
-								</Button>
-							</Link>
-						</div>
-					);
+return (
+	<div className="d-flex gap-1">
+		{canEditOrDelete && (
+			<>
+				<Button
+					color="None"
+					size="sm"
+					className="text-success"
+					onClick={() => handleEditClick(params.data)}
+				>
+					<i className="mdi mdi-pencil font-size-18" />
+				</Button>
+
+				<Button
+					color="None"
+					size="sm"
+					className="text-success"
+					onClick={() => handleOpenStructureModal(params.data)}
+				>
+					<FaAlignLeft size={18} />
+				</Button>
+			</>
+		)}
+
+		<Link to={`/projectdetail/${params.data.prj_id}`}>
+			<Button type="button" className="btn-sm mb-1 default" outline>
+				<i className="fa fa-eye"></i>
+			</Button>
+		</Link>
+	</div>
+);
+
 				},
 			},
 		];
 		return baseColumnDefs;
-	}, [t]);
+	}, [t,canEditOrDelete]);
 
 	return (
 		<React.Fragment>

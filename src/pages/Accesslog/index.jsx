@@ -17,7 +17,7 @@ const Spinners = lazy(() => import("../../components/Common/Spinner"));
 const Breadcrumbs = lazy(() => import("../../components/Common/Breadcrumb"));
 const AccessLogModal = lazy(() => import("./AccessLogModal"));
 const AdvancedSearch = lazy(
-  () => import("../../components/Common/AdvancedSearch"),
+  () => import("../../components/Common/AdvancedSearch2"),
 );
 const truncateText = (text, maxLength) => {
   if (typeof text !== "string") {

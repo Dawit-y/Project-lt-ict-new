@@ -317,7 +317,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
-				level={3}
+				level={0}
 				name={clusterField}
 				label="Cluster"
 				value={selectedCluster}
@@ -334,7 +334,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
-				level={4}
+				level={1}
 				name={sectorField}
 				label="Sector"
 				value={selectedSector}
@@ -349,7 +349,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
-				level={5}
+				level={2}
 				name={programField}
 				label="Program"
 				value={selectedProgram}
@@ -360,7 +360,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
-				level={6}
+				level={3}
 				name={subProgramField}
 				label="sub_program"
 				value={selectedSubProgram}
@@ -370,7 +370,7 @@ const ProgramCascadingDropdowns = ({
 			/>
 
 			<Dropdown
-				level={7}
+				level={4}
 				name={outputField}
 				label="Output"
 				value={validation.values[outputField]}

@@ -41,6 +41,12 @@ const ProjectPhysicalPerformanceReportsTable = lazy(
 const ProjectFinancialPerformanceReportsTable = lazy(
 	() => import("../Report/ProjectFinancialPerformanceReportsTable")
 );
+const ProjectActualPhysicalPerformanceReportsTable = lazy(
+	() => import("../Report/ProjectActualPhysicalPerformanceReportsTable")
+);
+const ProjectActualFinancialPerformanceReportsTable = lazy(
+	() => import("../Report/ProjectActualFinancialPerformanceReportsTable")
+);
 const ProjectPlanTable = lazy(() => import("../Report/ProjectPlanTable"));
 const ProjectEmployeeReportsTable = lazy(
 	() => import("../Report/ProjectEmployeeReportsTable")
@@ -149,16 +155,16 @@ const Report = () => {
 	const getUserEndpoints = useMemo(() => {
 		const allEndpoints = {
 			// Governmental endpoints (1-100)
-			project_stat: { reportTypeIndex: 1, userTypes: [1, 5] },
+			/*project_stat: { reportTypeIndex: 1, userTypes: [1, 5] },
 			employee_stat: { reportTypeIndex: 2, userTypes: [1, 5] },
 			budget_plan_stat: { reportTypeIndex: 3, userTypes: [1, 5] },
 			budget_expenditure_stat: { reportTypeIndex: 4, userTypes: [1, 5] },
 			budget_source_stat: { reportTypeIndex: 5, userTypes: [1, 5] },
 			budget_contractor_stat: { reportTypeIndex: 6, userTypes: [1, 5] },
-			project_payment_stat: { reportTypeIndex: 7, userTypes: [1, 5] },
+			project_payment_stat: { reportTypeIndex: 7, userTypes: [1, 5] },*/
 			project_financial_report: { reportTypeIndex: 8, userTypes: [1, 5] },
-			project_financial_report2: { reportTypeIndex: 9, userTypes: [1, 5] },
-			project_financial_report3: { reportTypeIndex: 10, userTypes: [1, 5] },
+			/*project_financial_report2: { reportTypeIndex: 9, userTypes: [1, 5] },
+			project_financial_report3: { reportTypeIndex: 10, userTypes: [1, 5] },*/
 			project_physical_performance_report: {
 				reportTypeIndex: 11,
 				userTypes: [1, 5],
@@ -167,7 +173,15 @@ const Report = () => {
 				reportTypeIndex: 12,
 				userTypes: [1, 5],
 			},
-			project_plan_report: { reportTypeIndex: 13, userTypes: [1, 5] },
+			project_actual_physical_performance_report: {
+				reportTypeIndex: 22,
+				userTypes: [1, 5],
+			},
+			project_actual_financial_performance_report: {
+				reportTypeIndex: 23,
+				userTypes: [1, 5],
+			},
+			/*project_plan_report: { reportTypeIndex: 13, userTypes: [1, 5] },*/
 			programs_report: { reportTypeIndex: 14, userTypes: [1, 5] },
 
 			project_finance_by_source: { reportTypeIndex: 16, userTypes: [1, 5] },
@@ -406,6 +420,42 @@ const Report = () => {
 						],
 					};
 					break;
+				case "project_actual_physical_performance_report":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
+				case "project_actual_financial_performance_report":
+					configs[key] = {
+						...baseConfig,
+						dateKeys: ["report_date"],
+						dropdownSearchKeys: [
+							{ key: "prp_budget_year_id", options: budgetYearOptions },
+							{
+								key: "prj_sector_id",
+								options:
+									lang === "en"
+										? sectorInformationOptionsEn
+										: lang === "am"
+											? sectorInformationOptionsAm
+											: sectorInformationOptionsOr,
+							},
+						],
+					};
+					break;
 				case "project_plan_report":
 					configs[key] = {
 						...baseConfig,
@@ -609,6 +659,8 @@ const Report = () => {
 		18: ProjectFinanceByYear,
 		19: ZoneFinanceByCluster,
 		20: ZoneFinanceByYear,
+		22: ProjectActualPhysicalPerformanceReportsTable,
+		23: ProjectActualFinancialPerformanceReportsTable,
 
 		101: CsoProjectsReport,
 	};
@@ -653,6 +705,14 @@ const Report = () => {
 
 	return (
 		<div className="page-content">
+		<style>
+        {`
+          td {
+            padding: 2px !important;
+            border: 1px solid #000;
+          }
+        `}
+      </style>
 			<Breadcrumbs
 				title={t("Report")}
 				breadcrumbItem={t("Statistical Report")}

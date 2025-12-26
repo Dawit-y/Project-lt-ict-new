@@ -248,8 +248,9 @@ const PaginationComponent = ({
 	};
 
 	const handlePageSizeChange = (e) => {
-		const newSize = parseInt(e.target.value, 10);
-		onPageSizeChange(newSize);
+		const value = e.target.value;
+		  const newSize = value === "All" ? Math.min(total, 2000) : parseInt(value, 10);
+		  onPageSizeChange(newSize);
 	};
 
 	// Calculate record range
@@ -269,7 +270,7 @@ const PaginationComponent = ({
 						disabled={isLoading}
 						bsSize={"sm"}
 					>
-						{[10, 20, 30, 50, 100].map((size) => (
+						{[10, 20, 30, 50, 100,"All"].map((size) => (
 							<option key={size} value={size}>
 								{size}
 							</option>
