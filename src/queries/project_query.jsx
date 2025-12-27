@@ -104,7 +104,7 @@ export const useUpdateProject = () => {
 		onSettled: () => {
 			queryClient.invalidateQueries({
 				queryKey: PROJECT_QUERY_KEY,
-				refetchType: "all",
+				// refetchType: "all",
 				exact: false,
 			});
 		},

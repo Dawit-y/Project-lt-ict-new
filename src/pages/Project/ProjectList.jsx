@@ -310,9 +310,6 @@ const ProjectList = () => {
 					autoClose: 3000,
 				});
 				toggleEditModal();
-				if (showSearchResult && advancedSearchRef.current) {
-					await advancedSearchRef.current.refreshSearch();
-				}
 			} catch (error) {
 				if (!error.handledByMutationCache) {
 					toast.error(t("update_failure"), { autoClose: 3000 });
