@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {
+	useEffect,
+	useMemo,
+	useState,
+	useRef,
+	useCallback,
+} from "react";
 import PropTypes from "prop-types";
 import { isEmpty } from "lodash";
 import * as Yup from "yup";
@@ -11,7 +17,7 @@ import Breadcrumbs from "../../components/Common/Breadcrumb";
 import UserRoles from "../../pages/Userrole/index";
 import UserSectorModel from "../Usersector";
 import AgGridContainer from "../../components/Common/AgGridContainer";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import AdvancedSearch from "../../components/Common/AdvancedSearch2";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import {
 	phoneValidation,
@@ -76,15 +82,52 @@ export const getDepartmentType = (user) => {
 const UsersModel = () => {
 	document.title = "Users";
 	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+
+	// Local state management (following the same pattern as ProjectList)
+	const [searchState, setSearchState] = useState({
+		searchParams: {},
+		additionalParams: {},
+		exportSearchParams: {},
+	});
+
+	const [paginationState, setPaginationState] = useState({
+		currentPage: 1,
+		pageSize: 30,
+		total: 0,
+		totalPages: 0,
+		hasNext: false,
+		hasPrev: false,
+	});
+
+	const [uiState, setUIState] = useState({
+		showSearchResult: false,
+	});
+
+	// Extract state for easier access
+	const { searchParams, additionalParams, exportSearchParams } = searchState;
+	const { currentPage, pageSize, total, totalPages } = paginationState;
+	const { showSearchResult } = uiState;
+
+	// Existing local state
 	const [modal, setModal] = useState(false);
 	const [modal1, setModal1] = useState(false);
 	const [isEdit, setIsEdit] = useState(false);
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
-	const [exportSearchParams, setExportSearchParams] = useState({});
+	const [searchError, setSearchError] = useState(null);
+	const [users, setUsers] = useState(null);
+	const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
+	const [userMetaData, setUserData] = useState({});
+	const [showCanvas, setShowCanvas] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
+	const [transaction, setTransaction] = useState({});
+	const [deleteModal, setDeleteModal] = useState(false);
 
+	// Refs
+	const advancedSearchRef = useRef(null);
+
+	// Data hooks
 	const exportColumns = useUserExportColumns();
 	const { data, isLoading, error, isError, refetch } = useFetchUserss(null);
 	const {
@@ -92,7 +135,29 @@ const UsersModel = () => {
 		isLoading: isSectorLoading,
 		isError: isSectorError,
 	} = useFetchSectorInformations();
+	const { data: csoData } = useFetchCsoInfos();
 
+	// Create paginationInfo for table component
+	const paginationInfo = useMemo(
+		() => ({
+			current_page: currentPage,
+			per_page: pageSize,
+			total: total || 0,
+			total_pages: totalPages || 0,
+			has_next: paginationState.hasNext,
+			has_prev: paginationState.hasPrev,
+		}),
+		[
+			currentPage,
+			pageSize,
+			total,
+			totalPages,
+			paginationState.hasNext,
+			paginationState.hasPrev,
+		]
+	);
+
+	// Prepare sector options
 	const {
 		sci_name_en: sectorInformationOptionsEn,
 		sci_name_or: sectorInformationOptionsOr,
@@ -102,6 +167,7 @@ const UsersModel = () => {
 		"sci_name_or",
 		"sci_name_am",
 	]);
+
 	const sectorInformationMap = useMemo(() => {
 		return createMultiLangKeyValueMap(
 			sectorInformationData?.data || [],
@@ -111,59 +177,484 @@ const UsersModel = () => {
 				am: "sci_name_am",
 				or: "sci_name_or",
 			},
-			i18n.language
+			lang
 		);
-	}, [sectorInformationData, i18n.language]);
+	}, [sectorInformationData, lang]);
 
-	const { data: csoData } = useFetchCsoInfos();
 	const csoOptions = createSelectOptions(
 		csoData?.data || [],
 		"cso_id",
 		"cso_name"
 	);
 
+	// Mutation hooks
 	const addUsers = useAddUsers();
 	const updateUsers = useUpdateUsers();
 	const deleteUsers = useDeleteUsers();
-	const [users, setUsers] = useState(null);
-	const [isDuplicateModalOpen, setIsDuplicateModalOpen] = useState(false);
 
-	const [userMetaData, setUserData] = useState({});
-	const [showCanvas, setShowCanvas] = useState(false);
-	const [showPassword, setShowPassword] = useState(false);
-	const togglePasswordVisibility = () => {
-		setShowPassword((prevState) => !prevState);
-	};
+	// Effects
+	useEffect(() => {
+		setUsers(data);
+		// Initialize pagination from initial data
+		if (data?.pagination) {
+			setPaginationState({
+				currentPage: data.pagination.current_page,
+				pageSize: data.pagination.per_page,
+				total: data.pagination.total,
+				totalPages: data.pagination.total_pages,
+				hasNext: data.pagination.has_next,
+				hasPrev: data.pagination.has_prev,
+			});
+		}
+	}, [data]);
 
-	const handleAddUsers = async (data) => {
-		try {
-			await addUsers.mutateAsync(data);
-			toast.success(t("add_success"), {
-				autoClose: 3000,
-			});
-			toggle();
-			validation.resetForm();
-		} catch (error) {
-			if (!error.handledByMutationCache) {
-				toast.error(t("add_failure"), { autoClose: 3000 });
-			}
+	useEffect(() => {
+		if (!isEmpty(data) && !!isEdit) {
+			setUsers(data);
+			setIsEdit(false);
 		}
-	};
-	const handleUpdateUsers = async (data) => {
-		try {
-			await updateUsers.mutateAsync(data);
-			toast.success(t("update_success"), {
-				autoClose: 3000,
-			});
-			toggle();
-			validation.resetForm();
-		} catch (error) {
-			if (!error.handledByMutationCache) {
-				toast.error(t("update_failure"), { autoClose: 3000 });
+	}, [data]);
+
+	// Search handler with pagination
+	const handleSearchResults = useCallback(
+		({ data: searchData, error: searchErr }) => {
+			setSearchResults(searchData);
+			setSearchError(searchErr);
+			setUIState({ showSearchResult: true });
+
+			if (searchData?.pagination) {
+				setPaginationState({
+					currentPage: searchData.pagination.current_page,
+					pageSize: searchData.pagination.per_page,
+					total: searchData.pagination.total,
+					totalPages: searchData.pagination.total_pages,
+					hasNext: searchData.pagination.has_next,
+					hasPrev: searchData.pagination.has_prev,
+				});
 			}
+		},
+		[]
+	);
+
+	// Pagination handlers
+	const handlePageChange = useCallback(
+		(newPage) => {
+			setPaginationState((prev) => ({ ...prev, currentPage: newPage }));
+
+			// Trigger search refresh with new page
+			if (advancedSearchRef.current && uiState.showSearchResult) {
+				advancedSearchRef.current.refreshSearch({ page: newPage });
+			}
+		},
+		[uiState.showSearchResult]
+	);
+
+	const handlePageSizeChange = useCallback(
+		(newSize) => {
+			setPaginationState({
+				currentPage: 1,
+				pageSize: newSize,
+				total: 0,
+				totalPages: 0,
+				hasNext: false,
+				hasPrev: false,
+			});
+
+			// Trigger search refresh with new page size
+			if (advancedSearchRef.current && uiState.showSearchResult) {
+				advancedSearchRef.current.refreshSearch({ pageSize: newSize, page: 1 });
+			}
+		},
+		[uiState.showSearchResult]
+	);
+
+	// Handle search labels for export
+	const handleSearchLabels = useCallback((labels) => {
+		setSearchState((prev) => ({ ...prev, exportSearchParams: labels }));
+	}, []);
+
+	// Clear search handler
+	const handleClear = useCallback(() => {
+		setSearchState({
+			searchParams: {},
+			additionalParams: {},
+			exportSearchParams: {},
+		});
+		setPaginationState({
+			currentPage: 1,
+			pageSize: 30,
+			total: 0,
+			totalPages: 0,
+			hasNext: false,
+			hasPrev: false,
+		});
+		setUIState({ showSearchResult: false });
+		setSearchResults(null);
+		setSearchError(null);
+	}, []);
+
+	// User type mapping
+	const userTypeMap = useMemo(() => {
+		return {
+			1: t("Governmental"),
+			2: t("CSO"),
+			4: t("CSO Director"),
+			3: t("Citizenship"),
+			5: t("Bureau of Finance"),
+		};
+	}, [t]);
+
+	// AG Grid column definitions
+	const columnDefs = useMemo(() => {
+		const baseColumns = [
+			{
+				headerName: t("S.N"),
+				field: "sn",
+				valueGetter: (params) => params.node.rowIndex + 1,
+				sortable: false,
+				filter: false,
+				width: 60,
+				pinned: "left",
+			},
+			{
+				headerName: t("usr_full_name"),
+				field: "usr_full_name",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				flex: 1,
+				minWidth: 200,
+				pinned: "left",
+				cellRenderer: (params) => {
+					return <span>{truncateText(params.value, 30) || "-"}</span>;
+				},
+			},
+			{
+				headerName: t("usr_email"),
+				field: "usr_email",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				minWidth: 200,
+				cellRenderer: (params) => {
+					return <span>{truncateText(params.value, 30) || "-"}</span>;
+				},
+			},
+			{
+				headerName: t("usr_phone_number"),
+				field: "usr_phone_number",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				minWidth: 200,
+				cellRenderer: (params) => {
+					return <span>{truncateText(params.value, 30) || "-"}</span>;
+				},
+			},
+			{
+				headerName: t("usr_sector_id"),
+				field: "sector_name",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				flex: 3,
+				minWidth: 200,
+				cellRenderer: (params) => {
+					return (
+						<span>
+							{sectorInformationMap[params.data.usr_sector_id] || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				headerName: t("Department"),
+				field: "dep_name",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				minWidth: 200,
+				cellRenderer: (params) => {
+					const departmentType = getDepartmentType(params.data);
+					return <span>{departmentType || "-"}</span>;
+				},
+			},
+			{
+				headerName: t("usr_user_type"),
+				field: "usr_user_type",
+				sortable: true,
+				filter: "agTextColumnFilter",
+				minWidth: 200,
+				cellRenderer: (params) => {
+					return <span>{userTypeMap[params.value] || "-"}</span>;
+				},
+			},
+		];
+
+		// Add action column if user has edit permissions
+		if (true) {
+			// This should be based on actual permissions check
+			baseColumns.push({
+				headerName: t("Action"),
+				sortable: false,
+				filter: false,
+				minWidth: 180,
+				pinned: "right",
+				cellRenderer: (params) => {
+					if (params.node.footer) {
+						return ""; // Suppress buttons for footer
+					}
+
+					const userId = params.data.usr_id;
+					const viewTooltipId = `viewtooltip-${userId}`;
+					const editTooltipId = `edittooltip-${userId}`;
+					const settingsTooltipId = `settingstooltip-${userId}`;
+					const duplicateTooltipId = `duplicatetooltip-${userId}`;
+
+					return (
+						<div className="d-flex gap-2">
+							{/* View button */}
+							<Button
+								size="sm"
+								color="none"
+								className="text-primary"
+								onClick={() => {
+									setTransaction(params.data);
+									setModal1(true);
+								}}
+								type="button"
+							>
+								<i className="mdi mdi-eye font-size-18" id={viewTooltipId} />
+								<UncontrolledTooltip placement="top" target={viewTooltipId}>
+									{t("view_detail")}
+								</UncontrolledTooltip>
+							</Button>
+
+							{/* Edit button */}
+							{(params.data?.is_editable || params.data?.is_role_editable) && (
+								<Button
+									size="sm"
+									color="none"
+									className="text-success"
+									onClick={() => handleUsersClick(params.data)}
+									type="button"
+								>
+									<i
+										className="mdi mdi-pencil font-size-18"
+										id={editTooltipId}
+									/>
+									<UncontrolledTooltip placement="top" target={editTooltipId}>
+										Edit
+									</UncontrolledTooltip>
+								</Button>
+							)}
+
+							{/* Settings button */}
+							{(params.data?.is_editable || params.data?.is_role_editable) && (
+								<Button
+									size="sm"
+									color="none"
+									className="text-secondary"
+									onClick={() => handleClick(params.data)}
+									type="button"
+								>
+									<i
+										className="mdi mdi-cog font-size-18"
+										id={settingsTooltipId}
+									/>
+									<UncontrolledTooltip
+										placement="top"
+										target={settingsTooltipId}
+									>
+										Setting
+									</UncontrolledTooltip>
+								</Button>
+							)}
+
+							{/* Duplicate button */}
+							<Button
+								size="sm"
+								color="none"
+								className="text-primary"
+								onClick={() => handleUsersDuplicateClick(params.data)}
+								type="button"
+							>
+								<i
+									className="mdi mdi-content-duplicate font-size-18"
+									id={duplicateTooltipId}
+								/>
+								<UncontrolledTooltip
+									placement="top"
+									target={duplicateTooltipId}
+								>
+									Duplicate
+								</UncontrolledTooltip>
+							</Button>
+						</div>
+					);
+				},
+			});
 		}
-	};
-	const handleDeleteUsers = async () => {
+		return baseColumns;
+	}, [t, sectorInformationMap, userTypeMap]);
+
+	// Modal handlers
+	const togglePasswordVisibility = useCallback(() => {
+		setShowPassword((prev) => !prev);
+	}, []);
+
+	const toggleViewModal = useCallback(() => {
+		setModal1(!modal1);
+	}, [modal1]);
+
+	const toggle = useCallback(() => {
+		if (modal) {
+			setModal(false);
+			setIsDuplicateModalOpen(false);
+			setUsers(null);
+		} else {
+			setModal(true);
+		}
+	}, [modal]);
+
+	// User action handlers
+	const handleUsersClick = useCallback(
+		(user) => {
+			setUsers({
+				usr_id: user.usr_id,
+				usr_email: user.usr_email,
+				usr_password: user.usr_password,
+				usr_full_name: user.usr_full_name,
+				usr_phone_number: Number(
+					user.usr_phone_number.toString().replace(/^(\+?251)/, "")
+				),
+				usr_role_id: Number(user.usr_role_id),
+				usr_region_id: Number(user.usr_region_id),
+				usr_zone_id: Number(user.usr_zone_id),
+				usr_woreda_id: Number(user.usr_woreda_id),
+				usr_sector_id: Number(user.usr_sector_id),
+				usr_is_active: user.usr_is_active,
+				usr_picture: user.usr_picture,
+				usr_last_logged_in: user.usr_last_logged_in,
+				usr_ip: user.usr_ip,
+				usr_remember_token: user.usr_remember_token,
+				usr_notified: user.usr_notified,
+				usr_description: user.usr_description,
+				usr_status: user.usr_status,
+				usr_department_id: Number(user.usr_department_id),
+				is_deletable: user.is_deletable,
+				is_editable: user.is_editable,
+				usr_directorate_id: Number(user.usr_directorate_id),
+				usr_team_id: Number(user.usr_team_id),
+				usr_officer_id: Number(user.usr_officer_id),
+				usr_user_type: Number(user.usr_user_type),
+				usr_owner_id: Number(user.usr_owner_id),
+			});
+			setIsEdit(true);
+			toggle();
+		},
+		[toggle]
+	);
+
+	const handleUsersDuplicateClick = useCallback(
+		(user) => {
+			setUsers({
+				usr_copied_from_id: user.usr_id,
+				usr_email: "",
+				usr_password: "User@123",
+				usr_full_name: user.usr_full_name,
+				usr_phone_number: Number(
+					user.usr_phone_number.toString().replace(/^(\+?251)/, "")
+				),
+				usr_role_id: Number(user.usr_role_id),
+				usr_region_id: Number(user.usr_region_id),
+				usr_zone_id: Number(user.usr_zone_id),
+				usr_woreda_id: Number(user.usr_woreda_id),
+				usr_sector_id: Number(user.usr_sector_id),
+				usr_is_active: user.usr_is_active,
+				usr_picture: user.usr_picture,
+				usr_last_logged_in: user.usr_last_logged_in,
+				usr_ip: user.usr_ip,
+				usr_remember_token: user.usr_remember_token,
+				usr_notified: user.usr_notified,
+				usr_description: user.usr_description,
+				usr_status: user.usr_status,
+				usr_department_id: Number(user.usr_department_id),
+				is_deletable: user.is_deletable,
+				is_editable: user.is_editable,
+				usr_directorate_id: Number(user.usr_directorate_id),
+				usr_team_id: Number(user.usr_team_id),
+				usr_officer_id: Number(user.usr_officer_id),
+				usr_user_type: Number(user.usr_user_type),
+				usr_owner_id: Number(user.usr_owner_id),
+			});
+			setIsDuplicateModalOpen(true);
+			toggle();
+		},
+		[toggle]
+	);
+
+	const handleClick = useCallback(
+		(data) => {
+			setShowCanvas(!showCanvas);
+			setUserData(data);
+		},
+		[showCanvas]
+	);
+
+	const handleUsersClicks = useCallback(() => {
+		setIsEdit(false);
+		setUsers("");
+		toggle();
+	}, [toggle]);
+
+	// Delete handler
+	const onClickDelete = useCallback((users) => {
+		setUsers(users);
+		setDeleteModal(true);
+	}, []);
+
+	// Mutation handlers
+	const handleAddUsers = useCallback(
+		async (data) => {
+			try {
+				await addUsers.mutateAsync(data);
+				toast.success(t("add_success"), {
+					autoClose: 3000,
+				});
+				toggle();
+				validation.resetForm();
+				// Refresh search if showing search results
+				if (showSearchResult && advancedSearchRef.current) {
+					await advancedSearchRef.current.refreshSearch();
+				}
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("add_failure"), { autoClose: 3000 });
+				}
+			}
+		},
+		[addUsers, t, toggle, showSearchResult]
+	);
+
+	const handleUpdateUsers = useCallback(
+		async (data) => {
+			try {
+				await updateUsers.mutateAsync(data);
+				toast.success(t("update_success"), {
+					autoClose: 3000,
+				});
+				toggle();
+				validation.resetForm();
+				// Refresh search if showing search results
+				if (showSearchResult && advancedSearchRef.current) {
+					await advancedSearchRef.current.refreshSearch();
+				}
+			} catch (error) {
+				if (!error.handledByMutationCache) {
+					toast.error(t("update_failure"), { autoClose: 3000 });
+				}
+			}
+		},
+		[updateUsers, t, toggle, showSearchResult]
+	);
+
+	const handleDeleteUsers = useCallback(async () => {
 		if (users && users.usr_id) {
 			try {
 				const id = users.usr_id;
@@ -171,6 +662,10 @@ const UsersModel = () => {
 				toast.success(t("delete_success"), {
 					autoClose: 3000,
 				});
+				// Refresh search if showing search results
+				if (showSearchResult && advancedSearchRef.current) {
+					await advancedSearchRef.current.refreshSearch();
+				}
 			} catch (error) {
 				toast.error(t("delete_failure"), {
 					autoClose: 3000,
@@ -178,18 +673,9 @@ const UsersModel = () => {
 			}
 			setDeleteModal(false);
 		}
-	};
-	const handleSearchResults = ({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	};
+	}, [deleteUsers, users, t, showSearchResult]);
 
-	const handleSearchLabels = (labels) => {
-		setExportSearchParams(labels);
-	};
-
-	// validation
+	// Form validation
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
@@ -250,7 +736,6 @@ const UsersModel = () => {
 			usr_full_name: alphanumericValidation(3, 50, true),
 			usr_phone_number: phoneValidation(true),
 			usr_sector_id: dropdownValidation(1, 100, true),
-			// usr_department_id: dropdownValidation(1, 100, true),
 			usr_region_id: Yup.number().required(t("usr_region_id")),
 			usr_user_type: Yup.number().required(t("usr_user_type")),
 			usr_owner_id: Yup.string().when("usr_user_type", {
@@ -260,8 +745,6 @@ const UsersModel = () => {
 				},
 				otherwise: (s) => s,
 			}),
-			// usr_zone_id: Yup.number().required(t("usr_zone_id")),
-			//usr_woreda_id: Yup.number().required(t("usr_woreda_id")),
 		}),
 		validateOnBlur: true,
 		validateOnChange: false,
@@ -343,7 +826,6 @@ const UsersModel = () => {
 					usr_remember_token: values.usr_remember_token,
 					usr_notified: Number(values.usr_notified),
 					usr_description: values.usr_description,
-					//usr_status: Number(values.usr_status),
 					usr_status: 1,
 					usr_department_id: Number(values.usr_department_id),
 					is_deletable: values.is_deletable,
@@ -358,17 +840,8 @@ const UsersModel = () => {
 			}
 		},
 	});
-	const [transaction, setTransaction] = useState({});
-	const toggleViewModal = () => setModal1(!modal1);
-	useEffect(() => {
-		setUsers(data);
-	}, [data]);
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setUsers(data);
-			setIsEdit(false);
-		}
-	}, [data]);
+
+	// Clear owner_id when user type changes
 	useEffect(() => {
 		if (
 			validation.values.usr_user_type !== 2 &&
@@ -377,298 +850,11 @@ const UsersModel = () => {
 			validation.setFieldValue("usr_owner_id", "");
 		}
 	}, [validation.values.usr_user_type]);
-	const toggle = () => {
-		if (modal) {
-			setModal(false);
-			setIsDuplicateModalOpen(false);
-			setUsers(null);
-		} else {
-			setModal(true);
-		}
-	};
-	const handleUsersClick = (arg) => {
-		const user = arg;
-		setUsers({
-			usr_id: user.usr_id,
-			usr_email: user.usr_email,
-			usr_password: user.usr_password,
-			usr_full_name: user.usr_full_name,
-			usr_phone_number: Number(
-				user.usr_phone_number.toString().replace(/^(\+?251)/, "")
-			),
-			usr_role_id: Number(user.usr_role_id),
-			usr_region_id: Number(user.usr_region_id),
-			usr_zone_id: Number(user.usr_zone_id),
-			usr_woreda_id: Number(user.usr_woreda_id),
-			usr_sector_id: Number(user.usr_sector_id),
-			usr_is_active: user.usr_is_active,
-			usr_picture: user.usr_picture,
-			usr_last_logged_in: user.usr_last_logged_in,
-			usr_ip: user.usr_ip,
-			usr_remember_token: user.usr_remember_token,
-			usr_notified: user.usr_notified,
-			usr_description: user.usr_description,
-			usr_status: user.usr_status,
-			usr_department_id: Number(user.usr_department_id),
-			is_deletable: user.is_deletable,
-			is_editable: user.is_editable,
-			usr_directorate_id: Number(user.usr_directorate_id),
-			usr_team_id: Number(user.usr_team_id),
-			usr_officer_id: Number(user.usr_officer_id),
-			usr_user_type: Number(user.usr_user_type),
-			usr_owner_id: Number(user.usr_owner_id),
-		});
-		setIsEdit(true);
-		toggle();
-	};
-	const handleUsersDuplicateClick = (arg) => {
-		const user = arg;
-		setUsers({
-			usr_copied_from_id: user.usr_id,
-			usr_email: "",
-			usr_password: "User@123",
-			usr_full_name: user.usr_full_name,
-			usr_phone_number: Number(
-				user.usr_phone_number.toString().replace(/^(\+?251)/, "")
-			),
-			usr_role_id: Number(user.usr_role_id),
-			usr_region_id: Number(user.usr_region_id),
-			usr_zone_id: Number(user.usr_zone_id),
-			usr_woreda_id: Number(user.usr_woreda_id),
-			usr_sector_id: Number(user.usr_sector_id),
-			usr_is_active: user.usr_is_active,
-			usr_picture: user.usr_picture,
-			usr_last_logged_in: user.usr_last_logged_in,
-			usr_ip: user.usr_ip,
-			usr_remember_token: user.usr_remember_token,
-			usr_notified: user.usr_notified,
-			usr_description: user.usr_description,
-			usr_status: user.usr_status,
-			usr_department_id: Number(user.usr_department_id),
-			is_deletable: user.is_deletable,
-			is_editable: user.is_editable,
-			usr_directorate_id: Number(user.usr_directorate_id),
-			usr_team_id: Number(user.usr_team_id),
-			usr_officer_id: Number(user.usr_officer_id),
-			usr_user_type: Number(user.usr_user_type),
-			usr_owner_id: Number(user.usr_owner_id),
-		});
-		setIsDuplicateModalOpen(true);
-		toggle();
-	};
-	//delete projects
-	const [deleteModal, setDeleteModal] = useState(false);
-	const onClickDelete = (users) => {
-		setUsers(users);
-		setDeleteModal(true);
-	};
-	const handleClick = (data) => {
-		setShowCanvas(!showCanvas); // Toggle canvas visibility
-		// setProjectMetaData(data);
-		setUserData(data);
-	};
-
-	const handleUsersClicks = () => {
-		setIsEdit(false);
-		setUsers("");
-		toggle();
-	};
-
-	const userTypeMap = useMemo(() => {
-		return {
-			1: t("Governmental"),
-			2: t("CSO"),
-			4: t("CSO Director"),
-			3: t("Citizenship"),
-		};
-	});
-
-	const columnDefs = useMemo(() => {
-		const baseColumns = [
-			{
-				headerName: t("s_n"),
-				field: "sn",
-				valueGetter: "node.rowIndex + 1",
-				width: 60,
-				pinned: "left",
-			},
-			{
-				headerName: t("usr_full_name"),
-				field: "usr_full_name",
-				sortable: true,
-				filter: false,
-				flex: 1,
-				minWidth: 200,
-				pinned: "left",
-				cellRenderer: (params) =>
-					truncateText(params.data.usr_full_name, 30) || "-",
-			},
-			{
-				headerName: t("usr_email"),
-				field: "usr_email",
-				sortable: true,
-				filter: false,
-				minWidth: 200,
-				cellRenderer: (params) =>
-					truncateText(params.data.usr_email, 30) || "-",
-			},
-			{
-				headerName: t("usr_phone_number"),
-				field: "usr_phone_number",
-				sortable: true,
-				filter: false,
-				minWidth: 200,
-				cellRenderer: (params) =>
-					truncateText(params.data.usr_phone_number, 30) || "-",
-			},
-			{
-				headerName: t("usr_sector_id"),
-				field: "sector_name",
-				sortable: true,
-				filter: false,
-				flex: 3,
-				minWidth: 200,
-				cellRenderer: (params) =>
-					sectorInformationMap[params.data.usr_sector_id],
-			},
-			{
-				headerName: t("Department"),
-				field: "dep_name",
-				sortable: true,
-				filter: false,
-				minWidth: 200,
-				cellRenderer: (params) => {
-					const departmentType = getDepartmentType(params.data);
-					return departmentType;
-				},
-			},
-			{
-				headerName: t("usr_user_type"),
-				field: "usr_user_type",
-				sortable: true,
-				filter: false,
-				minWidth: 200,
-				cellRenderer: ({ data }) => {
-					return userTypeMap[data.usr_user_type] ?? "";
-				},
-			},
-		];
-
-		if (1 == 1) {
-			baseColumns.push({
-				headerName: t("Action"),
-				sortable: true,
-				filter: false,
-				minWidth: 120,
-				pinned: "right",
-				cellRenderer: (params) => {
-					const userId = params.data.id || params.data.usr_id || params.node.id;
-					const viewTooltipId = `viewtooltip-${userId}`;
-					const editTooltipId = `edittooltip-${userId}`;
-					const settingsTooltipId = `settingstooltip-${userId}`;
-					const duplicateTooltipId = `duplicatetooltip-${userId}`;
-
-					return (
-						<div className="d-flex gap-2">
-							{/* view button */}
-							<Button
-								size="sm"
-								color="none"
-								className="text-primary"
-								onClick={() => {
-									const userdata = params.data;
-									toggleViewModal(userdata);
-									setTransaction(userdata);
-								}}
-								type="button"
-							>
-								<i className="mdi mdi-eye font-size-18" id={viewTooltipId} />
-								<UncontrolledTooltip placement="top" target={viewTooltipId}>
-									{t("view_detail")}
-								</UncontrolledTooltip>
-							</Button>
-
-							{(params.data?.is_editable || params.data?.is_role_editable) && (
-								<Button
-									size="sm"
-									color="none"
-									className="text-success"
-									onClick={() => handleUsersClick(params.data)}
-									type="button"
-								>
-									<i
-										className="mdi mdi-pencil font-size-18"
-										id={editTooltipId}
-									/>
-									<UncontrolledTooltip placement="top" target={editTooltipId}>
-										Edit
-									</UncontrolledTooltip>
-								</Button>
-							)}
-
-							{/* settings button */}
-							{params.data?.is_editable || params.data?.is_role_editable ? (
-								<Button
-									size="sm"
-									color="none"
-									className="text-secondary"
-									onClick={() => handleClick(params.data)}
-									type="button"
-								>
-									<i
-										className="mdi mdi-cog font-size-18"
-										id={settingsTooltipId}
-									/>
-									<UncontrolledTooltip
-										placement="top"
-										target={settingsTooltipId}
-									>
-										Setting
-									</UncontrolledTooltip>
-								</Button>
-							) : (
-								""
-							)}
-
-							{/* duplicate button */}
-							<Button
-								size="sm"
-								color="none"
-								className="text-primary"
-								onClick={() => {
-									handleUsersDuplicateClick(params.data);
-								}}
-								type="button"
-							>
-								<i
-									className="mdi mdi-content-duplicate font-size-18"
-									id={duplicateTooltipId}
-								/>
-								<UncontrolledTooltip
-									placement="top"
-									target={duplicateTooltipId}
-								>
-									Duplicate
-								</UncontrolledTooltip>
-							</Button>
-						</div>
-					);
-				},
-			});
-		}
-		return baseColumns;
-	}, [
-		handleUsersClick,
-		toggleViewModal,
-		onClickDelete,
-		handleUsersDuplicateClick,
-		sectorInformationMap,
-		t,
-	]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
 	}
+
 	return (
 		<React.Fragment>
 			<UsersModal
@@ -680,15 +866,16 @@ const UsersModel = () => {
 				<div className="container-fluid">
 					<Breadcrumbs />
 					<AdvancedSearch
+						ref={advancedSearchRef}
 						searchHook={useSearchUserss}
 						textSearchKeys={["usr_email", "usr_phone_number"]}
 						dropdownSearchKeys={[
 							{
 								key: "usr_sector_id",
 								options:
-									i18n.language === "en"
+									lang === "en"
 										? sectorInformationOptionsEn
-										: i18n.language === "am"
+										: lang === "am"
 											? sectorInformationOptionsAm
 											: sectorInformationOptionsOr,
 							},
@@ -700,12 +887,34 @@ const UsersModel = () => {
 							dropdown2name: "usr_zone_id",
 							dropdown3name: "usr_woreda_id",
 						}}
+						additionalParams={additionalParams}
+						setAdditionalParams={(params) =>
+							setSearchState((prev) => ({ ...prev, additionalParams: params }))
+						}
 						onSearchResult={handleSearchResults}
 						onSearchLabels={handleSearchLabels}
 						setIsSearchLoading={setIsSearchLoading}
 						setSearchResults={setSearchResults}
-						setShowSearchResult={setShowSearchResult}
-						setExportSearchParams={setExportSearchParams}
+						setShowSearchResult={(show) =>
+							setUIState((prev) => ({ ...prev, showSearchResult: show }))
+						}
+						searchParams={searchParams}
+						getSearchParams={(params) =>
+							setSearchState((prev) => ({ ...prev, searchParams: params }))
+						}
+						setExportSearchParams={(params) =>
+							setSearchState((prev) => ({
+								...prev,
+								exportSearchParams: params,
+							}))
+						}
+						// Pass pagination state
+						pagination={paginationState}
+						onPaginationChange={setPaginationState}
+						onClear={handleClear}
+						initialSearchParams={searchParams}
+						initialAdditionalParams={additionalParams}
+						initialPagination={paginationState}
 					/>
 					{isLoading || isSearchLoading ? (
 						<Spinners top={"top-60"} />
@@ -713,21 +922,29 @@ const UsersModel = () => {
 						<div>
 							<AgGridContainer
 								rowData={
-									showSearchResult ? searchResults?.data : data?.data || []
+									showSearchResult
+										? searchResults?.data || []
+										: data?.data || []
 								}
 								columnDefs={columnDefs}
-								isPagination={true}
-								paginationPageSize={30}
+								isLoading={isLoading || isSearchLoading}
+								isPagination={false}
+								isServerSidePagination={true}
+								paginationPageSize={pageSize}
 								isGlobalFilter={true}
 								isAddButton={true}
 								onAddClick={handleUsersClicks}
-								addButtonText="Add"
+								addButtonText={t("Add User")}
 								isExcelExport={true}
 								isPdfExport={true}
 								isPrint={true}
 								tableName="Users"
 								exportColumns={exportColumns}
 								exportSearchParams={exportSearchParams}
+								paginationInfo={paginationInfo}
+								onPageChange={handlePageChange}
+								onPageSizeChange={handlePageSizeChange}
+								rowHeight={36}
 							/>
 						</div>
 					)}
@@ -1076,7 +1293,9 @@ const UsersModel = () => {
 		</React.Fragment>
 	);
 };
+
 UsersModel.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
+
 export default UsersModel;
