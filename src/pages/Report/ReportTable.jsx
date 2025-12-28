@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect , lazy, Suspense, useCallback} from "react";
 import {
 	Card,
 	CardBody,
@@ -8,6 +8,7 @@ import {
 	DropdownMenu,
 	DropdownItem,
 	Button,
+	Spinner
 } from "reactstrap";
 import {
 	FaSearch,
@@ -17,7 +18,8 @@ import {
 	FaChevronDown,
 	FaChevronRight,
 } from "react-icons/fa";
-import ExportToExcel from "../../components/Common/ExportToExcel";
+//import ExportToExcel from "../../components/Common/ExportToExcel";
+const LazyExportToExcel = lazy(() => import("../../components/Common/ExportToExcel"));
 import { useTranslation } from "react-i18next";
 
 const ReportTable = ({
@@ -59,7 +61,7 @@ const ReportTable = ({
 
 	const tableRef = useRef(null);
 	const headerRowRef = useRef(null);
-
+	const [activeExport, setActiveExport] = useState(null);
 	// Initialize column widths
 	useEffect(() => {
 		const initialWidths = {};
@@ -677,13 +679,25 @@ const ReportTable = ({
 							}}
 						/>
 					</div>
-					<div className="d-flex align-items-center">
-						<ExportToExcel
-							tableData={exportData}
+					<div className="d-flex align-items-center">						
+						<Suspense fallback={<Spinner size="sm" />}>
+		{activeExport === 1 && (
+			<LazyExportToExcel
+				tableData={exportData}
 							tableName={tableName}
 							exportColumns={visibleExportColumns}
 							exportSearchParams={exportSearchParams}
-						/>
+				autoRun
+				onDone={() => setActiveExport(null)}
+			/>
+		)}
+</Suspense>
+<Button 
+						color="outline-primary"
+						className="mb-2"
+						onClick={() => setActiveExport(1)}>
+			Export to Excel
+		</Button>
 						<Dropdown
 							isOpen={dropdownOpen}
 							toggle={toggleDropdown}

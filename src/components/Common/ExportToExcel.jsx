@@ -440,8 +440,8 @@ const ExportToExcel = ({
 				!tableData || !Array.isArray(tableData) || tableData.length === 0
 			}
 		>
-			<FaFileExcel className="me-1" />
-			{t("exportToExcel")}
+			<FaFileExcel className="me-1 mr-2" />
+			Download Excel
 		</Button>
 	);
 };

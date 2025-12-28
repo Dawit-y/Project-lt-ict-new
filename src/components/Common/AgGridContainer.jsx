@@ -1,9 +1,11 @@
-import React, { useRef, useState, memo, useMemo } from "react";
+import React, { useRef, lazy, Suspense, useState, useCallback, memo, useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { Row, Col, Input, Button } from "reactstrap";
-import ExportToExcel from "./ExportToExcel";
-import ExportToPDF from "./ExportToPdf";
-import PrintTable from "./PrintTable";
+
+const LazyExportToExcel = lazy(() => import("./ExportToExcel"));
+const LazyExportToPDF = lazy(() => import("./ExportToPdf"));
+const LazyPrintTable = lazy(() => import("./PrintTable"));
+
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import {
@@ -12,6 +14,7 @@ import {
 	UncontrolledDropdown,
 	DropdownMenu,
 	DropdownToggle,
+	DropdownItem
 } from "reactstrap";
 import { FaFileExport } from "react-icons/fa";
 
@@ -101,7 +104,13 @@ const AgGridContainer = ({
 			return col;
 		});
 	}, [columnDefs, isServerSidePagination]);
+const [activeExport, setActiveExport] = useState(null);
 
+const EXPORT = {
+	EXCEL: "excel",
+	PDF: "pdf",
+	PRINT: "print",
+};
 	return (
 		<div
 			className={
@@ -145,38 +154,66 @@ const AgGridContainer = ({
 									<FaFileExport size={18} />
 								</DropdownToggle>
 								<DropdownMenu end>
-									{isExcelExport && (
-										<ExportToExcel
-											tableData={rowData}
-											tableName={tableName}
-											dropdownItem={true}
-											exportColumns={exportColumns}
-											exportSearchParams={exportSearchParams}
-										/>
-									)}
-									{isPdfExport && (
-										<ExportToPDF
-											tableData={rowData}
-											tableName={tableName}
-											dropdownItem={true}
-											exportColumns={exportColumns}
-											exportSearchParams={exportSearchParams}
-										/>
-									)}
-									{isPrint && (
-										<PrintTable
-											tableData={rowData}
-											tableName={tableName}
-											dropdownItem={true}
-											exportColumns={exportColumns}
-											exportSearchParams={exportSearchParams}
-										/>
-									)}
-								</DropdownMenu>
+	{isExcelExport && (
+		<DropdownItem onClick={() => setActiveExport(EXPORT.EXCEL)}>
+			Export to Excel
+		</DropdownItem>
+	)}
+
+	{isPdfExport && (
+		<DropdownItem onClick={() => setActiveExport(EXPORT.PDF)}>
+			Export to PDF
+		</DropdownItem>
+	)}
+
+	{isPrint && (
+		<DropdownItem onClick={() => setActiveExport(EXPORT.PRINT)}>
+			Print
+		</DropdownItem>
+	)}
+</DropdownMenu>
 							</UncontrolledDropdown>
 							<UncontrolledTooltip placement="top" target="export_toggle">
 								Export Data
 							</UncontrolledTooltip>
+						{activeExport && (
+	<Suspense fallback={<Spinner size="sm" />}>
+		{activeExport === EXPORT.EXCEL && (
+			<LazyExportToExcel
+				tableData={rowData}
+				tableName={tableName}
+				exportColumns={exportColumns}
+				exportSearchParams={exportSearchParams}
+				autoRun
+				onDone={() => setActiveExport(null)}
+			/>
+		)}
+
+		{activeExport === EXPORT.PDF && (
+			<LazyExportToPDF
+				tableData={rowData}
+				tableName={tableName}
+				exportColumns={exportColumns}
+				exportSearchParams={exportSearchParams}
+				autoRun
+				onDone={() => setActiveExport(null)}
+			/>
+		)}
+
+		{activeExport === EXPORT.PRINT && (
+			<LazyPrintTable
+				tableData={rowData}
+				tableName={tableName}
+				exportColumns={exportColumns}
+				exportSearchParams={exportSearchParams}
+				autoRun
+				onDone={() => setActiveExport(null)}
+			/>
+		)}
+	</Suspense>
+)}
+
+
 						</>
 					)}
 				</Col>
@@ -249,8 +286,8 @@ const PaginationComponent = ({
 
 	const handlePageSizeChange = (e) => {
 		const value = e.target.value;
-		  const newSize = value === "All" ? Math.min(total, 2000) : parseInt(value, 10);
-		  onPageSizeChange(newSize);
+		const newSize = value === "All" ? Math.min(total, 2000) : parseInt(value, 10);
+		onPageSizeChange(newSize);
 	};
 
 	// Calculate record range
@@ -270,7 +307,7 @@ const PaginationComponent = ({
 						disabled={isLoading}
 						bsSize={"sm"}
 					>
-						{[10, 20, 30, 50, 100,"All"].map((size) => (
+						{[10, 20, 30, 50, 100, "All"].map((size) => (
 							<option key={size} value={size}>
 								{size}
 							</option>

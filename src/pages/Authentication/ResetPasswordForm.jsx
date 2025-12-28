@@ -17,9 +17,8 @@ import {
   InputGroup,
 } from "reactstrap";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import profile from "../../assets/images/profile-img.png";
+import { FaUserCircle } from "react-icons/fa";
 import { LOGIN_TITLE, FOOTER_TEXT } from "../../constants/constantFile";
-
 const ResetPasswordForm = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -28,13 +27,10 @@ const ResetPasswordForm = () => {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const togglePasswordVisibility = () =>
     setShowPassword((prevState) => !prevState);
-
   const toggleConfirmPasswordVisibility = () =>
     setShowConfirmPassword((prevState) => !prevState);
-
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tokenParam = urlParams.get("token");
@@ -44,7 +40,6 @@ const ResetPasswordForm = () => {
       setError("Invalid or missing token.");
     }
   }, [location]);
-
   const validation = useFormik({
     initialValues: {
       password: "",
@@ -74,7 +69,6 @@ const ResetPasswordForm = () => {
             }),
           },
         );
-
         const data = await response.json();
         if (response.ok) {
           setApiResponse(data.message);
@@ -90,7 +84,6 @@ const ResetPasswordForm = () => {
       }
     },
   });
-
   return (
     <Container className="my-5">
       <Row className="justify-content-center">
@@ -105,16 +98,19 @@ const ResetPasswordForm = () => {
                   </div>
                 </Col>
                 <Col xs={5} className="align-self-end">
-                  <img src={profile} alt="Profile" className="img-fluid" />
+                   <FaUserCircle
+  className="rounded-circle header-profile-user"
+  size={40} // adjust size like image width/height
+  color="#ccc" // optional, change color if needed
+  title="Header Avatar"
+/>
                 </Col>
               </Row>
             </div>
             <CardBody>
               <h4 className="text-center mb-4">Change Your Password</h4>
-
               {apiResponse && <Alert color="success">{apiResponse}</Alert>}
               {error && <Alert color="danger">{error}</Alert>}
-
               <Form
                 className="form-horizontal"
                 onSubmit={validation.handleSubmit}
@@ -149,7 +145,6 @@ const ResetPasswordForm = () => {
                       )}
                   </InputGroup>
                 </div>
-
                 {/* Confirm Password Field */}
                 <div className="mb-3">
                   <Label>Confirm Password</Label>
@@ -180,7 +175,6 @@ const ResetPasswordForm = () => {
                       )}
                   </InputGroup>
                 </div>
-
                 {/* Submit Button */}
                 <div className="text-end">
                   <button className="btn btn-primary w-md" type="submit">
@@ -195,5 +189,4 @@ const ResetPasswordForm = () => {
     </Container>
   );
 };
-
 export default ResetPasswordForm;

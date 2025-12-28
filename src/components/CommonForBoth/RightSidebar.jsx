@@ -1,7 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Row, Col, FormGroup } from "reactstrap";
-
+import {
+  FormGroup,
+  Button,
+  ButtonGroup,
+} from "reactstrap";
 import { connect } from "react-redux";
 import {
   changeLayout,
@@ -14,44 +17,31 @@ import {
   changeTopbarTheme,
   showRightSidebarAction,
 } from "../../store/actions";
-
-//SimpleBar
 import SimpleBar from "simplebar-react";
-
 import { Link } from "react-router-dom";
-
-import "../../components/CommonForBoth/rightbar.scss";
-
-//constants
 import {
   layoutTypes,
   layoutModeTypes,
   layoutWidthTypes,
   topBarThemeTypes,
-  leftBarThemeImageTypes,
   leftSidebarTypes,
-  leftSideBarThemeTypes,
 } from "../../constants/layout";
-
 const RightSidebar = (props) => {
-  // Save layout changes to localStorage
   const handleLayoutChange = (layoutType) => {
     props.changeLayout(layoutType);
   };
-
   const handleLayoutWidthChange = (layoutWidth) => {
     props.changeLayoutWidth(layoutWidth);
   };
-
   const handleTopbarThemeChange = (theme) => {
     props.changeTopbarTheme(theme);
   };
-
+  const buttonClass = "me-2 mb-2 rounded"; // spacing class for all buttons
   return (
-    <React.Fragment>
+    <>
       <div className="right-bar" id="right-bar">
         <SimpleBar style={{ height: "900px" }}>
-          <div data-simplebar className="h-100">
+          <div className="h-100">
             <div className="rightbar-title px-3 py-4">
               <Link
                 to="#"
@@ -65,199 +55,150 @@ const RightSidebar = (props) => {
               </Link>
               <h5 className="m-0">Settings</h5>
             </div>
-
             <hr className="my-0" />
-
             <div className="p-4">
-              <div className="radio-toolbar">
+              {/* Layout */}
+              <FormGroup>
                 <span className="mb-2 d-block">Layouts</span>
-                <input
-                  type="radio"
-                  id="radioVertical"
-                  name="radioFruit"
-                  value={layoutTypes.VERTICAL}
-                  checked={props.layoutType === layoutTypes.VERTICAL}
-                  onChange={(e) => handleLayoutChange(e.target.value)}
-                />
-                <label className="me-1" htmlFor="radioVertical">
-                  Vertical
-                </label>
-                <input
-                  type="radio"
-                  id="radioHorizontal"
-                  name="radioFruit"
-                  value={layoutTypes.HORIZONTAL}
-                  checked={props.layoutType === layoutTypes.HORIZONTAL}
-                  onChange={(e) => handleLayoutChange(e.target.value)}
-                />
-                <label htmlFor="radioHorizontal">Horizontal</label>
-              </div>
-
-              <hr className="mt-1" />
-              <div className="radio-toolbar">
-                <span className="mb-2 d-block">Layouts Mode</span>
-                <input
-                  type="radio"
-                  id="radioLight"
-                  name="radioLight"
-                  value={layoutModeTypes.LIGHT}
-                  checked={props.layoutModeType === layoutModeTypes.LIGHT}
-                  onChange={(e) => props.changeLayoutMode(e.target.value)}
-                />
-                <label className="me-1" htmlFor="radioLight">
-                  Light
-                </label>
-                <input
-                  type="radio"
-                  id="radioDark"
-                  name="radioDark"
-                  value={layoutModeTypes.DARK}
-                  checked={props.layoutModeType === layoutModeTypes.DARK}
-                  onChange={(e) => props.changeLayoutMode(e.target.value)}
-                />
-                <label htmlFor="radioDark">Dark</label>
-              </div>
-
-              <hr className="mt-1" />
-              <div className="radio-toolbar">
-                <span className="mb-2 d-block" id="radio-title">
-                  Layout Width
-                </span>
-                <input
-                  type="radio"
-                  id="radioFluid"
-                  name="radioWidth"
-                  value={layoutWidthTypes.FLUID}
-                  checked={props.layoutWidth === layoutWidthTypes.FLUID}
-                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
-                />
-                <label className="me-1" htmlFor="radioFluid">
-                  Fluid
-                </label>
-                <input
-                  type="radio"
-                  id="radioBoxed"
-                  name="radioWidth"
-                  value={layoutWidthTypes.BOXED}
-                  checked={props.layoutWidth === layoutWidthTypes.BOXED}
-                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
-                />
-                <label htmlFor="radioBoxed" className="me-1">
-                  Boxed
-                </label>
-                <input
-                  type="radio"
-                  id="radioscrollable"
-                  name="radioscrollable"
-                  value={layoutWidthTypes.SCROLLABLE}
-                  checked={props.layoutWidth === layoutWidthTypes.SCROLLABLE}
-                  onChange={(e) => handleLayoutWidthChange(e.target.value)}
-                />
-                <label htmlFor="radioscrollable">Scrollable</label>
-              </div>
-
-              <hr className="mt-1" />
-              <div className="radio-toolbar">
-                <span className="mb-2 d-block" id="radio-title">
-                  Topbar Theme
-                </span>
-                <input
-                  type="radio"
-                  id="radioThemeLight"
-                  name="radioTheme"
-                  value={topBarThemeTypes.LIGHT}
-                  checked={props.topbarTheme === topBarThemeTypes.LIGHT}
-                  onChange={(e) => handleTopbarThemeChange(e.target.value)}
-                />
-                <label className="me-1" htmlFor="radioThemeLight">
-                  Light
-                </label>
-                <input
-                  type="radio"
-                  id="radioThemeDark"
-                  name="radioTheme"
-                  value={topBarThemeTypes.DARK}
-                  checked={props.topbarTheme === topBarThemeTypes.DARK}
-                  onChange={(e) => handleTopbarThemeChange(e.target.value)}
-                />
-                <label className="me-1" htmlFor="radioThemeDark">
-                  Dark
-                </label>
-                {props.layoutType === "vertical" ? null : (
-                  <>
-                    <input
-                      type="radio"
-                      id="radioThemeColored"
-                      name="radioTheme"
-                      value={topBarThemeTypes.COLORED}
-                      checked={props.topbarTheme === topBarThemeTypes.COLORED}
-                      onChange={(e) => handleTopbarThemeChange(e.target.value)}
-                    />
-                    <label className="me-1" htmlFor="radioThemeColored">
-                      Colored
-                    </label>{" "}
-                  </>
-                )}
-              </div>
-
-              {props.layoutType === "vertical" ? (
-                <React.Fragment>
-                  <hr className="mt-1" />
-                  <div className="radio-toolbar">
-                    <span className="mb-2 d-block" id="radio-title">
-                      Left Sidebar Type{" "}
-                    </span>
-                    <input
-                      type="radio"
-                      id="sidebarDefault"
-                      name="sidebarType"
-                      value={leftSidebarTypes.DEFAULT}
-                      checked={
-                        props.leftSideBarType === leftSidebarTypes.DEFAULT
-                      }
-                      onChange={(e) => props.changeSidebarType(e.target.value)}
-                    />
-                    <label className="me-1" htmlFor="sidebarDefault">
-                      Default
-                    </label>
-                    <input
-                      type="radio"
-                      id="sidebarCompact"
-                      name="sidebarType"
-                      value={leftSidebarTypes.COMPACT}
-                      checked={
-                        props.leftSideBarType === leftSidebarTypes.COMPACT
-                      }
-                      onChange={(e) => props.changeSidebarType(e.target.value)}
-                    />
-                    <label className="me-1" htmlFor="sidebarCompact">
-                      Compact
-                    </label>
-                    <input
-                      type="radio"
-                      id="sidebarIcon"
-                      name="sidebarType"
-                      value={leftSidebarTypes.ICON}
-                      checked={props.leftSidebarType === leftSidebarTypes.ICON}
-                      onChange={(e) => props.changeSidebarType(e.target.value)}
-                    />
-                    <label className="me-1" htmlFor="sidebarIcon">
-                      Icon
-                    </label>
-                  </div>
-                  <hr className="mt-1" />
-                </React.Fragment>
-              ) : null}
-              {/*preloader here*/}
+                <ButtonGroup>
+                  <Button
+                    color={props.layoutType === layoutTypes.VERTICAL ? "primary" : "light"}
+                    active={props.layoutType === layoutTypes.VERTICAL}
+                    onClick={() => handleLayoutChange(layoutTypes.VERTICAL)}
+                    className={buttonClass}
+                  >
+                    Vertical
+                  </Button>
+                  <Button
+                    color={props.layoutType === layoutTypes.HORIZONTAL ? "primary" : "light"}
+                    active={props.layoutType === layoutTypes.HORIZONTAL}
+                    onClick={() => handleLayoutChange(layoutTypes.HORIZONTAL)}
+                    className={buttonClass}
+                  >
+                    Horizontal
+                  </Button>
+                </ButtonGroup>
+              </FormGroup>
+              <hr />
+              {/* Layout Mode */}
+              <FormGroup>
+                <span className="mb-2 d-block">Layout Mode</span>
+                <ButtonGroup>
+                  <Button
+                    color={props.layoutModeType === layoutModeTypes.LIGHT ? "primary" : "light"}
+                    active={props.layoutModeType === layoutModeTypes.LIGHT}
+                    onClick={() => props.changeLayoutMode(layoutModeTypes.LIGHT)}
+                    className={buttonClass}
+                  >
+                    Light
+                  </Button>
+                  <Button
+                    color={props.layoutModeType === layoutModeTypes.DARK ? "primary" : "light"}
+                    active={props.layoutModeType === layoutModeTypes.DARK}
+                    onClick={() => props.changeLayoutMode(layoutModeTypes.DARK)}
+                    className={buttonClass}
+                  >
+                    Dark
+                  </Button>
+                </ButtonGroup>
+              </FormGroup>
+              <hr />
+              {/* Layout Width */}
+              <FormGroup>
+                <span className="mb-2 d-block">Layout Width</span>
+                <ButtonGroup>
+                  <Button
+                    color={props.layoutWidth === layoutWidthTypes.FLUID ? "primary" : "light"}
+                    active={props.layoutWidth === layoutWidthTypes.FLUID}
+                    onClick={() => handleLayoutWidthChange(layoutWidthTypes.FLUID)}
+                    className={buttonClass}
+                  >
+                    Fluid
+                  </Button>
+                  <Button
+                    color={props.layoutWidth === layoutWidthTypes.BOXED ? "primary" : "light"}
+                    active={props.layoutWidth === layoutWidthTypes.BOXED}
+                    onClick={() => handleLayoutWidthChange(layoutWidthTypes.BOXED)}
+                    className={buttonClass}
+                  >
+                    Boxed
+                  </Button>
+                  <Button
+                    color={props.layoutWidth === layoutWidthTypes.SCROLLABLE ? "primary" : "light"}
+                    active={props.layoutWidth === layoutWidthTypes.SCROLLABLE}
+                    onClick={() => handleLayoutWidthChange(layoutWidthTypes.SCROLLABLE)}
+                    className={buttonClass}
+                  >
+                    Scrollable
+                  </Button>
+                </ButtonGroup>
+              </FormGroup>
+              <hr />
+              {/* Topbar Theme */}
+              <FormGroup>
+                <span className="mb-2 d-block">Topbar Theme</span>
+                <ButtonGroup>
+                  <Button
+                    color={props.topbarTheme === topBarThemeTypes.LIGHT ? "primary" : "light"}
+                    active={props.topbarTheme === topBarThemeTypes.LIGHT}
+                    onClick={() => handleTopbarThemeChange(topBarThemeTypes.LIGHT)}
+                    className={buttonClass}
+                  >
+                    Light
+                  </Button>
+                  <Button
+                    color={props.topbarTheme === topBarThemeTypes.DARK ? "primary" : "light"}
+                    active={props.topbarTheme === topBarThemeTypes.DARK}
+                    onClick={() => handleTopbarThemeChange(topBarThemeTypes.DARK)}
+                    className={buttonClass}
+                  >
+                    Dark
+                  </Button>
+                </ButtonGroup>
+              </FormGroup>
+              {/* Sidebar Type (Vertical only) */}
+              {props.layoutType === layoutTypes.VERTICAL && (
+                <>
+                  <hr />
+                  <FormGroup>
+                    <span className="mb-2 d-block">Left Sidebar Type</span>
+                    <ButtonGroup>
+                      <Button
+                        color={props.leftSideBarType === leftSidebarTypes.DEFAULT ? "primary" : "light"}
+                        active={props.leftSideBarType === leftSidebarTypes.DEFAULT}
+                        onClick={() => props.changeSidebarType(leftSidebarTypes.DEFAULT)}
+                        className={buttonClass}
+                      >
+                        Default
+                      </Button>
+                      <Button
+                        color={props.leftSideBarType === leftSidebarTypes.COMPACT ? "primary" : "light"}
+                        active={props.leftSideBarType === leftSidebarTypes.COMPACT}
+                        onClick={() => props.changeSidebarType(leftSidebarTypes.COMPACT)}
+                        className={buttonClass}
+                      >
+                        Compact
+                      </Button>
+                      <Button
+                        color={props.leftSideBarType === leftSidebarTypes.ICON ? "primary" : "light"}
+                        active={props.leftSideBarType === leftSidebarTypes.ICON}
+                        onClick={() => props.changeSidebarType(leftSidebarTypes.ICON)}
+                        className={buttonClass}
+                      >
+                        Icon
+                      </Button>
+                    </ButtonGroup>
+                  </FormGroup>
+                </>
+              )}
             </div>
           </div>
         </SimpleBar>
       </div>
-      <div className="rightbar-overlay"></div>
-    </React.Fragment>
+      <div className="rightbar-overlay" />
+    </>
   );
 };
-
 RightSidebar.propTypes = {
   changeLayout: PropTypes.func,
   changeLayoutWidth: PropTypes.func,
@@ -266,23 +207,17 @@ RightSidebar.propTypes = {
   changeSidebarThemeImage: PropTypes.func,
   changeSidebarType: PropTypes.func,
   changeTopbarTheme: PropTypes.func,
-  isPreloader: PropTypes.any,
   layoutType: PropTypes.any,
   layoutModeType: PropTypes.any,
-  changeLayoutMode: PropTypes.func,
   layoutWidth: PropTypes.any,
-  leftSideBarTheme: PropTypes.any,
-  leftSideBarThemeImage: PropTypes.any,
   leftSideBarType: PropTypes.any,
-  showRightSidebarAction: PropTypes.func,
   topbarTheme: PropTypes.any,
-  onClose: PropTypes.func,
+  changeLayoutMode: PropTypes.func,
+  showRightSidebarAction: PropTypes.func,
 };
-
-const mapStateToProps = (state) => {
-  return { ...state.Layout };
-};
-
+const mapStateToProps = (state) => ({
+  ...state.Layout,
+});
 export default connect(mapStateToProps, {
   changeLayout,
   changeLayoutMode,

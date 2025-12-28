@@ -9,7 +9,7 @@ import {
 import { withTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import withRouter from "../../Common/withRouter";
-import defaultAvatar from "../../../assets/images/default-avatar.jpg";
+import { FaUserCircle } from "react-icons/fa";
 import { useAuthUser } from "../../../hooks/useAuthUser";
 
 const ProfileMenu = (props) => {
@@ -28,11 +28,12 @@ const ProfileMenu = (props) => {
           id="page-header-user-dropdown"
           tag="button"
         >
-          <img
-            className="rounded-circle header-profile-user"
-            src={defaultAvatar}
-            alt="Header Avatar"
-          />
+          <FaUserCircle
+  className="rounded-circle header-profile-user"
+  size={40} // adjust size like image width/height
+  color="#ccc" // optional, change color if needed
+  title="Header Avatar"
+/>
           <span className="d-none d-xl-inline-block ms-2">
             {authUser.usr_full_name || authUser.usr_email}
           </span>

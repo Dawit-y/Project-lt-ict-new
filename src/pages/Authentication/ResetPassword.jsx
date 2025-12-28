@@ -15,16 +15,13 @@ import {
   Alert,
 } from "reactstrap";
 import { LOGIN_TITLE, FOOTER_TEXT } from "../../constants/constantFile";
-
+import { FaUserCircle } from "react-icons/fa";
 // import images
-import profile from "../../assets/images/profile-img.png";
 import lightlogo from "../../assets/images/logo-light.png";
-
 const ResetPassword = () => {
   document.title = "Reset Password";
   const [apiResponse, setApiResponse] = useState("");
   const [error, setError] = useState("");
-
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -55,7 +52,6 @@ const ResetPassword = () => {
       }
     },
   });
-
   return (
     <div className="account-pages my-5 pt-sm-5">
       <Container>
@@ -71,7 +67,12 @@ const ResetPassword = () => {
                     </div>
                   </Col>
                   <Col xs={5} className="align-self-end">
-                    <img src={profile} alt="Profile" className="img-fluid" />
+                     <FaUserCircle
+  className="rounded-circle header-profile-user"
+  size={40} // adjust size like image width/height
+  color="#ccc" // optional, change color if needed
+  title="Header Avatar"
+/>
                   </Col>
                 </Row>
               </div>
@@ -90,7 +91,6 @@ const ResetPassword = () => {
                     </div>
                   </Link>
                 </div>
-
                 <div className="p-2">
                   {error ? (
                     <Alert color="danger">{error}</Alert>
@@ -101,7 +101,6 @@ const ResetPassword = () => {
                       </div>
                     )
                   )}
-
                   {apiResponse.length > 0 ? (
                     apiResponse && <Alert color="success">{apiResponse}</Alert>
                   ) : (
@@ -160,5 +159,4 @@ const ResetPassword = () => {
     </div>
   );
 };
-
 export default ResetPassword;

@@ -484,7 +484,7 @@ const ExportToPDF = ({
 				styles: {
 					font: "NotoSansEthiopic-Regular",
 					fontSize: 9,
-					cellPadding: 4,
+					cellPadding: 1,
 					lineColor: COLORS.lightGray,
 					lineWidth: 0.3,
 					textColor: [0, 0, 0],
@@ -546,7 +546,7 @@ const ExportToPDF = ({
 					styles: {
 						font: "NotoSansEthiopic-Bold",
 						fontSize: 9,
-						cellPadding: 4,
+						cellPadding: 1,
 						fillColor: COLORS.orange,
 						fontStyle: "bold",
 						lineColor: COLORS.lightGray,
