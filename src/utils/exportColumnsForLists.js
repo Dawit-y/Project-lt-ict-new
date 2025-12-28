@@ -3,8 +3,16 @@ import { useFetchSectorInformations } from "../queries/sectorinformation_query";
 import { useFetchProjectStatuss } from "../queries/projectstatus_query";
 import { createMultiLangKeyValueMap } from "./commonMethods";
 import { useTranslation } from "react-i18next";
-//import { getDepartmentType } from "../pages/Users";
 import { useFetchProjectCategorys } from "../queries/projectcategory_query";
+
+export const getDepartmentType = (user) => {
+	if (!user) return null;
+	if (user?.usr_officer_id > 0) return "Expert";
+	if (user?.usr_team_id > 0) return "Team Leader";
+	if (user?.usr_directorate_id > 0) return "Director";
+	if (user?.usr_department_id > 0) return "All Department";
+	return null;
+};
 
 export const useUserExportColumns = () => {
 	const { i18n, t } = useTranslation();
@@ -33,7 +41,46 @@ export const useUserExportColumns = () => {
 		};
 	});
 
-	
+	const exportColumns = useMemo(
+		() => [
+			{
+				key: "usr_full_name",
+				label: t("usr_full_name"),
+				format: (val) => (val ? val : "-"),
+				width: 60,
+			},
+			{
+				key: "usr_email",
+				label: t("usr_email"),
+				format: (val) => (val ? val : "-"),
+				width: 40,
+			},
+			{
+				key: "usr_phone_number",
+				label: t("usr_phone_number"),
+				format: (val) => (val ? String(val) : "-"),
+			},
+			{
+				key: "usr_sector_id",
+				label: t("usr_sector_id"),
+				format: (val) => sectorInformationMap[val] ?? "-",
+				width: 40,
+			},
+			{
+				key: "dep_name",
+				label: t("Department"),
+				format: (_, row) => getDepartmentType(row) ?? "-",
+			},
+			{
+				key: "usr_user_type",
+				label: t("usr_user_type"),
+				format: (val) => userTypeMap[val] ?? "-",
+			},
+		],
+		[t, sectorInformationMap]
+	);
+
+	return exportColumns;
 };
 
 export const monitoringExportColumns = [

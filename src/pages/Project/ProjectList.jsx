@@ -5,7 +5,7 @@ import React, {
 	useRef,
 	useCallback,
 	lazy,
-	Suspense
+	Suspense,
 } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -28,7 +28,9 @@ import ProjectFormModal from "./ProjectFormModal";
 import { toast } from "react-toastify";
 import { useProjectListState } from "../../hooks/useProjectListsState";
 import { FaAlignLeft } from "react-icons/fa";
-const ProjectRegionalStructureModal = lazy(	() => import("./ProjectRegionalStructureModal"));
+const ProjectRegionalStructureModal = lazy(
+	() => import("./ProjectRegionalStructureModal")
+);
 const ProjectList = () => {
 	document.title = "Projects List";
 	const { t, i18n } = useTranslation();
@@ -308,9 +310,9 @@ const ProjectList = () => {
 		}
 	};
 	const canEditOrDelete = useMemo(
-	() => searchResults?.previledge?.is_role_editable === 1,
-	[searchResults]
-);
+		() => searchResults?.previledge?.is_role_editable === 1,
+		[searchResults]
+	);
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -338,7 +340,7 @@ const ProjectList = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 150,
-				cellDataType: "text"
+				cellDataType: "text",
 			},
 			{
 				field: "zone_name",
@@ -396,40 +398,40 @@ const ProjectList = () => {
 					if (params.node.footer) {
 						return ""; // Suppress button for footer
 					}
-return (
-	<div className="d-flex gap-1">
-		{canEditOrDelete && (
-			<>
-				<Button
-					color="None"
-					size="sm"
-					className="text-success"
-					onClick={() => handleEditClick(params.data)}
-				>
-					<i className="mdi mdi-pencil font-size-18" />
-				</Button>
-				<Button
-					color="None"
-					size="sm"
-					className="text-success"
-					onClick={() => handleOpenStructureModal(params.data)}
-				>
-					<FaAlignLeft size={18} />
-				</Button>
-			</>
-		)}
-		<Link to={`/projectdetail/${params.data.prj_id}`}>
-			<Button type="button" className="btn-sm mb-1 default" outline>
-				<i className="fa fa-eye"></i>
-			</Button>
-		</Link>
-	</div>
-);
+					return (
+						<div className="d-flex gap-1">
+							{canEditOrDelete && (
+								<>
+									<Button
+										color="None"
+										size="sm"
+										className="text-success"
+										onClick={() => handleEditClick(params.data)}
+									>
+										<i className="mdi mdi-pencil font-size-18" />
+									</Button>
+									<Button
+										color="None"
+										size="sm"
+										className="text-success"
+										onClick={() => handleOpenStructureModal(params.data)}
+									>
+										<FaAlignLeft size={18} />
+									</Button>
+								</>
+							)}
+							<Link to={`/projectdetail/${params.data.prj_id}`}>
+								<Button type="button" className="btn-sm mb-1 default" outline>
+									<i className="fa fa-eye"></i>
+								</Button>
+							</Link>
+						</div>
+					);
 				},
 			},
 		];
 		return baseColumnDefs;
-	}, [t,canEditOrDelete]);
+	}, [t, canEditOrDelete]);
 	return (
 		<React.Fragment>
 			<div className="page-content">
@@ -437,14 +439,14 @@ return (
 					<Breadcrumbs />
 					{isStructureModalOpen && (
 						<Suspense>
-					<ProjectRegionalStructureModal
-						isOpen={isStructureModalOpen}
-						toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
-						project={selectedProject}
-						onSubmit={handleStructureSubmit}
-						isLoading={updateProject.isPending}
-					/>
-					</Suspense>
+							<ProjectRegionalStructureModal
+								isOpen={isStructureModalOpen}
+								toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
+								project={selectedProject}
+								onSubmit={handleStructureSubmit}
+								isLoading={updateProject.isPending}
+							/>
+						</Suspense>
 					)}
 					<ProjectFormModal
 						isOpen={isEditModalOpen}
@@ -477,7 +479,7 @@ return (
 									: prjLocationZoneId
 										? "zone"
 										: "region",
-								add_name_en: "", // You might want to store these in Redux too
+								add_name_en: "",
 								add_name_am: "",
 								name: "",
 							}}
