@@ -63,7 +63,7 @@ const TreeForLists = forwardRef(
 
 		const [searchTerm, setSearchTerm] = useState("");
 		const [selectedNode, setSelectedNode] = useState({});
-		const [includeChecked, setIncludeChecked] = useState(false);
+		const [includeChecked, setIncludeChecked] = useState(true);
 		const { ref: resizeRef, width, height } = useResizeObserver();
 
 		const handleCheckboxChange = (e) => {

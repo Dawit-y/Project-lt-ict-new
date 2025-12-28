@@ -57,7 +57,6 @@ const AdvancedSearch = forwardRef(
 		},
 		ref
 	) => {
-
 		const { t } = useTranslation();
 		const [isOpen, setIsOpen] = useState(false);
 		const toggle = () => setIsOpen(!isOpen);
@@ -182,7 +181,7 @@ const AdvancedSearch = forwardRef(
 				...params,
 				...transformedValues,
 				...(additionalParams || {}),
-				page: currentPage, 
+				page: currentPage,
 				per_page: pageSize,
 			};
 
@@ -316,17 +315,20 @@ const AdvancedSearch = forwardRef(
 				});
 			}
 			if (onClear) {
-				onClear()
+				onClear();
 			}
 		};
 
 		const isButtonDisabled = useMemo(() => {
-			// Check if any search parameter has a value
-			const hasAnyValue = Object.values({
+			const hasAnyValue = Object.entries({
 				...params,
 				...validation.values,
 				...additionalParams,
-			}).some((value) => {
+			}).some(([key, value]) => {
+				if (key === "include") {
+					return false;
+				}
+
 				if (Array.isArray(value)) {
 					return value.length > 0;
 				}
