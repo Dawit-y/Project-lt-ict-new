@@ -2081,5 +2081,7 @@
 	"cso_information_report": "CSO Information Report",
 	"citizen_project_by_location_report": "Citizen Project by Location Report",
 	"citizen_project_by_category_report": "Citizen Project by Category Report",
-	"budget_year_id": "Budget Year"
+	"budget_year_id": "Budget Year",
+	"project_evaluation": "Project Evaluation",
+	"project_monitoring": "Project Monitoring"
 }

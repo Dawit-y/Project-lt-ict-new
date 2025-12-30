@@ -9,13 +9,13 @@ import Spinners from "../../components/Common/Spinner";
 import DeleteModal from "../../components/Common/DeleteModal";
 import classnames from "classnames";
 import {
-	useFetchProjectMonitoringEvaluations,
-	useAddProjectMonitoringEvaluation,
-	useDeleteProjectMonitoringEvaluation,
-	useUpdateProjectMonitoringEvaluation,
-} from "../../queries/projectmonitoringevaluation_query";
+	useFetchProjectEvaluations,
+	useAddProjectEvaluation,
+	useDeleteProjectEvaluation,
+	useUpdateProjectEvaluation,
+} from "../../queries/project_evaluation_query";
 import { useFetchMonitoringEvaluationTypes } from "../../queries/monitoringevaluationtype_query";
-import ProjectMonitoringEvaluationModal from "./ProjectMonitoringEvaluationModal";
+import ProjectMonitoringEvaluationModal from "./ProjectEvaluationModal";
 import { useTranslation } from "react-i18next";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import { convertToNumericValue } from "../../utils/commonMethods";
@@ -79,7 +79,7 @@ const visitTypeMap = Object.fromEntries(
 const LazyLoader = ({ children }) => (
 	<Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
-const ProjectMonitoringEvaluationModel = (props) => {
+const ProjectEvaluationModel = (props) => {
 	document.title = " ProjectMonitoringEvaluation";
 	const { passedId, isActive, status, startDate } = props;
 	const param = { project_id: passedId, request_type: "single" };
@@ -95,7 +95,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 	const [showSearchResult, setShowSearchResult] = useState(false);
 	const [activeTab, setActiveTab] = useState("2");
 	const { data, isLoading, isFetching, error, isError, refetch } =
-		useFetchProjectMonitoringEvaluations(param, isActive);
+		useFetchProjectEvaluations(param, isActive);
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
 	const {
@@ -117,11 +117,11 @@ const ProjectMonitoringEvaluationModel = (props) => {
 		);
 	}, [meTypes, i18n.language]);
 
-	const addProjectMonitoringEvaluation = useAddProjectMonitoringEvaluation();
+	const addProjectMonitoringEvaluation = useAddProjectEvaluation();
 	const updateProjectMonitoringEvaluation =
-		useUpdateProjectMonitoringEvaluation();
+		useUpdateProjectEvaluation();
 	const deleteProjectMonitoringEvaluation =
-		useDeleteProjectMonitoringEvaluation();
+		useDeleteProjectEvaluation();
 
 	const handleAddProjectMonitoringEvaluation = async (data) => {
 		try {
@@ -792,8 +792,8 @@ const ProjectMonitoringEvaluationModel = (props) => {
 			<Modal isOpen={modal} toggle={toggle} className="modal-xl">
 				<ModalHeader toggle={toggle} tag="h4">
 					{!!isEdit
-						? t("edit") + " " + t("project_monitoring")
-						: t("add") + " " + t("project_monitoring")}
+						? t("edit") + " " + t("project_evaluation")
+						: t("add") + " " + t("project_evaluation")}
 				</ModalHeader>
 				<ModalBody>
 					<Form
@@ -1304,7 +1304,7 @@ const ProjectMonitoringEvaluationModel = (props) => {
 		</React.Fragment>
 	);
 };
-ProjectMonitoringEvaluationModel.propTypes = {
+ProjectEvaluationModel.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
-export default ProjectMonitoringEvaluationModel;
+export default ProjectEvaluationModel;
