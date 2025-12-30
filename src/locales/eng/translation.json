@@ -2083,5 +2083,21 @@
 	"citizen_project_by_category_report": "Citizen Project by Category Report",
 	"budget_year_id": "Budget Year",
 	"project_evaluation": "Project Evaluation",
-	"project_monitoring": "Project Monitoring"
+	"project_monitoring": "Project Monitoring",
+	"gov_project_monitoring": "Government Project Monitoring",
+	"cso_project_monitoring": "CSO Project Monitoring",
+	"citizen_project_monitoring": "Citizen Project Monitoring",
+	"cso_financial_progress": "CSO Financial Progress",
+	"cso_physical_progress": "CSO Physical Progress",
+	"cso_partner_name": "CSO Partner Name",
+	"partnership_type": "Partnership Type",
+	"Select_partnership_type": "Select Partnership Type",
+	"Implementing Partner": "Implementing Partner",
+	"Funding Partner": "Funding Partner",
+	"Technical Partner": "Technical Partner",
+	"citizen_participation_count": "Citizen Participation Count",
+	"community_feedback": "Community Feedback",
+	"community_level": "Community Level",
+	"search_results": "{{count}} Results...",
+	"max_length_exceeded": "Maximum length exceeded"
 }
