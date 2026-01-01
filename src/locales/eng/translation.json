@@ -2099,5 +2099,6 @@
 	"community_feedback": "Community Feedback",
 	"community_level": "Community Level",
 	"search_results": "{{count}} Results...",
-	"max_length_exceeded": "Maximum length exceeded"
+	"max_length_exceeded": "Maximum length exceeded",
+	"view_plan": "View Plan"
 }
