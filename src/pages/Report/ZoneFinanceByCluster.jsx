@@ -198,39 +198,35 @@ const ZoneBudgetByClustersTable = ({
 	const prepareExportData = useMemo(() => {
 		return (filteredData, groupedData, calculatedTotals, translation) => {
 			const exportRows = [];
-
-			// Add zone rows
 			filteredData.forEach((zone) => {
 				const zoneRow = {
-					level: translation("Zone"),
 					zone_name: zone.zone_name,
 				};
 
 				clusters.forEach((cluster) => {
-					const value = Number(zone[cluster.field]) || 0;
-					zoneRow[cluster.label] = value;
+					zoneRow[cluster.field] = Number(zone[cluster.field]) || 0;
 				});
 
-				zoneRow[translation("Zone Total")] = zone.zone_total_budget;
-				zoneRow[translation("Zone %")] = zone.zone_total_percent;
+				zoneRow["zone_total_budget"] = zone.zone_total_budget || 0;
+				zoneRow["zone_total_percent"] = zone.zone_total_percent || 0;
+
 				exportRows.push(zoneRow);
 			});
 
-			// Add total row
 			if (calculatedTotals.grand_total) {
 				const totalRow = {
-					level: translation("Total"),
 					zone_name: translation("Total"),
 				};
 
 				clusters.forEach((cluster) => {
-					totalRow[cluster.label] =
+					totalRow[cluster.field] =
 						calculatedTotals.grand_total[cluster.field] || 0;
 				});
 
-				totalRow[translation("Zone Total")] =
-					calculatedTotals.grand_total.zone_total_budget;
-				totalRow[translation("Zone %")] = 100;
+				totalRow["zone_total_budget"] =
+					calculatedTotals.grand_total.zone_total_budget || 0;
+				totalRow["zone_total_percent"] = 100;
+
 				exportRows.push(totalRow);
 			}
 
