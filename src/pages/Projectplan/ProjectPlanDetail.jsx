@@ -67,7 +67,6 @@ const PlanDetailFormModal = ({
 		initialValues: {
 			prp_plan_id: planId,
 			prp_activity_name: planDetail?.prp_activity_name || "",
-			prp_budget_year_id: planDetail?.prp_budget_year_id || "",
 			prp_description: planDetail?.prp_description || "",
 
 			// Monthly planned values
@@ -94,8 +93,6 @@ const PlanDetailFormModal = ({
 			prp_activity_name: Yup.string()
 				.required(t("Activity name is required"))
 				.max(200, t("Activity name cannot exceed 200 characters")),
-
-			prp_budget_year_id: Yup.number().required(t("Year is required")),
 
 			// Monthly validations
 			...Array.from({ length: 12 }, (_, i) => ({
@@ -166,13 +163,6 @@ const PlanDetailFormModal = ({
 		},
 	});
 
-	// Handle year change
-	const handleYearChange = (e) => {
-		const yearId = e.target.value;
-		setSelectedYear(yearId);
-		validation.setFieldValue("prp_budget_year_id", yearId);
-	};
-
 	// Calculate totals for display
 	const calculateTotals = () => {
 		const totalPhysical = Array.from({ length: 12 }, (_, i) =>
@@ -230,35 +220,6 @@ const PlanDetailFormModal = ({
 										/>
 										<FormFeedback>
 											{validation.errors.prp_activity_name}
-										</FormFeedback>
-									</div>
-								</Col>
-								<Col md={6}>
-									<div className="mb-3">
-										<Label className="form-label fw-medium">
-											{t("Budget Year")} <span className="text-danger">*</span>
-										</Label>
-										<Input
-											name="prp_budget_year_id"
-											type="select"
-											className="form-select"
-											onChange={handleYearChange}
-											onBlur={validation.handleBlur}
-											value={validation.values.prp_budget_year_id || ""}
-											invalid={
-												validation.touched.prp_budget_year_id &&
-												!!validation.errors.prp_budget_year_id
-											}
-										>
-											<option value="">{t("Select Year")}</option>
-											{budgetYearData?.data?.map((year) => (
-												<option key={year.bdy_id} value={year.bdy_id}>
-													{year.bdy_name}
-												</option>
-											))}
-										</Input>
-										<FormFeedback>
-											{validation.errors.prp_budget_year_id}
 										</FormFeedback>
 									</div>
 								</Col>
@@ -507,7 +468,6 @@ const ProjectPlanDetailModal = ({
 		const payload = {
 			prp_plan_id: planId,
 			prp_activity_name: formData.prp_activity_name,
-			prp_budget_year_id: formData.prp_budget_year_id,
 			prp_description: formData.prp_description || null,
 			prp_physical_planned: totalPhysicalPlanned,
 			prp_budget_planned: totalFinancialPlanned,
@@ -553,7 +513,6 @@ const ProjectPlanDetailModal = ({
 			prp_id: planDetail.prp_id,
 			prp_plan_id: planId,
 			prp_activity_name: formData.prp_activity_name,
-			prp_budget_year_id: formData.prp_budget_year_id,
 			prp_description: formData.prp_description || null,
 			prp_physical_planned: totalPhysicalPlanned,
 			prp_budget_planned: totalFinancialPlanned,
@@ -645,13 +604,6 @@ const ProjectPlanDetailModal = ({
 				enableColumnFilter: true,
 				accessorKey: "prp_activity_name",
 				cell: ({ row }) => <span>{row.original.prp_activity_name || "-"}</span>,
-			},
-			{
-				header: t("Year"),
-				enableColumnFilter: false,
-				accessorKey: "prp_budget_year_id",
-				cell: (cellProps) =>
-					budgetYearMap[cellProps.row.original.prp_budget_year_id] || "-",
 			},
 			{
 				header: t("Total Physical (%)"),
