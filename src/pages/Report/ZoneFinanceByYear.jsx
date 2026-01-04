@@ -220,57 +220,50 @@ const ZoneBudgetByYearsTable = ({
 	// Prepare data for export
 	const prepareExportData = useMemo(() => {
 		return (filteredData, groupedData, calculatedTotals, translation) => {
+			const transformedData = transformData(filteredData);
 			const exportRows = [];
 
-			// Add zone rows
-			filteredData.forEach((zone) => {
+			transformedData.forEach((zone) => {
 				const zoneRow = {
-					level: translation("Zone"),
 					zone_name: zone.zone_name,
 				};
 
 				years.forEach((year) => {
-					const value = Number(zone[year.field]) || 0;
-					const percent =
-						yearTotals.yearTotals[year.field] > 0
-							? (value / yearTotals.yearTotals[year.field]) * 100
-							: 0;
-
-					zoneRow[`${year.label} Budget`] = value;
-					zoneRow[`${year.label} %`] = percent;
+					zoneRow[`${year.field}_budget`] = zone[`${year.field}_budget`] || 0;
+					zoneRow[`${year.field}_percent`] = zone[`${year.field}_percent`] || 0;
 				});
 
-				zoneRow[translation("Total Budget")] = zone.total_budget;
-				zoneRow[translation("Total %")] = zone.total_percent;
+				zoneRow["total_budget"] = zone.total_budget || 0;
+				zoneRow["total_percent"] = zone.total_percent || 0;
+
 				exportRows.push(zoneRow);
 			});
 
 			// Add total row
 			if (calculatedTotals.grand_total) {
 				const totalRow = {
-					level: translation("Total"),
 					zone_name: translation("Total"),
 				};
 
 				years.forEach((year) => {
-					const value = yearTotals.yearTotals[year.field] || 0;
-					const percent =
+					totalRow[`${year.field}_budget`] =
+						yearTotals.yearTotals[year.field] || 0;
+					totalRow[`${year.field}_percent`] =
 						yearTotals.grandTotal > 0
-							? (value / yearTotals.grandTotal) * 100
+							? (yearTotals.yearTotals[year.field] / yearTotals.grandTotal) *
+								100
 							: 0;
-
-					totalRow[`${year.label} Budget`] = value;
-					totalRow[`${year.label} %`] = percent;
 				});
 
-				totalRow[translation("Total Budget")] = yearTotals.grandTotal;
-				totalRow[translation("Total %")] = 100;
+				totalRow["total_budget"] = yearTotals.grandTotal;
+				totalRow["total_percent"] = 100;
+
 				exportRows.push(totalRow);
 			}
 
 			return exportRows;
 		};
-	}, [years, yearTotals, t]);
+	}, [years, yearTotals, transformData]);
 
 	// Search fields configuration
 	const searchFields = useMemo(() => ["zone_name"], []);
@@ -282,18 +275,13 @@ const ZoneBudgetByYearsTable = ({
 			exportSearchParams={exportSearchParams}
 			tableClass={tableClass}
 			tableName="Zone Finance by Years"
-			// Header configuration
 			headerStructure="grouped"
-			// Custom rendering
 			renderDataRow={renderDataRow}
-			// Data processing
 			calculateTotals={calculateTotals}
 			prepareExportData={prepareExportData}
 			transformData={transformData}
-			// Search configuration
 			searchFields={searchFields}
 			searchPlaceholder="Search by zone name..."
-			// Disable grouping since we're handling totals differently
 			groupBy={null}
 			expandable={false}
 		/>
