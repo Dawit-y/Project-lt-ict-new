@@ -45,13 +45,11 @@ const ExportToExcel = ({
 		return max;
 	};
 
-	// --- CRITICAL FIX: REWRITING buildHeaderRows for absolute indexing ---
 	const buildHeaderRows = (columns) => {
 		const maxDepth = getDepth(columns);
 		const rows = Array.from({ length: maxDepth }, () => []);
 
 		// The key here is tracking column start/end points using a recursive data structure.
-
 		const processColumn = (col, depth, currentColStart) => {
 			const currentRow = rows[depth];
 			const isGroup = !!col.columns;
@@ -136,8 +134,8 @@ const ExportToExcel = ({
 			const HEADER_BG = "4472C4";
 			const HEADER_FONT_COLOR = "FFFFFF";
 			const SEARCH_PARAM_BG = "D9E1F2";
-			const ROW_COLOR_1 = "D9E1F2";
-			const ROW_COLOR_2 = "FFFFFF";
+			const DEFAULT_ROW_COLOR_1 = "D9E1F2"; // Light blue for odd rows
+			const DEFAULT_ROW_COLOR_2 = "FFFFFF"; // White for even rows
 			const BORDER_COLOR = "B4C6E7";
 
 			/** ======= TITLE & META ======= */
@@ -295,14 +293,34 @@ const ExportToExcel = ({
 			// Re-anchor currentRow after headers
 			currentRow = worksheet.lastRow.number + 1;
 
-			// Re-anchor currentRow after headers
-			currentRow = worksheet.lastRow.number + 1;
-
 			/** ======= DATA ROWS ======= */
 			tableData.forEach((row, idx) => {
+				// Check if row has custom color
+				const customRowColor = row.row_color;
+
+				// Determine the row color and whether to bold
+				let rowColor;
+				let shouldBold = false;
+
+				if (customRowColor) {
+					// Use custom row color if provided (remove # if present)
+					rowColor = customRowColor.startsWith("#")
+						? customRowColor.substring(1)
+						: customRowColor;
+					shouldBold = true; // Bold rows with custom colors
+				} else {
+					// Use default alternating colors
+					rowColor = idx % 2 === 0 ? DEFAULT_ROW_COLOR_1 : DEFAULT_ROW_COLOR_2;
+				}
+
 				const rowData = [
 					idx + 1,
 					...leafColumns.map((col) => {
+						// Skip row_color and row_type columns from data
+						if (col.key === "row_color" || col.key === "row_type") {
+							return null;
+						}
+
 						const val = row[col.key];
 
 						// Handle numeric/percentage types
@@ -320,31 +338,38 @@ const ExportToExcel = ({
 				];
 
 				const excelRow = worksheet.addRow(rowData);
-				const rowColor = idx % 2 === 0 ? ROW_COLOR_1 : ROW_COLOR_2;
 
-				// Apply styling to ALL cells in the data row
+				// Apply styling to ALL cells in the data row (only up to data columns)
 				excelRow.eachCell((cell, colNumber) => {
-					cell.fill = {
-						type: "pattern",
-						pattern: "solid",
-						fgColor: { argb: rowColor },
-					};
-					cell.border = {
-						top: { style: "thin", color: { argb: BORDER_COLOR } },
-						left: { style: "thin", color: { argb: BORDER_COLOR } },
-						bottom: { style: "thin", color: { argb: BORDER_COLOR } },
-						right: { style: "thin", color: { argb: BORDER_COLOR } },
-					};
+					// Only apply styling to cells within the table data range (1 to dataColumnsCount)
+					if (colNumber <= dataColumnsCount) {
+						// Set bold font if row has custom color
+						if (shouldBold) {
+							cell.font = { bold: true };
+						}
 
-					if (colNumber === 1) cell.alignment = { horizontal: "center" };
+						cell.fill = {
+							type: "pattern",
+							pattern: "solid",
+							fgColor: { argb: rowColor },
+						};
+						cell.border = {
+							top: { style: "thin", color: { argb: BORDER_COLOR } },
+							left: { style: "thin", color: { argb: BORDER_COLOR } },
+							bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+							right: { style: "thin", color: { argb: BORDER_COLOR } },
+						};
 
-					const col = leafColumns[colNumber - 2];
-					if (col?.type === "number") {
-						cell.numFmt = "#,##0.00";
-						cell.alignment = { horizontal: "right" };
-					} else if (col?.type === "percentage") {
-						cell.numFmt = "0.00%";
-						cell.alignment = { horizontal: "right" };
+						if (colNumber === 1) cell.alignment = { horizontal: "center" };
+
+						const col = leafColumns[colNumber - 2];
+						if (col?.type === "number") {
+							cell.numFmt = "#,##0.00";
+							cell.alignment = { horizontal: "right" };
+						} else if (col?.type === "percentage") {
+							cell.numFmt = "0.00%";
+							cell.alignment = { horizontal: "right" };
+						}
 					}
 				});
 			});
@@ -355,6 +380,11 @@ const ExportToExcel = ({
 				const totals = [
 					t("total"),
 					...leafColumns.map((col) => {
+						// Skip row_color and row_type columns
+						if (col.key === "row_color" || col.key === "row_type") {
+							return "";
+						}
+
 						if (col.type === "number") {
 							return tableData.reduce((sum, r) => {
 								const num = parseFloat(
@@ -369,21 +399,27 @@ const ExportToExcel = ({
 				const totalsRow = worksheet.addRow(totals);
 				totalsRow.font = { bold: true };
 				totalsRow.eachCell((cell, colNumber) => {
-					cell.fill = {
-						type: "pattern",
-						pattern: "solid",
-						fgColor: { argb: "FCE4D6" },
-					};
-					cell.border = {
-						top: { style: "thin", color: { argb: BORDER_COLOR } },
-						left: { style: "thin", color: { argb: BORDER_COLOR } },
-						bottom: { style: "thin", color: { argb: BORDER_COLOR } },
-						right: { style: "thin", color: { argb: BORDER_COLOR } },
-					};
+					// Only apply styling to cells within the table data range
+					if (colNumber <= dataColumnsCount) {
+						cell.fill = {
+							type: "pattern",
+							pattern: "solid",
+							fgColor: { argb: "FCE4D6" }, // Light orange for totals
+						};
+						cell.border = {
+							top: { style: "thin", color: { argb: BORDER_COLOR } },
+							left: { style: "thin", color: { argb: BORDER_COLOR } },
+							bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+							right: { style: "thin", color: { argb: BORDER_COLOR } },
+						};
 
-					if (colNumber > 1 && leafColumns[colNumber - 2]?.type === "number") {
-						cell.numFmt = "#,##0.00";
-						cell.alignment = { horizontal: "right" };
+						if (
+							colNumber > 1 &&
+							leafColumns[colNumber - 2]?.type === "number"
+						) {
+							cell.numFmt = "#,##0.00";
+							cell.alignment = { horizontal: "right" };
+						}
 					}
 				});
 			}
@@ -402,9 +438,12 @@ const ExportToExcel = ({
 			/** ======= COLUMN WIDTHS ======= */
 			worksheet.getColumn(1).width = 8;
 			leafColumns.forEach((col, i) => {
-				const column = worksheet.getColumn(i + 2);
-				column.width =
-					col.width || Math.max(15, (t(col.label).length || 15) * 1.5);
+				// Skip row_color and row_type columns from width adjustment
+				if (col.key !== "row_color" && col.key !== "row_type") {
+					const column = worksheet.getColumn(i + 2);
+					column.width =
+						col.width || Math.max(15, (t(col.label).length || 15) * 1.5);
+				}
 			});
 
 			/** ======= SAVE FILE ======= */
