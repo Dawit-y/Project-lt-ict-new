@@ -375,8 +375,14 @@ const ExportToExcel = ({
 			});
 
 			/** ======= TOTALS ======= */
+			const hasGrandTotalRow = tableData.some(
+				(row) =>
+					row.row_type === "grand_total" ||
+					row.sector_category_name === t("GRAND TOTAL")
+			);
+			
 			const numericCols = leafColumns.filter((c) => c.type === "number");
-			if (numericCols.length) {
+			if (numericCols.length && !hasGrandTotalRow) {
 				const totals = [
 					t("total"),
 					...leafColumns.map((col) => {
