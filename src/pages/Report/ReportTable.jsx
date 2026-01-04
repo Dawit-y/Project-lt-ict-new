@@ -1,4 +1,12 @@
-import React, { useState, useMemo, useRef, useEffect , lazy, Suspense, useCallback} from "react";
+import React, {
+	useState,
+	useMemo,
+	useRef,
+	useEffect,
+	lazy,
+	Suspense,
+	useCallback,
+} from "react";
 import {
 	Card,
 	CardBody,
@@ -8,7 +16,7 @@ import {
 	DropdownMenu,
 	DropdownItem,
 	Button,
-	Spinner
+	Spinner,
 } from "reactstrap";
 import {
 	FaSearch,
@@ -19,7 +27,9 @@ import {
 	FaChevronRight,
 } from "react-icons/fa";
 //import ExportToExcel from "../../components/Common/ExportToExcel";
-const LazyExportToExcel = lazy(() => import("../../components/Common/ExportToExcel"));
+const LazyExportToExcel = lazy(
+	() => import("../../components/Common/ExportToExcel")
+);
 import { useTranslation } from "react-i18next";
 
 const ReportTable = ({
@@ -36,6 +46,8 @@ const ReportTable = ({
 	// Custom rendering
 	renderGroupRow = null,
 	renderDataRow = null,
+	// Grand total row
+	grandTotalRow = null,
 	// Data processing
 	calculateTotals = null,
 	prepareExportData = null,
@@ -62,6 +74,7 @@ const ReportTable = ({
 	const tableRef = useRef(null);
 	const headerRowRef = useRef(null);
 	const [activeExport, setActiveExport] = useState(null);
+
 	// Initialize column widths
 	useEffect(() => {
 		const initialWidths = {};
@@ -121,9 +134,17 @@ const ReportTable = ({
 		return calculateTotals(groupedData, columnsConfig);
 	}, [groupedData, calculateTotals, columnsConfig]);
 
-	// Prepare all rows for rendering
+	// Prepare all rows for rendering (including grand total row if provided)
 	const allRows = useMemo(() => {
 		const rows = [];
+
+		// Add grand total row at the beginning if provided
+		if (grandTotalRow) {
+			rows.push({
+				type: "grand-total",
+				...grandTotalRow,
+			});
+		}
 
 		Object.entries(groupedData).forEach(([groupName, groupData]) => {
 			const isExpanded = expandedGroups[groupName] !== false;
@@ -152,7 +173,14 @@ const ReportTable = ({
 		});
 
 		return rows;
-	}, [groupedData, expandedGroups, calculatedTotals, expandable, groupBy]);
+	}, [
+		groupedData,
+		expandedGroups,
+		calculatedTotals,
+		expandable,
+		groupBy,
+		grandTotalRow,
+	]);
 
 	// Toggle group expansion
 	const toggleGroup = (groupName) => {
@@ -176,6 +204,22 @@ const ReportTable = ({
 
 		// Default export preparation
 		const exportRows = [];
+
+		// Add grand total row to export if it exists
+		if (grandTotalRow) {
+			const exportRow = { type: "grand-total" };
+			columnsConfig.forEach((col) => {
+				if (!hiddenColumns.includes(col.id)) {
+					const value = grandTotalRow[col.id];
+					exportRow[col.id] =
+						col.format === "number" || col.format === "currency"
+							? Number(value) || 0
+							: value;
+				}
+			});
+			exportRows.push(exportRow);
+		}
+
 		Object.entries(groupedData).forEach(([groupName, groupData]) => {
 			groupData.items.forEach((item) => {
 				const exportRow = { group: groupName };
@@ -200,6 +244,7 @@ const ReportTable = ({
 		t,
 		columnsConfig,
 		hiddenColumns,
+		grandTotalRow,
 	]);
 
 	// Filter export columns based on visibility
@@ -209,7 +254,11 @@ const ReportTable = ({
 			.map((col) => ({
 				key: col.id,
 				label: col.label,
-				width: col.exportWidth || 20,
+				width:
+					col.exportWidth ||
+					(col.id === "sector_name" || col.id === "sector_category_name"
+						? 50
+						: 20),
 				type:
 					col.format === "number" || col.format === "currency"
 						? "number"
@@ -537,6 +586,41 @@ const ReportTable = ({
 		</tr>
 	);
 
+	// Default grand total row renderer
+	const defaultRenderGrandTotalRow = (row) => (
+		<tr
+			key="grand-total-row"
+			className="grand-total-row"
+			style={{ backgroundColor: "#FFE5CC" }} // Light orange color
+		>
+			{columnsConfig.map((col) => {
+				if (hiddenColumns.includes(col.id)) return null;
+
+				let content = "";
+				if (col.id === "sector_category_name") {
+					content = (
+						<strong>{row.sector_category_name || t("GRAND TOTAL")}</strong>
+					);
+				} else if (col.id === "sector_name") {
+					content = "";
+				} else if (row[col.id] !== undefined) {
+					content = <strong>{formatValue(row[col.id], col.format)}</strong>;
+				}
+
+				return (
+					<td
+						key={col.id}
+						data-column={col.id}
+						className={col.sticky ? "sticky-column" : ""}
+						style={col.sticky ? { left: getStickyPosition(col.id) } : {}}
+					>
+						{content}
+					</td>
+				);
+			})}
+		</tr>
+	);
+
 	const defaultRenderDataRow = (row, index) => (
 		<tr key={`data-${row.id || index}`}>
 			{columnsConfig.map((col) => {
@@ -560,7 +644,13 @@ const ReportTable = ({
 	);
 
 	const renderRow = (row, index) => {
-		if (row.type === "group") {
+		if (row.type === "grand-total") {
+			// Check if custom renderer exists for grand total row
+			if (renderGroupRow && renderGroupRow.length > 3) {
+				return renderGroupRow(row, () => {}, t, true);
+			}
+			return defaultRenderGrandTotalRow(row);
+		} else if (row.type === "group") {
 			return renderGroupRow
 				? renderGroupRow(row, toggleGroup, t)
 				: defaultRenderGroupRow(row);
@@ -679,25 +769,26 @@ const ReportTable = ({
 							}}
 						/>
 					</div>
-					<div className="d-flex align-items-center">						
+					<div className="d-flex align-items-center">
 						<Suspense fallback={<Spinner size="sm" />}>
-		{activeExport === 1 && (
-			<LazyExportToExcel
-				tableData={exportData}
-							tableName={tableName}
-							exportColumns={visibleExportColumns}
-							exportSearchParams={exportSearchParams}
-				autoRun
-				onDone={() => setActiveExport(null)}
-			/>
-		)}
-</Suspense>
-<Button 
-						color="outline-primary"
-						className="mb-2"
-						onClick={() => setActiveExport(1)}>
-			Export to Excel
-		</Button>
+							{activeExport === 1 && (
+								<LazyExportToExcel
+									tableData={exportData}
+									tableName={tableName}
+									exportColumns={visibleExportColumns}
+									exportSearchParams={exportSearchParams}
+									autoRun
+									onDone={() => setActiveExport(null)}
+								/>
+							)}
+						</Suspense>
+						<Button
+							color="outline-primary"
+							className="mb-2"
+							onClick={() => setActiveExport(1)}
+						>
+							Export to Excel
+						</Button>
 						<Dropdown
 							isOpen={dropdownOpen}
 							toggle={toggleDropdown}
@@ -769,6 +860,13 @@ const ReportTable = ({
 					}
 					.group-row td {
 						background-color: #e8f4f0 !important;
+					}
+					.grand-total-row {
+						background-color: #FFE5CC !important; /* Light orange */
+						font-weight: bold;
+					}
+					.grand-total-row td {
+						background-color: #FFE5CC !important;
 					}
 					.resize-handle {
 						position: absolute;
