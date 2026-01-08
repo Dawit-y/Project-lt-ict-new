@@ -86,7 +86,10 @@ const UsersModel = () => {
 
 	// Local state management (following the same pattern as ProjectList)
 	const [searchState, setSearchState] = useState({
-		searchParams: {},
+		searchParams: {
+			page: 1,
+			per_page: 30,
+		},
 		additionalParams: {},
 		exportSearchParams: {},
 	});
@@ -128,8 +131,6 @@ const UsersModel = () => {
 	const advancedSearchRef = useRef(null);
 
 	// Data hooks
-	const exportColumns = useUserExportColumns();
-	const { data, isLoading, error, isError, refetch } = useFetchUserss(null);
 	const {
 		data: sectorInformationData,
 		isLoading: isSectorLoading,
@@ -192,29 +193,6 @@ const UsersModel = () => {
 	const updateUsers = useUpdateUsers();
 	const deleteUsers = useDeleteUsers();
 
-	// Effects
-	useEffect(() => {
-		setUsers(data);
-		// Initialize pagination from initial data
-		if (data?.pagination) {
-			setPaginationState({
-				currentPage: data.pagination.current_page,
-				pageSize: data.pagination.per_page,
-				total: data.pagination.total,
-				totalPages: data.pagination.total_pages,
-				hasNext: data.pagination.has_next,
-				hasPrev: data.pagination.has_prev,
-			});
-		}
-	}, [data]);
-
-	useEffect(() => {
-		if (!isEmpty(data) && !!isEdit) {
-			setUsers(data);
-			setIsEdit(false);
-		}
-	}, [data]);
-
 	// Search handler with pagination
 	const handleSearchResults = useCallback(
 		({ data: searchData, error: searchErr }) => {
@@ -240,11 +218,6 @@ const UsersModel = () => {
 	const handlePageChange = useCallback(
 		(newPage) => {
 			setPaginationState((prev) => ({ ...prev, currentPage: newPage }));
-
-			// Trigger search refresh with new page
-			if (advancedSearchRef.current && uiState.showSearchResult) {
-				advancedSearchRef.current.refreshSearch({ page: newPage });
-			}
 		},
 		[uiState.showSearchResult]
 	);
@@ -259,11 +232,6 @@ const UsersModel = () => {
 				hasNext: false,
 				hasPrev: false,
 			});
-
-			// Trigger search refresh with new page size
-			if (advancedSearchRef.current && uiState.showSearchResult) {
-				advancedSearchRef.current.refreshSearch({ pageSize: newSize, page: 1 });
-			}
 		},
 		[uiState.showSearchResult]
 	);
@@ -711,7 +679,7 @@ const UsersModel = () => {
 				.required(t("usr_email"))
 				.email(t("Invalid email format"))
 				.test("unique-usr_email", t("Already exists"), (value) => {
-					return !data?.data.some(
+					return !searchResults?.data.some(
 						(item) => item.usr_email === value && item.usr_id !== users?.usr_id
 					);
 				}),
@@ -754,7 +722,7 @@ const UsersModel = () => {
 					usr_id: users?.usr_id,
 					usr_email: values.usr_email,
 					usr_full_name: values.usr_full_name,
-					usr_phone_number: values.usr_phone_number,
+					usr_phone_number: `+251${values.usr_phone_number}`,
 					usr_role_id: values.usr_role_id,
 					usr_region_id: Number(values.usr_region_id),
 					usr_woreda_id: Number(values.usr_woreda_id),
@@ -851,10 +819,6 @@ const UsersModel = () => {
 		}
 	}, [validation.values.usr_user_type]);
 
-	if (isError) {
-		return <FetchErrorHandler error={error} refetch={refetch} />;
-	}
-
 	return (
 		<React.Fragment>
 			<UsersModal
@@ -915,39 +879,17 @@ const UsersModel = () => {
 						initialSearchParams={searchParams}
 						initialAdditionalParams={additionalParams}
 						initialPagination={paginationState}
-					/>
-					{isLoading || isSearchLoading ? (
-						<Spinners top={"top-60"} />
-					) : (
-						<div>
-							<AgGridContainer
-								rowData={
-									showSearchResult
-										? searchResults?.data || []
-										: data?.data || []
-								}
-								columnDefs={columnDefs}
-								isLoading={isLoading || isSearchLoading}
-								isPagination={false}
-								isServerSidePagination={true}
-								paginationPageSize={pageSize}
-								isGlobalFilter={true}
-								isAddButton={true}
-								onAddClick={handleUsersClicks}
-								addButtonText={t("Add User")}
-								isExcelExport={true}
-								isPdfExport={true}
-								isPrint={true}
-								tableName="Users"
-								exportColumns={exportColumns}
-								exportSearchParams={exportSearchParams}
-								paginationInfo={paginationInfo}
-								onPageChange={handlePageChange}
-								onPageSizeChange={handlePageSizeChange}
-								rowHeight={36}
-							/>
-						</div>
-					)}
+					>
+						<TableWrapper
+							columnDefs={columnDefs}
+							showSearchResult={showSearchResult}
+							exportSearchParams={exportSearchParams}
+							paginationInfo={paginationInfo}
+							onPageChange={handlePageChange}
+							onPageSizeChange={handlePageSizeChange}
+							handleUsersClick={handleUsersClicks}
+						/>
+					</AdvancedSearch>
 					<Modal isOpen={modal} toggle={toggle} className="modal-xl">
 						<ModalHeader toggle={toggle} tag="h4">
 							{isDuplicateModalOpen ? (
@@ -1299,3 +1241,43 @@ UsersModel.propTypes = {
 };
 
 export default UsersModel;
+
+const TableWrapper = ({
+	data,
+	isLoading,
+	columnDefs,
+	showSearchResult,
+	exportSearchParams,
+	paginationInfo,
+	onPageChange,
+	onPageSizeChange,
+	handleUsersClick
+}) => {
+	const exportColumns = useUserExportColumns();
+	return (
+		<>
+			<AgGridContainer
+				rowData={showSearchResult ? data?.data || [] : []}
+				columnDefs={columnDefs}
+				isLoading={isLoading}
+				isPagination={false}
+				isServerSidePagination={true}
+				paginationPageSize={10}
+				isGlobalFilter={true}
+				isAddButton={true}
+				onAddClick={handleUsersClick}
+				rowHeight={36}
+				addButtonText="Add"
+				isExcelExport={true}
+				isPdfExport={true}
+				isPrint={true}
+				tableName="Users"
+				exportColumns={exportColumns}
+				exportSearchParams={exportSearchParams}
+				paginationInfo={paginationInfo}
+				onPageChange={onPageChange}
+				onPageSizeChange={onPageSizeChange}
+			/>
+		</>
+	);
+};
