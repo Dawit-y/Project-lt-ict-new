@@ -58,6 +58,7 @@ const ZoneBudgetByClustersTable = ({
 				minWidth: 250,
 				sticky: true,
 				group: "zone_info",
+				exportWidth: 30,
 			},
 			...clusters.map((cluster) => ({
 				id: cluster.field,
@@ -65,6 +66,7 @@ const ZoneBudgetByClustersTable = ({
 				minWidth: 150,
 				format: "currency",
 				group: "clusters",
+				exportWidth: 25,
 			})),
 			{
 				id: "zone_total_budget",
@@ -72,6 +74,7 @@ const ZoneBudgetByClustersTable = ({
 				minWidth: 150,
 				format: "currency",
 				group: "zone_totals",
+				exportWidth: 30,
 			},
 			{
 				id: "zone_total_percent",

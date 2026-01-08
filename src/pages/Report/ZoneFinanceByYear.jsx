@@ -87,6 +87,7 @@ const ZoneBudgetByYearsTable = ({
 				minWidth: 150,
 				format: "currency",
 				group: "zone_totals",
+				exportWidth: 30,
 			},
 			{
 				id: "total_percent",
