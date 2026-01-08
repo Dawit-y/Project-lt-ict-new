@@ -132,17 +132,19 @@ const ProjectModel = () => {
 	);
 
 	const projectSchema = Yup.object({
-		prj_name: alphanumericValidation(3, 200, true),
-		prj_name_am: onlyAmharicValidation(3, 200, false),
-		prj_name_en: alphanumericValidation(3, 200, true),
+		prj_name: alphanumericValidation(3, 400, true),
+		prj_name_am: onlyAmharicValidation(3, 400, false),
+		prj_name_en: alphanumericValidation(3, 400, false),
 		prj_code: alphanumericValidation(3, 20, false),
 		prj_project_category_id: numberValidation(1, 200, true),
+		prj_project_status_id: numberValidation(1, 200, true),
 		prj_cluster_id: Yup.number().required(t("prj_cluster_id")),
 		prj_total_actual_budget: formattedAmountValidation(
 			1000,
 			1000000000000,
 			true
-		).test(
+		),
+		/*.test(
 			"admin-program-budget-check-budget",
 			t(
 				"Sum of admin cost and program cost should be equal with total actual budget"
@@ -155,20 +157,16 @@ const ProjectModel = () => {
 
 				return total <= (budget || 0);
 			}
-		),
-		prj_total_estimate_budget: formattedAmountValidation(
-			1000,
-			1000000000000,
-			true
-		),
+		),*/
+		prj_agreement_signed_level:Yup.string().required(t("prj_agreement_signed_level")),
+		prj_date_agreement_signed:Yup.string().required(t("prj_date_agreement_signed")),
 		prj_start_date_plan_gc: Yup.string().required(t("prj_start_date_plan_gc")),
 		prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
 		prj_location_region_id: Yup.string().required(t("prj_location_region_id")),
 		prj_location_zone_id: Yup.string().required(t("prj_location_zone_id")),
 		prj_location_woreda_id: Yup.string().required(t("prj_location_woreda_id")),
-		prj_urban_ben_number: numberValidation(0, 1000000000000, false),
-		prj_rural_ben_number: numberValidation(0, 1000000000000, false),
-		prj_admin_cost: formattedAmountValidation(0, 1000000000000, true).test(
+		prj_admin_cost: formattedAmountValidation(0, 1000000000000, true),
+		/*.test(
 			"admin-program-budget-check-admin",
 			t(
 				"Sum of admin cost and program cost should be equal with total actual budget"
@@ -182,9 +180,10 @@ const ProjectModel = () => {
 				const approxBudget = parseInt(budget);
 				return approxTotal == approxBudget;
 			}
-		),
+		),*/
 
-		prj_program_cost: formattedAmountValidation(0, 1000000000000, true).test(
+		prj_program_cost: formattedAmountValidation(0, 1000000000000, true),
+		/*.test(
 			"admin-program-budget-check-program",
 			t(
 				"Sum of admin cost and program cost should be equal with total actual budget"
@@ -198,26 +197,22 @@ const ProjectModel = () => {
 				const approxBudget = parseInt(budget);
 				return approxTotal == approxBudget;
 			}
-		),
-		prj_male_participant: numberValidation(0, 1000000000000, true),
-		prj_female_participant: numberValidation(0, 1000000000000, true),
+		),*/
 		prj_location_description: alphanumericValidation(3, 425, false),
 		prj_remark: alphanumericValidation(3, 425, false),
 
 		prj_direct_ben_male: formattedAmountValidation(0, 1000000000000, false),
 		prj_direct_ben_female: formattedAmountValidation(0, 1000000000000, false),
 		prj_indirect_ben_male: formattedAmountValidation(0, 1000000000000, false),
-		prj_indirect_ben_female: formattedAmountValidation(0, 1000000000000, false),
-		prj_date_agreement_signed: Yup.string().nullable(),
-		prj_agreement_signed_level: Yup.string().nullable(),
+		prj_indirect_ben_female: formattedAmountValidation(0, 1000000000000, false)
 	});
 
 	const activitySchema = Yup.object({
 		prj_name: alphanumericValidation(3, 300, true),
 		prj_total_actual_budget: formattedAmountValidation(1000, leftBudget, true),
 		prj_project_category_id: numberValidation(1, 200, true),
-		prj_measurement_unit: alphanumericValidation(2, 200, false),
-		prj_measured_figure: formattedAmountValidation(0, 10000000000, false),
+		prj_measurement_unit: alphanumericValidation(2, 200, true),
+		prj_measured_figure: formattedAmountValidation(0, 10000000000, true)
 	});
 
 	// validation
@@ -234,8 +229,6 @@ const ProjectModel = () => {
 			prj_cluster_id: (project && project.prj_cluster_id) || "",
 			prj_project_budget_source_id:
 				(project && project.prj_project_budget_source_id) || "",
-			prj_total_estimate_budget:
-				(project && project.prj_total_estimate_budget) || "",
 			prj_total_actual_budget:
 				(project && project.prj_total_actual_budget) || "",
 			prj_geo_location: (project && project.prj_geo_location) || "",
@@ -251,25 +244,18 @@ const ProjectModel = () => {
 			prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
 			prj_owner_kebele_id: (project && project.prj_owner_kebele_id) || "",
 			prj_owner_description: (project && project.prj_owner_description) || "",
-			prj_start_date_et: (project && project.prj_start_date_et) || "",
-			prj_start_date_gc: (project && project.prj_start_date_gc) || "",
-			prj_start_date_plan_et: (project && project.prj_start_date_plan_et) || "",
-			prj_start_date_plan_gc: (project && project.prj_start_date_plan_gc) || "",
-			prj_end_date_actual_et: (project && project.prj_end_date_actual_et) || "",
+			prj_start_date_gc: (project && project.prj_start_date_gc) || "",			
+			prj_start_date_plan_gc: (project && project.prj_start_date_plan_gc) || "",			
 			prj_end_date_actual_gc: (project && project.prj_end_date_actual_gc) || "",
-			prj_end_date_plan_gc: (project && project.prj_end_date_plan_gc) || "",
-			prj_end_date_plan_et: (project && project.prj_end_date_plan_et) || "",
+			prj_end_date_plan_gc: (project && project.prj_end_date_plan_gc) || "",			
 			prj_outcome: (project && project.prj_outcome) || "",
 			prj_deleted: (project && project.prj_deleted) || "",
 			prj_remark: (project && project.prj_remark) || "",
 			prj_created_date: (project && project.prj_created_date) || "",
 			prj_owner_id: (project && project.prj_owner_id) || "",
-			prj_urban_ben_number: (project && project.prj_urban_ben_number) || "",
-			prj_rural_ben_number: (project && project.prj_rural_ben_number) || "",
 			prj_admin_cost: (project && project.prj_admin_cost) || "",
 			prj_program_cost: (project && project.prj_program_cost) || "",
-			prj_male_participant: (project && project.prj_male_participant) || "",
-			prj_female_participant: (project && project.prj_female_participant) || "",
+			
 			prj_measurement_unit: (project && project.prj_measurement_unit) || "",
 			prj_measured_figure: (project && project.prj_measured_figure) || "",
 
@@ -302,7 +288,6 @@ const ProjectModel = () => {
 					prj_project_category_id: values.prj_project_category_id,
 					prj_cluster_id: values.prj_cluster_id,
 					prj_project_budget_source_id: values.prj_project_budget_source_id,
-					prj_total_estimate_budget: values.prj_total_estimate_budget,
 					prj_total_actual_budget: values.prj_total_actual_budget,
 					prj_geo_location: values.prj_geo_location,
 					prj_location_region_id: Number(values.prj_location_region_id),
@@ -327,13 +312,9 @@ const ProjectModel = () => {
 					prj_deleted: values.prj_deleted,
 					prj_remark: values.prj_remark,
 					prj_created_date: values.prj_created_date,
-					prj_owner_id: userType === 2 ? currentActiveTab.selectedCsoId : csoId,
-					prj_urban_ben_number: values.prj_urban_ben_number,
-					prj_rural_ben_number: values.prj_rural_ben_number,
+					prj_owner_id: userType === 2 ? currentActiveTab.selectedCsoId : csoId,					
 					prj_admin_cost: values.prj_admin_cost,
 					prj_program_cost: values.prj_program_cost,
-					prj_male_participant: values.prj_male_participant,
-					prj_female_participant: values.prj_female_participant,
 					prj_program_id: 1,
 					parent_id:
 						(isUserType2 && isTab2) || (!isUserType2 && isTab1)
@@ -363,7 +344,6 @@ const ProjectModel = () => {
 					prj_project_category_id: values.prj_project_category_id,
 					prj_cluster_id: values.prj_cluster_id,
 					prj_project_budget_source_id: values.prj_project_budget_source_id,
-					prj_total_estimate_budget: values.prj_total_estimate_budget,
 					prj_total_actual_budget: values.prj_total_actual_budget,
 					prj_geo_location: values.prj_geo_location,
 					prj_location_region_id: Number(values.prj_location_region_id),
@@ -376,25 +356,18 @@ const ProjectModel = () => {
 					prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
 					prj_owner_kebele_id: values.prj_owner_kebele_id,
 					prj_owner_description: values.prj_owner_description,
-					prj_start_date_et: values.prj_start_date_et,
 					prj_start_date_gc: values.prj_start_date_gc,
-					prj_start_date_plan_et: values.prj_start_date_plan_et,
 					prj_start_date_plan_gc: values.prj_start_date_plan_gc,
-					prj_end_date_actual_et: values.prj_end_date_actual_et,
 					prj_end_date_actual_gc: values.prj_end_date_actual_gc,
 					prj_end_date_plan_gc: values.prj_end_date_plan_gc,
-					prj_end_date_plan_et: values.prj_end_date_plan_et,
 					prj_outcome: values.prj_outcome,
 					prj_deleted: values.prj_deleted,
 					prj_remark: values.prj_remark,
 					prj_created_date: values.prj_created_date,
 					prj_owner_id: userType === 2 ? currentActiveTab.selectedCsoId : csoId,
-					prj_urban_ben_number: values.prj_urban_ben_number,
-					prj_rural_ben_number: values.prj_rural_ben_number,
+					
 					prj_admin_cost: values.prj_admin_cost,
 					prj_program_cost: values.prj_program_cost,
-					prj_male_participant: values.prj_male_participant,
-					prj_female_participant: values.prj_female_participant,
 					//prj_department_id: Number(values.prj_department_id),
 					prj_program_id: 1,
 					parent_id:
@@ -448,7 +421,7 @@ const ProjectModel = () => {
 	};
 
 	const getFormType = () => {
-		if (userType === 4) {
+		if (userType === 2) {
 			return currentActiveTab.tab === 2 ? "project" : "activity";
 		}
 		return currentActiveTab.tab === 1 ? "project" : "activity";
@@ -570,7 +543,7 @@ const ProjectModel = () => {
 							<div className="w-100">
 								{isLoading ? (
 									<Spinners />
-								) : userType === 4 ? (
+								) : userType === 2 ? (
 									<RegionProjectTab
 										handleAddClick={handleProjectsClicks}
 										handleEditClick={handleProjectClick}

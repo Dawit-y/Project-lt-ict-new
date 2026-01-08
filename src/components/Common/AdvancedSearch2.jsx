@@ -32,6 +32,7 @@ const AdvancedSearch = forwardRef(
 			searchHook,
 			textSearchKeys,
 			dropdownSearchKeys,
+			dropdownSearchKeys2,
 			checkboxSearchKeys,
 			dateSearchKeys,
 			Component,
@@ -571,7 +572,7 @@ const AdvancedSearch = forwardRef(
 											</UncontrolledTooltip>
 										</div>
 
-										{(checkboxSearchKeys?.length > 0 || Component) && (
+										{(checkboxSearchKeys?.length > 0 || dropdownSearchKeys2?.length > 0 || Component) && (
 											<div className=" flex-grow-1 mb-2">
 												<button
 													type="button"
@@ -605,14 +606,61 @@ const AdvancedSearch = forwardRef(
 												)}
 											</Col>
 										</Row>
-										<Row className="g-3">
+										<hr></hr>
+										<Row className="g-3 m-1">
+										<Row>
+										<div
+											className="d-grid gap-2 mb-1"
+											style={{
+												display: "grid",
+												gridTemplateColumns:
+													"repeat(auto-fill, minmax(220px, 1fr))",
+												gap: "2rem",
+											}}>
+											{dropdownSearchKeys2 &&
+												dropdownSearchKeys2.map(({ key, options }) => (
+													<div key={key}>
+														<div className="">
+															<Input
+																name={key}
+																id={key}
+																type="select"
+																className="form-select"
+																onChange={(event) => {
+																	const value = event.target.value;
+																	const label =
+																		event.target.options[
+																			event.target.selectedIndex
+																		].text;
+																	handleSearchKey(key, value, "text", label);
+																}}
+																value={params[key] || ""}
+																style={inputStyles}
+															>
+																<option value={""}>
+																	{t("Select") + " " + t(`${key}`)}
+																</option>
+																{options.map((option) => (
+																	<option
+																		key={`${option.value}-${key}`}
+																		value={option.value}
+																	>
+																		{t(`${option.label}`)}
+																	</option>
+																))}
+															</Input>
+														</div>
+													</div>
+												))}
+												</div>
+												</Row>
 											{checkboxSearchKeys &&
 												checkboxSearchKeys.map(({ key, options }) => (
 													<Col key={key} xxl={4} lg={6}>
 														<div>
 															<Label
 																htmlFor={key}
-																className="form-label fw-semibold"
+																className="form-label"
 															>
 																{key}
 															</Label>

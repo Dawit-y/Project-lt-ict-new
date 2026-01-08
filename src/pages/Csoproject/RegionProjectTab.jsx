@@ -276,7 +276,7 @@ const ProjectTabs = ({
 				},
 			},
 			{
-				headerName: "Program Name",
+				headerName: t("cso_prj_name"),
 				field: "prj_name",
 				sortable: true,
 				filter: true,
@@ -287,7 +287,7 @@ const ProjectTabs = ({
 				},
 			},
 			{
-				headerName: t("prj_code"),
+				headerName: t("cso_prj_code"),
 				field: "prj_code",
 				sortable: true,
 				filter: true,
@@ -322,7 +322,7 @@ const ProjectTabs = ({
 				},
 			},
 			{
-				headerName: t("prj_total_actual_budget"),
+				headerName: t("cso_prj_total_actual_budget"),
 				field: "prj_total_actual_budget",
 				sortable: true,
 				filter: true,
@@ -376,7 +376,7 @@ const ProjectTabs = ({
 						<div className="d-flex gap-3">
 							{projects?.previledge?.is_role_editable === 1 &&
 								rowData?.is_editable === 1 &&
-								rowData.prj_project_status_id > 1 && (
+								rowData.prj_project_status_id >= 1 && (
 									<Link
 										to="#"
 										className="text-success"
@@ -411,12 +411,12 @@ const ProjectTabs = ({
 				width: 60,
 			},
 			{
-				headerName: "Activity Title",
+				headerName: "Activity",
 				field: "prj_name",
 				sortable: true,
 				filter: true,
 				flex: 1,
-				minWidth: 150,
+				minWidth: 130,
 				cellRenderer: (params) => {
 					return params.node.footer ? t("Total") : params.value;
 				},
@@ -426,37 +426,37 @@ const ProjectTabs = ({
 				field: "prj_project_category_id",
 				sortable: true,
 				filter: true,
-				minWidth: 150,
+				minWidth: 80,
 				cellRenderer: (params) => {
 					return projectCategoryMap[params.value];
 				},
 			},
 			{
-				headerName: t("prj_measurement_unit"),
+				headerName: t("cso_prj_measurement_unit"),
 				field: "prj_measurement_unit",
 				sortable: true,
 				filter: true,
-				minWidth: 150,
+				minWidth: 80,
 				cellRenderer: (params) => {
 					return params.node.footer ? t("Total") : params.value;
 				},
 			},
 			{
-				headerName: t("prj_measured_figure"),
+				headerName: t("cso_prj_measured_figure"),
 				field: "prj_measured_figure",
 				sortable: true,
 				filter: true,
-				minWidth: 150,
+				minWidth: 80,
 				cellRenderer: (params) => {
 					return params.node.footer ? t("Total") : params.value;
 				},
 			},
 			{
-				headerName: t("prj_total_actual_budget"),
+				headerName: t("cso_prj_total_actual_budget"),
 				field: "prj_total_actual_budget",
 				sortable: true,
 				filter: true,
-				minWidth: 180,
+				minWidth: 80,
 				valueFormatter: (params) => {
 					const value = params.value;
 					if (!value) return "";
@@ -472,7 +472,7 @@ const ProjectTabs = ({
 				field: "view_details",
 				sortable: false,
 				filter: false,
-				width: 100,
+				width: 80,
 				cellRenderer: (params) => {
 					if (params.node.footer) {
 						return "";
