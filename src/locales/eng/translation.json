@@ -2097,10 +2097,9 @@
 	"search_results": "{{count}} Results...",
 	"max_length_exceeded": "Maximum length exceeded",
 	"view_plan": "View Plan",
-	"prj_age":"Age of Project",
-	"prj_should_be_completed":"Should have been completed",
-	"prj_to_be_completed":"To be completed this year",
-
+	"prj_age": "Age of Project",
+	"prj_should_be_completed": "Should have been completed",
+	"prj_to_be_completed": "To be completed this year",
 	"cso_prj_name": "Project Title",
 	"cso_prj_code": "Project Reference Number",
 	"cso_prj_project_status_id": "Project Status",
@@ -2127,5 +2126,12 @@
 	"cso_prj_name_en": "Project Title in English",
 	"cso_prj_name_am": "Project Title in Amharic",
 	"cso_prj_measurement_unit": "Unit of Measurement",
-	"cso_prj_measured_figure": "Amount or Quantity for the project duration"
+	"cso_prj_measured_figure": "Amount or Quantity for the project duration",
+	"prj_location_description_or": "Specific Site in Oromo",
+	"prj_location_description_en": "Specific Site in English",
+	"prj_location_description_am": "Specific Site in Amharic",
+	"programs": "Programs",
+	"pri_outcome_or": "Outcome in Oromo",
+	"pri_outcome_am": "Outcome in Amharic",
+	"pri_outcome_en": "Outcome in English"
 }

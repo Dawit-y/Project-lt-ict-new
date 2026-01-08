@@ -1,4 +1,3 @@
-// ProjectModel.js (updated)
 import React, { useEffect, useMemo, useState, useCallback } from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -20,6 +19,13 @@ import TreeForProject from "./TreeForProject";
 import ProjectFormModal from "./ProjectFormModal";
 import ProjectRegionalStructureModal from "./ProjectRegionalStructureModal";
 import { FaAlignLeft } from "react-icons/fa";
+
+const truncateText = (text, maxLength) => {
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
 
 const ProjectModel = () => {
 	document.title = "Projects";
@@ -75,7 +81,9 @@ const ProjectModel = () => {
 				prj_location_zone_id: Number(values.prj_location_zone_id),
 				prj_location_woreda_id: Number(values.prj_location_woreda_id),
 				prj_location_kebele_id: values.prj_location_kebele_id,
-				prj_location_description: values.prj_location_description,
+				prj_location_description_or: values.prj_location_description_or,
+				prj_location_description_en: values.prj_location_description_en,
+				prj_location_description_am: values.prj_location_description_am,
 				prj_owner_region_id: Number(selectedNode.data.region_id),
 				prj_owner_zone_id: Number(selectedNode.data.zone_id),
 				prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
@@ -121,7 +129,9 @@ const ProjectModel = () => {
 				prj_location_zone_id: Number(values.prj_location_zone_id),
 				prj_location_woreda_id: Number(values.prj_location_woreda_id),
 				prj_location_kebele_id: values.prj_location_kebele_id,
-				prj_location_description: values.prj_location_description,
+				prj_location_description_en: values.prj_location_description_en,
+				prj_location_description_or: values.prj_location_description_or,
+				prj_location_description_am: values.prj_location_description_am,
 				prj_owner_region_id: Number(selectedNode.data.region_id),
 				prj_owner_zone_id: Number(selectedNode.data.zone_id),
 				prj_owner_woreda_id: Number(selectedNode.data.woreda_id),
@@ -288,9 +298,12 @@ const ProjectModel = () => {
 				cell: (cellProps) => {
 					return (
 						<span>
-							{cellProps.row.original.footer
-								? t("Total")
-								: cellProps.getValue()}
+							{truncateText(
+								cellProps.row.original.footer
+									? t("Total")
+									: cellProps.getValue(),
+								50
+							)}
 						</span>
 					);
 				},

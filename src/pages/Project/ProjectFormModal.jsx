@@ -110,8 +110,12 @@ const ProjectFormModal = ({
 			prj_owner_region_id: (project && project.prj_owner_region_id) || "",
 			prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
 			prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
-			prj_location_description:
-				(project && project.prj_location_description) || "",
+			prj_location_description_or:
+				(project && project.prj_location_description_or) || "",
+			prj_location_description_en:
+				(project && project.prj_location_description_en) || "",
+			prj_location_description_am:
+				(project && project.prj_location_description_am) || "",
 			prj_owner_description: (project && project.prj_owner_description) || "",
 			prj_start_date_et: (project && project.prj_start_date_et) || "",
 			prj_start_date_gc: (project && project.prj_start_date_gc) || "",
@@ -176,7 +180,9 @@ const ProjectFormModal = ({
 			prj_rural_ben_number: numberValidation(0, 1000000000, false),
 			prj_measured_figure: formattedAmountValidation(1, 100000000000, true),
 			prj_measurement_unit: Yup.string().required(t("prj_measurement_unit")),
-			prj_location_description: alphanumericValidation(3, 425, false),
+			prj_location_description_or: alphanumericValidation(3, 425, false),
+			prj_location_description_en: alphanumericValidation(3, 425, false),
+			prj_location_description_am: onlyAmharicValidation(3, 425, false),
 			prj_remark: alphanumericValidation(3, 425, false),
 		}),
 		validateOnBlur: true,
@@ -216,9 +222,25 @@ const ProjectFormModal = ({
 						<InputField
 							type="textarea"
 							validation={validation}
-							fieldId={"prj_location_description"}
+							fieldId={"prj_location_description_or"}
 							isRequired={false}
-							className="col-md-12 mb-3"
+							className="col-md-4 mb-3"
+							maxLength={400}
+						/>
+						<InputField
+							type="textarea"
+							validation={validation}
+							fieldId={"prj_location_description_am"}
+							isRequired={false}
+							className="col-md-4 mb-3"
+							maxLength={400}
+						/>
+						<InputField
+							type="textarea"
+							validation={validation}
+							fieldId={"prj_location_description_en"}
+							isRequired={false}
+							className="col-md-4 mb-3"
 							maxLength={400}
 						/>
 						<InputField
@@ -264,15 +286,15 @@ const ProjectFormModal = ({
 							isError={prCategoryIsError}
 						/>
 						<AsyncSelectField
-									fieldId="prj_project_status_id"
-									validation={validation}
-									isRequired={true}
-									className="col-md-2 mb-3"
-									optionMap={projectStatusMap}
-									isLoading={isStatusLoading}
-									isError={isStatusError}
-									placeholder={t("select_status")}
-								/>
+							fieldId="prj_project_status_id"
+							validation={validation}
+							isRequired={true}
+							className="col-md-2 mb-3"
+							optionMap={projectStatusMap}
+							isLoading={isStatusLoading}
+							isError={isStatusError}
+							placeholder={t("select_status")}
+						/>
 						<FormattedAmountField
 							validation={validation}
 							fieldId={"prj_total_estimate_budget"}
