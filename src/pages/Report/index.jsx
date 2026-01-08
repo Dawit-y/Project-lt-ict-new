@@ -332,7 +332,6 @@ const Report = () => {
 				case "project_financial_report":
 					configs[key] = {
 						...baseConfig,
-						dateKeys: ["report_date"],
 						dropdownSearchKeys: [
 							{ key: "prp_budget_year_id", options: budgetYearOptions },
 							{ key: "sector_category", options: sectorCategoryOptions },
@@ -521,6 +520,7 @@ const Report = () => {
 					configs[key] = {
 						...baseConfig,
 						dropdownSearchKeys: [
+							{ key: "bdr_budget_year_id", options: budgetYearOptions },
 							{ key: "sector_category", options: sectorCategoryOptions },
 						],
 					};

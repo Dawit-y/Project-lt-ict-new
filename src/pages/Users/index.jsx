@@ -88,7 +88,7 @@ const UsersModel = () => {
 	const [searchState, setSearchState] = useState({
 		searchParams: {
 			page: 1,
-			per_page: 30,
+			per_page: 10,
 		},
 		additionalParams: {},
 		exportSearchParams: {},
@@ -96,7 +96,7 @@ const UsersModel = () => {
 
 	const [paginationState, setPaginationState] = useState({
 		currentPage: 1,
-		pageSize: 30,
+		pageSize: 10,
 		total: 0,
 		totalPages: 0,
 		hasNext: false,
@@ -265,8 +265,8 @@ const UsersModel = () => {
 	const userTypeMap = useMemo(() => {
 		return {
 			1: t("Governmental"),
-			2: t("CSO"),
-			4: t("CSO Director"),
+			4: t("CSO"),
+			2: t("CSO Director"),
 			3: t("Citizenship"),
 			5: t("Bureau of Finance"),
 		};
@@ -707,7 +707,7 @@ const UsersModel = () => {
 			usr_region_id: Yup.number().required(t("usr_region_id")),
 			usr_user_type: Yup.number().required(t("usr_user_type")),
 			usr_owner_id: Yup.string().when("usr_user_type", {
-				is: 2,
+				is: 4,
 				then: () => {
 					return Yup.number().required(t("usr_owner_id"));
 				},
@@ -812,7 +812,7 @@ const UsersModel = () => {
 	// Clear owner_id when user type changes
 	useEffect(() => {
 		if (
-			validation.values.usr_user_type !== 2 &&
+			validation.values.usr_user_type !== 4 &&
 			validation.values.usr_owner_id
 		) {
 			validation.setFieldValue("usr_owner_id", "");
@@ -1066,8 +1066,8 @@ const UsersModel = () => {
 										>
 											<option value="">{t("select_one")}</option>
 											<option value={1}>{t("Governmental")}</option>
-											<option value={2}>{t("CSO")}</option>
-											<option value={4}>{t("CSO Director")}</option>
+											<option value={4}>{t("CSO")}</option>
+											<option value={2}>{t("CSO Director")}</option>
 											<option value={3}>{t("Citizenship")}</option>
 											<option value={5}>{t("Bureau of Finance")}</option>
 										</Input>
@@ -1078,7 +1078,7 @@ const UsersModel = () => {
 											</FormFeedback>
 										) : null}
 									</Col>
-									{validation.values.usr_user_type == 2 && (
+									{validation.values.usr_user_type == 4 && (
 										<Col className="col-md-4 mb-3">
 											<Label>
 												{t("usr_owner_id")}{" "}

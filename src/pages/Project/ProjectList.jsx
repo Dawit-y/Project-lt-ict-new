@@ -512,7 +512,7 @@ const ProjectList = () => {
 												: lang === "am"
 													? sectorInformationOptionsAm
 													: sectorInformationOptionsOr,
-									},
+									}
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={treeParams}
@@ -540,6 +540,31 @@ const ProjectList = () => {
 								initialSearchParams={searchParams}
 								initialAdditionalParams={projectParams}
 								initialPagination={reduxPagination}
+								dropdownSearchKeys2={[
+									{
+      key: "prj_age",
+      options: [
+        { value: "1", label: "1" },
+        { value: "2", label: "2" },
+        { value: "3", label: "3" },
+        { value: "4", label: "4" },
+        ],
+    },
+							{
+								key: "prj_should_be_completed",
+								options: [
+									{ value: "yes", label: "yes" },
+									{ value: "no", label: "no" }
+								],
+							},
+							{
+								key: "prj_to_be_completed",
+								options: [
+									{ value: "yes", label: "yes" },
+									{ value: "no", label: "no" }
+								],
+							},
+						]}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}

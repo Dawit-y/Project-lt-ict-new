@@ -166,7 +166,7 @@ const ProjectsOverview = () => {
 				component: LazyComponents.ProjectMonitoringEvaluationModel,
 				path: "project_monitoring_evaluation",
 			},
-			73: {
+			82: {
 				label: t("project_evaluation"),
 				component: LazyComponents.ProjectEvaluationModel,
 				path: "project_evaluation",

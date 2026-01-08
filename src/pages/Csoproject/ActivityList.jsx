@@ -153,7 +153,7 @@ const ActivityList = () => {
       },
       {
         field: "prj_name",
-        headerName: t("Activity Title"),
+        headerName: t("Activity"),
         sortable: true,
         filter: "agTextColumnFilter",
       },
@@ -204,7 +204,7 @@ const ActivityList = () => {
       // },
       {
         field: "prj_total_estimate_budget",
-        headerName: t("prj_total_estimate_budget"),
+        headerName: t("cso_prj_total_estimate_budget"),
         valueFormatter: (params) => {
           if (params.node.footer) {
             return params.value ? `$${params.value.toLocaleString()}` : "";

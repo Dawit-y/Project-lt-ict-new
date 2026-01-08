@@ -29,7 +29,7 @@ export function formatDate(date) {
 		return "";
 	}
 
-	const formatted = `${year}/${month}/${day}`;
+	const formatted = `${year}-${month}-${day}`;
 	return formatted;
 }
 

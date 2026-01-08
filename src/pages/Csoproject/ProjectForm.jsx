@@ -189,15 +189,16 @@ const ProjectForm = ({
 									isRequired={false}
 									className="col-md-4 mb-3"
 									maxLength={200}
+									label={t("cso_prj_name")}
 								/>
-								<InputField
+								{/*<InputField
 									type="text"
 									validation={validation}
 									fieldId={"prj_name_am"}
 									isRequired={false}
 									className="col-md-4 mb-3"
 									maxLength={200}
-								/>
+								/>*/}
 								<InputField
 									type="text"
 									validation={validation}
@@ -213,7 +214,8 @@ const ProjectForm = ({
 									isRequired={false}
 									className="col-md-4 mb-3"
 									maxLength={20}
-									placeholder={t("project_code")}
+									placeholder={t("cso_prj_code")}
+									label={t("cso_prj_code")}
 								/>
 								<AsyncSelectField
 									fieldId="prj_project_category_id"
@@ -248,7 +250,57 @@ const ProjectForm = ({
 							</Row>
 						</CardBody>
 					</Card>
-
+					{/* Agreement Details Card */}
+					<Card className="mb-4">
+						<CardHeader className="bg-light">
+							<h5 className="card-title mb-0">{t("agreement_details")}</h5>
+						</CardHeader>
+						<CardBody>
+							<Row>
+								<Col className="col-md-3 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"prj_date_agreement_signed"}
+										validation={validation}
+										placeholder={t("agreement_signed_date")}
+									/>
+								</Col>
+								<AsyncSelectField
+									fieldId="prj_agreement_signed_level"
+									validation={validation}
+									isRequired={true}
+									className="col-md-3 mb-3"
+									optionMap={{
+										federal: t("federal"),
+										regional: t("regional"),
+										zone: t("zone"),
+										town: t("town"),
+									}}
+									placeholder={t("select_agreement_level")}
+								/>
+								<Col className="col-md-3 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"prj_start_date_plan_gc"}
+										validation={validation}
+										placeholder={t("planned_start_date")}
+										label={t("cso_prj_start_date_plan_gc")}
+									/>
+								</Col>
+								<Col className="col-md-3 mb-3">
+									<DatePicker
+										isRequired={true}
+										componentId={"prj_end_date_plan_gc"}
+										validation={validation}
+										minDate={minEndDate}
+										maxDate={maxEndDate}
+										placeholder={t("planned_end_date")}
+										label={t("cso_prj_end_date_plan_gc")}
+									/>
+								</Col>	
+							</Row>
+						</CardBody>
+					</Card>
 					{/* Budget & Timeline Card */}
 					<Card className="mb-4">
 						<CardHeader className="bg-light">
@@ -258,38 +310,13 @@ const ProjectForm = ({
 							<Row>
 								<FormattedAmountField
 									validation={validation}
-									fieldId={"prj_total_estimate_budget"}
-									isRequired={true}
-									className="col-md-4 mb-3"
-									allowDecimal={true}
-									placeholder={t("estimated_budget")}
-								/>
-								<FormattedAmountField
-									validation={validation}
 									fieldId={"prj_total_actual_budget"}
 									isRequired={true}
 									className="col-md-4 mb-3"
 									allowDecimal={true}
-									placeholder={t("actual_budget")}
+									placeholder={t("cso_prj_total_actual_budget")}
+									label={t("cso_prj_total_actual_budget")}
 								/>
-								<Col className="col-md-4 mb-3">
-									<DatePicker
-										isRequired={true}
-										componentId={"prj_start_date_plan_gc"}
-										validation={validation}
-										placeholder={t("planned_start_date")}
-									/>
-								</Col>
-								<Col className="col-md-4 mb-3">
-									<DatePicker
-										isRequired={true}
-										componentId={"prj_end_date_plan_gc"}
-										validation={validation}
-										minDate={minEndDate}
-										maxDate={maxEndDate}
-										placeholder={t("planned_end_date")}
-									/>
-								</Col>
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_admin_cost"}
@@ -305,11 +332,10 @@ const ProjectForm = ({
 									className="col-md-4 mb-3"
 									allowDecimal={true}
 									placeholder={t("program_cost")}
-								/>
+								/>							
 							</Row>
 						</CardBody>
 					</Card>
-
 					{/* Beneficiary Information Card */}
 					<Card className="mb-4">
 						<CardHeader className="bg-light">
@@ -319,51 +345,6 @@ const ProjectForm = ({
 						</CardHeader>
 						<CardBody>
 							<Row>
-								{/* Geographic Distribution & Gender Distribution - First Row */}
-								<Col md={12} className="mb-3">
-									<h6 className="text-muted mb-3">
-										{t("geographic_distribution")} & {t("gender_distribution")}
-									</h6>
-								</Col>
-								<FormattedAmountField
-									validation={validation}
-									fieldId={"prj_urban_ben_number"}
-									isRequired={false}
-									className="col-md-3 mb-3"
-									allowDecimal={false}
-									placeholder={t("urban_beneficiaries")}
-								/>
-								<FormattedAmountField
-									validation={validation}
-									fieldId={"prj_rural_ben_number"}
-									isRequired={false}
-									className="col-md-3 mb-3"
-									allowDecimal={false}
-									placeholder={t("rural_beneficiaries")}
-								/>
-								<FormattedAmountField
-									validation={validation}
-									fieldId={"prj_male_participant"}
-									isRequired={true}
-									className="col-md-3 mb-3"
-									allowDecimal={false}
-									placeholder={t("male_participants")}
-								/>
-								<FormattedAmountField
-									validation={validation}
-									fieldId={"prj_female_participant"}
-									isRequired={true}
-									className="col-md-3 mb-3"
-									allowDecimal={false}
-									placeholder={t("female_participants")}
-								/>
-
-								{/* Direct & Indirect Beneficiaries - Second Row */}
-								<Col md={12} className="mt-3 mb-3">
-									<h6 className="text-muted mb-3">
-										{t("direct_beneficiaries")} & {t("indirect_beneficiaries")}
-									</h6>
-								</Col>
 								<FormattedAmountField
 									validation={validation}
 									fieldId={"prj_direct_ben_male"}
@@ -399,38 +380,6 @@ const ProjectForm = ({
 							</Row>
 						</CardBody>
 					</Card>
-
-					{/* Agreement Details Card */}
-					<Card className="mb-4">
-						<CardHeader className="bg-light">
-							<h5 className="card-title mb-0">{t("agreement_details")}</h5>
-						</CardHeader>
-						<CardBody>
-							<Row>
-								<Col className="col-md-6 mb-3">
-									<DatePicker
-										isRequired={false}
-										componentId={"prj_date_agreement_signed"}
-										validation={validation}
-										placeholder={t("agreement_signed_date")}
-									/>
-								</Col>
-								<AsyncSelectField
-									fieldId="prj_agreement_signed_level"
-									validation={validation}
-									isRequired={false}
-									className="col-md-6 mb-3"
-									optionMap={{
-										federal: t("federal"),
-										regional: t("regional"),
-										zone: t("zone"),
-									}}
-									placeholder={t("select_agreement_level")}
-								/>
-							</Row>
-						</CardBody>
-					</Card>
-
 					{/* Additional Information Card */}
 					<Card className="mb-4">
 						<CardHeader className="bg-light">
@@ -441,7 +390,7 @@ const ProjectForm = ({
 								<InputField
 									type="textarea"
 									validation={validation}
-									fieldId={"prj_outcome"}
+									fieldId={"cso_prj_outcome"}
 									isRequired={false}
 									className="col-md-6 mb-3"
 									maxLength={400}

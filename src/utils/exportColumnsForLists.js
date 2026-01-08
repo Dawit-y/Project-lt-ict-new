@@ -4,7 +4,7 @@ import { useFetchProjectStatuss } from "../queries/projectstatus_query";
 import { createMultiLangKeyValueMap } from "./commonMethods";
 import { useTranslation } from "react-i18next";
 import { useFetchProjectCategorys } from "../queries/projectcategory_query";
-
+import { toEthiopian } from "../utils/commonMethods";
 export const getDepartmentType = (user) => {
 	if (!user) return null;
 	if (user?.usr_officer_id > 0) return "Expert";
@@ -169,6 +169,11 @@ export const citizenshipProjectExportColumns = [
 
 export const projectExportColumns = [
 	{
+		key: "sector_name",
+		label: "prj_sector_id",
+		width: 40,
+	},
+	{
 		key: "prj_name",
 		label: "prj_name",
 		width: 60,
@@ -183,13 +188,13 @@ export const projectExportColumns = [
 		label: "prj_owner_zone_id",
 	},
 	{
-		key: "sector_name",
-		label: "prj_sector_id",
-		width: 40,
-	},
-	{
 		key: "status_name",
 		label: "prs_status",
+	},
+	{
+		key: "prj_end_date_plan_gc",
+		label: "prj_end_date_plan_gc",
+		format: (val) => toEthiopian(val) || "-"
 	},
 	{
 		key: "prj_total_estimate_budget",
@@ -225,6 +230,12 @@ export const useCsoProjectExportColumns = () => {
 
 	const exportColumns = useMemo(
 		() => [
+			{
+				key: "cso_name",
+				label: t("cso_name"),
+				width: 60,
+				format: (val) => val || "-",
+			},
 			{
 				key: "prj_name",
 				label: t("prj_name"),

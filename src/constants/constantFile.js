@@ -46,6 +46,7 @@ export const PAGE_ID = {
   PROJ_MONITORING: 73,
   PROJ_PROJECT_PLAN: 74,
   PROJ_KPI_RESULT: 75,
+  CSO:65
 };
 
 //Login Page Constants
