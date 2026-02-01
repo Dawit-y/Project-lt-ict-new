@@ -288,12 +288,15 @@ const AdvancedSearch = forwardRef(
 		};
 
 		const isButtonDisabled = useMemo(() => {
-			// Check if any search parameter has a value
-			const hasAnyValue = Object.values({
+			const hasAnyValue = Object.entries({
 				...params,
 				...validation.values,
 				...additionalParams,
-			}).some((value) => {
+			}).some(([key, value]) => {
+				if (key === "include") {
+					return false;
+				}
+
 				if (Array.isArray(value)) {
 					return value.length > 0;
 				}

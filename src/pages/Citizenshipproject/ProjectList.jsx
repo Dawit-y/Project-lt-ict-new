@@ -89,9 +89,8 @@ const CitizenProjectList = () => {
 		"pct_name_am",
 	]);
 
-	// Update projectParams when tree state changes
-	useEffect(() => {
-		const newProjectParams = {
+	const treeParams = useMemo(
+		() => ({
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
 			}),
@@ -100,16 +99,9 @@ const CitizenProjectList = () => {
 				prj_location_woreda_id: prjLocationWoredaId,
 			}),
 			...(include === 1 && { include: include }),
-		};
-
-		setSearchState({ projectParams: newProjectParams });
-	}, [
-		prjLocationRegionId,
-		prjLocationZoneId,
-		prjLocationWoredaId,
-		include,
-		setSearchState,
-	]);
+		}),
+		[prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]
+	);
 
 	// Update tree selection handler
 	const handleNodeSelect = useCallback(
@@ -197,7 +189,7 @@ const CitizenProjectList = () => {
 				valueGetter: (params) => params.node.rowIndex + 1,
 				sortable: false,
 				filter: false,
-				width: 60,
+				width: 100,
 				pinned: "left",
 			},
 			{
@@ -332,7 +324,7 @@ const CitizenProjectList = () => {
 									},
 								]}
 								checkboxSearchKeys={[]}
-								additionalParams={projectParams}
+								additionalParams={treeParams}
 								setAdditionalParams={(params) =>
 									setSearchState({ projectParams: params })
 								}

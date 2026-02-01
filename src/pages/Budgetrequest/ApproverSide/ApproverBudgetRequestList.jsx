@@ -1,5 +1,4 @@
 import React, {
-	useEffect,
 	useMemo,
 	useState,
 	useRef,
@@ -15,24 +14,24 @@ import { Button, Badge, UncontrolledTooltip } from "reactstrap";
 import Spinners from "../../../components/Common/Spinner";
 import { FaGavel, FaChartLine, FaPaperclip, FaPenSquare } from "react-icons/fa";
 const Breadcrumbs = lazy(() => import("../../../components/Common/Breadcrumb"));
-const AdvancedSearch = lazy(
-	() => import("../../../components/Common/AdvancedSearch")
+const AdvancedSearch2 = lazy(
+	() => import("../../../components/Common/AdvancedSearch2"),
 );
-const TreeForLists = lazy(
-	() => import("../../../components/Common/TreeForLists2")
+const TreeForLists3 = lazy(
+	() => import("../../../components/Common/TreeForLists3"),
 );
 const AttachFileModal = lazy(
-	() => import("../../../components/Common/AttachFileModal")
+	() => import("../../../components/Common/AttachFileModal"),
 );
 const ConvInfoModal = lazy(
-	() => import("../../Conversationinformation/ConvInfoModal")
+	() => import("../../Conversationinformation/ConvInfoModal"),
 );
 const SingleAnalysisModal = lazy(
-	() => import("../Analysis/SingleAnalysisModal")
+	() => import("../Analysis/SingleAnalysisModal"),
 );
 const TotalAnalysisModal = lazy(() => import("../Analysis/TotalAnalysisModal"));
 const AgGridContainer = lazy(
-	() => import("../../../components/Common/AgGridContainer")
+	() => import("../../../components/Common/AgGridContainer"),
 );
 import { useSearchBudgetRequestforApproval } from "../../../queries/budget_request_query";
 import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
@@ -49,6 +48,7 @@ import {
 } from "../../../utils/commonMethods";
 import SearchTableContainer from "../../../components/Common/SearchTableContainer";
 import { approverBdrExportColumns } from "../../../utils/exportColumnsForLists";
+import { useBudgetRequestListState } from "../../../hooks/useBudgetRequestListState";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -60,17 +60,163 @@ const truncateText = (text, maxLength) => {
 const ApproverBudgetRequestList = () => {
 	document.title = "Budget Request List";
 	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+
+	const {
+		budgetRequestListState,
+		setTreeState,
+		setSearchState,
+		setPaginationState,
+		setUIState,
+		clearTreeSelection: clearTreeSelectionRedux,
+		resetBudgetRequestListState,
+	} = useBudgetRequestListState();
+
+	// Extract state from Redux
+	const {
+		prjLocationRegionId,
+		prjLocationZoneId,
+		prjLocationWoredaId,
+		nodeId,
+		include,
+		isCollapsed,
+		searchParams,
+		budgetRequestParams,
+		exportSearchParams,
+		pagination: reduxPagination,
+		showSearchResult,
+	} = budgetRequestListState;
+
+	// Local state for non-persistent data
+	const [searchResults, setSearchResults] = useState(null);
+	const [isSearchLoading, setIsSearchLoading] = useState(false);
+	const [searchError, setSearchError] = useState(null);
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
 	const [singleAnalysisModal, setSingleAnalysisModal] = useState(false);
 	const [totalAnalysisModal, setTotalAnalysisModal] = useState(false);
-
-	const [searchResults, setSearchResults] = useState(null);
-	const [isSearchLoading, setIsSearchLoading] = useState(false);
-	const [searcherror, setSearchError] = useState(null);
-	const [showSearchResult, setShowSearchResult] = useState(false);
 	const [transaction, setTransaction] = useState({});
+	const [selectedRequest, setSelectedRequest] = useState(null);
 
+	const advancedSearchRef = useRef(null);
+	const treeRef = useRef(null);
+
+	// Pagination info for table component
+	const paginationInfo = useMemo(
+		() => ({
+			current_page: reduxPagination.currentPage,
+			per_page: reduxPagination.pageSize,
+			total: reduxPagination.total || 0,
+			total_pages: reduxPagination.totalPages || 0,
+			has_next: reduxPagination.hasNext,
+			has_prev: reduxPagination.hasPrev,
+		}),
+		[reduxPagination],
+	);
+
+	// Tree parameters
+	const treeParams = useMemo(
+		() => ({
+			...(prjLocationRegionId && {
+				prj_location_region_id: prjLocationRegionId,
+			}),
+			...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
+			...(prjLocationWoredaId && {
+				prj_location_woreda_id: prjLocationWoredaId,
+			}),
+			...(include === 1 && { include: include }),
+		}),
+		[prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include],
+	);
+
+	// Tree node selection handler
+	const handleNodeSelect = useCallback(
+		(node) => {
+			const treeState = { nodeId: node.id };
+			if (node.level === "region") {
+				treeState.prjLocationRegionId = node.id;
+				treeState.prjLocationZoneId = null;
+				treeState.prjLocationWoredaId = null;
+			} else if (node.level === "zone") {
+				treeState.prjLocationZoneId = node.id;
+				treeState.prjLocationWoredaId = null;
+			} else if (node.level === "woreda") {
+				treeState.prjLocationWoredaId = node.id;
+			}
+			setTreeState(treeState);
+			setUIState({ showSearchResult: false });
+		},
+		[setTreeState, setUIState],
+	);
+
+	// Clear tree selection
+	const clearTreeSelection = useCallback(() => {
+		if (treeRef.current) {
+			treeRef.current.clearSelection();
+		}
+		clearTreeSelectionRedux();
+		setSearchState({ budgetRequestParams: {} });
+	}, [clearTreeSelectionRedux, setSearchState]);
+
+	// Search handler
+	const handleSearch = useCallback(
+		({ data, error }) => {
+			setSearchResults(data);
+			setSearchError(error);
+			setUIState({ showSearchResult: true });
+			if (data?.pagination) {
+				setPaginationState({
+					currentPage: data.pagination.current_page,
+					pageSize: data.pagination.per_page,
+					total: data.pagination.total,
+					totalPages: data.pagination.total_pages,
+					hasNext: data.pagination.has_next || false,
+					hasPrev: data.pagination.has_prev || false,
+				});
+			}
+		},
+		[setUIState, setPaginationState],
+	);
+
+	// Pagination handlers
+	const handlePageChange = useCallback(
+		(newPage) => {
+			setPaginationState({ currentPage: newPage });
+		},
+		[setPaginationState],
+	);
+
+	const handlePageSizeChange = useCallback(
+		(newSize) => {
+			setPaginationState({
+				currentPage: 1,
+				pageSize: newSize,
+			});
+		},
+		[setPaginationState],
+	);
+
+	const handleSearchLabels = (labels) => {
+		setSearchState({ exportSearchParams: labels });
+	};
+
+	const handleClear = () => {
+		clearTreeSelection();
+		resetBudgetRequestListState();
+	};
+
+	const toggleFileModal = () => setFileModal(!fileModal);
+	const toggleConvModal = () => setConvModal(!convModal);
+	const toggleSingleAnalysisModal = () => {
+		setSingleAnalysisModal(!singleAnalysisModal);
+		if (!singleAnalysisModal) {
+			setSelectedRequest(null);
+		}
+	};
+	const toggleTotalAnalysisModal = () =>
+		setTotalAnalysisModal(!totalAnalysisModal);
+
+	// Data fetching hooks
 	const { data: budgetYearData } = useFetchBudgetYears();
 	const param = { gov_active: "1" };
 	const { data: bgCategoryOptionsData } = useSearchRequestCategorys(param);
@@ -79,15 +225,7 @@ const ApproverBudgetRequestList = () => {
 	const { data: sectorInformationData } = getUserSectorList();
 	const { data: sectorCategoryData } = useFetchSectorCategorys();
 
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
-	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
-	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
-	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const [include, setInclude] = useState(0);
-	const [isCollapsed, setIsCollapsed] = useState(false);
-	const [selectedRequest, setSelectedRequest] = useState(null);
-
+	// Options for dropdowns
 	const {
 		sci_name_en: sectorInfoOptionsEn,
 		sci_name_or: sectorInfoOptionsOr,
@@ -97,6 +235,7 @@ const ApproverBudgetRequestList = () => {
 		"sci_name_or",
 		"sci_name_am",
 	]);
+
 	const {
 		rqs_name_en: requestStatusOptionsEn,
 		rqs_name_or: requestStatusOptionsOr,
@@ -110,12 +249,13 @@ const ApproverBudgetRequestList = () => {
 	const budgetYearOptions = createSelectOptions(
 		budgetYearData?.data || [],
 		"bdy_id",
-		"bdy_name"
+		"bdy_name",
 	);
+
 	const sectorCategoryOptions = createSelectOptions(
 		sectorCategoryData?.data || [],
 		"psc_id",
-		"psc_name"
+		"psc_name",
 	);
 
 	const {
@@ -127,6 +267,7 @@ const ApproverBudgetRequestList = () => {
 		"rqc_name_or",
 		"rqc_name_am",
 	]);
+
 	const projectStatusOptions = useMemo(() => {
 		return (
 			projectStatusData?.data
@@ -140,48 +281,7 @@ const ApproverBudgetRequestList = () => {
 
 	const isMutable = ![3, 4].includes(parseInt(transaction?.bdr_request_status));
 
-	const handleSearch = useCallback(({ data, error }) => {
-		setSearchResults(data);
-		setSearchError(error);
-		setShowSearchResult(true);
-	}, []);
-
-	const toggleFileModal = () => setFileModal(!fileModal);
-	const toggleConvModal = () => setConvModal(!convModal);
-	const toggleSingleAnalysisModal = () =>
-		setSingleAnalysisModal(!singleAnalysisModal);
-	const toggleTotalAnalysisModal = () =>
-		setTotalAnalysisModal(!totalAnalysisModal);
-
-	useEffect(() => {
-		setProjectParams({
-			...(prjLocationRegionId && {
-				prj_location_region_id: prjLocationRegionId,
-			}),
-			...(prjLocationZoneId && { prj_location_zone_id: prjLocationZoneId }),
-			...(prjLocationWoredaId && {
-				prj_location_woreda_id: prjLocationWoredaId,
-			}),
-			...(include === 1 && { include }),
-		});
-	}, [prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]);
-
-	const handleNodeSelect = (node) => {
-		if (node.level === "region") {
-			setPrjLocationRegionId(node.id);
-			setPrjLocationZoneId(null); // Clear dependent states
-			setPrjLocationWoredaId(null);
-		} else if (node.level === "zone") {
-			setPrjLocationZoneId(node.id);
-			setPrjLocationWoredaId(null); // Clear dependent state
-		} else if (node.level === "woreda") {
-			setPrjLocationWoredaId(node.id);
-		}
-		if (showSearchResult) {
-			setShowSearchResult(false);
-		}
-	};
-
+	// Column definitions
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -192,7 +292,6 @@ const ApproverBudgetRequestList = () => {
 				filter: false,
 				width: 60,
 				pinned: "left",
-				// flex: 0.5,
 			},
 			{
 				headerName: t("prj_name"),
@@ -211,40 +310,11 @@ const ApproverBudgetRequestList = () => {
 				field: "bdy_name",
 				sortable: true,
 				filter: true,
-				//flex: 1,
 				width: 150,
 				cellRenderer: (params) => {
 					return truncateText(params.data.bdy_name, 30) || "-";
 				},
 			},
-			// {
-			//   headerName: t("bdr_request_category_id"),
-			//   field: "bdr_request_category_id",
-			//   sortable: true,
-			//   filter: true,
-			//   //flex: 1,
-			//   cellRenderer: (params) => {
-			//     const category = requestCategoryOptions.find(
-			//       (option) => option.value === params.data.bdr_request_category_id
-			//     );
-			//     return category ? truncateText(category.label, 30) : "-";
-			//   },
-			// },
-
-			// {
-			//   headerName: t("bdr_request_type"),
-			//   field: "bdr_request_type",
-			//   sortable: true,
-			//   filter: true,
-
-			//   cellRenderer: (params) => {
-			//     const requestType = projectStatusOptions.find(
-			//       (option) => option.value === params.data.bdr_request_type
-			//     );
-			//     return requestType ? truncateText(requestType.label, 30) : "-";
-			//   },
-			// },
-
 			{
 				headerName: t("prj_code"),
 				field: "prj_code",
@@ -261,7 +331,6 @@ const ApproverBudgetRequestList = () => {
 				field: "bdr_requested_amount",
 				sortable: true,
 				filter: true,
-				//flex: 1.2,
 				valueFormatter: (params) => {
 					if (params.value != null) {
 						return new Intl.NumberFormat("en-US", {
@@ -269,7 +338,7 @@ const ApproverBudgetRequestList = () => {
 							maximumFractionDigits: 2,
 						}).format(params.value);
 					}
-					return "0.00"; // Default value if null or undefined
+					return "0.00";
 				},
 			},
 			{
@@ -277,7 +346,6 @@ const ApproverBudgetRequestList = () => {
 				field: "bdr_requested_date_gc",
 				sortable: true,
 				filter: "agDateColumnFilter",
-				//flex: 1,
 				cellRenderer: (params) => {
 					return truncateText(params.data.bdr_requested_date_gc, 30) || "-";
 				},
@@ -287,7 +355,6 @@ const ApproverBudgetRequestList = () => {
 				field: "bdr_released_amount",
 				sortable: true,
 				filter: true,
-				//flex: 1.2,
 				valueFormatter: (params) => {
 					if (params.value != null) {
 						return new Intl.NumberFormat("en-US", {
@@ -295,16 +362,14 @@ const ApproverBudgetRequestList = () => {
 							maximumFractionDigits: 2,
 						}).format(params.value);
 					}
-					return "0.00"; // Default value if null or undefined
+					return "0.00";
 				},
 			},
-
 			{
 				headerName: t("bdr_released_date_gc"),
 				field: "bdr_released_date_gc",
 				sortable: true,
 				filter: "agDateColumnFilter",
-				//flex: 1,
 				cellRenderer: (params) => {
 					return truncateText(params.data.bdr_released_date_gc, 30) || "-";
 				},
@@ -314,7 +379,6 @@ const ApproverBudgetRequestList = () => {
 				field: "forwarded",
 				sortable: true,
 				filter: true,
-				//flex: 1,
 				width: 130,
 				cellRenderer: (params) => {
 					const isForwarded = params.data.forwarded;
@@ -334,7 +398,6 @@ const ApproverBudgetRequestList = () => {
 				field: "status_name",
 				sortable: true,
 				filter: true,
-				//flex: 1,
 				width: 130,
 				cellRenderer: (params) => {
 					const { status_name, color_code } = params.data;
@@ -378,7 +441,6 @@ const ApproverBudgetRequestList = () => {
 							<UncontrolledTooltip target={`view-${data.bdr_id}`}>
 								{t("analysis")}
 							</UncontrolledTooltip>
-
 							<Button
 								id={`attachFiles-${data.bdr_id}`}
 								color="light"
@@ -393,7 +455,6 @@ const ApproverBudgetRequestList = () => {
 							<UncontrolledTooltip target={`attachFiles-${data.bdr_id}`}>
 								{t("attach_files")}
 							</UncontrolledTooltip>
-
 							<Button
 								id={`notes-${data.bdr_id}`}
 								color="light"
@@ -414,7 +475,7 @@ const ApproverBudgetRequestList = () => {
 			},
 		];
 		return baseColumnDefs;
-	}, []);
+	}, [t, toggleSingleAnalysisModal, toggleFileModal, toggleConvModal]);
 
 	return (
 		<Suspense fallback={<Spinners />}>
@@ -442,17 +503,37 @@ const ApproverBudgetRequestList = () => {
 					<div className="">
 						<Breadcrumbs />
 						<div className="w-100 d-flex gap-2 flex-nowrap">
-							<TreeForLists
+							<TreeForLists3
+								ref={treeRef}
 								onNodeSelect={handleNodeSelect}
-								setIsAddressLoading={setIsAddressLoading}
-								setInclude={setInclude}
+								setInclude={(newInclude) =>
+									setTreeState({ include: newInclude })
+								}
+								setIsCollapsed={(collapsed) =>
+									setUIState({ isCollapsed: collapsed })
+								}
 								isCollapsed={isCollapsed}
-								setIsCollapsed={setIsCollapsed}
+								initialSelection={{
+									id:
+										prjLocationRegionId ||
+										prjLocationZoneId ||
+										prjLocationWoredaId,
+									nodeId: nodeId || null,
+									level: prjLocationWoredaId
+										? "woreda"
+										: prjLocationZoneId
+											? "zone"
+											: "region",
+									add_name_en: "",
+									add_name_am: "",
+									name: "",
+								}}
+								initialInclude={include}
 							/>
 							<SearchTableContainer isCollapsed={isCollapsed}>
-								<AdvancedSearch
+								<AdvancedSearch2
+									ref={advancedSearchRef}
 									searchHook={useSearchBudgetRequestforApproval}
-									// dateSearchKeys={["budget_request_date"]}
 									textSearchKeys={["prj_name"]}
 									dropdownSearchKeys={[
 										{
@@ -462,9 +543,9 @@ const ApproverBudgetRequestList = () => {
 										{
 											key: "bdr_request_category_id",
 											options:
-												i18n.language === "en"
+												lang === "en"
 													? requestCategoryOptionsEn
-													: i18n.language === "am"
+													: lang === "am"
 														? requestCategoryOptionsAm
 														: requestCategoryOptionsOr,
 										},
@@ -475,9 +556,9 @@ const ApproverBudgetRequestList = () => {
 										{
 											key: "prj_sector_id",
 											options:
-												i18n.language === "en"
+												lang === "en"
 													? sectorInfoOptionsEn
-													: i18n.language === "am"
+													: lang === "am"
 														? sectorInfoOptionsAm
 														: sectorInfoOptionsOr,
 										},
@@ -488,30 +569,55 @@ const ApproverBudgetRequestList = () => {
 										{
 											key: "bdr_request_status",
 											options:
-												i18n.language === "en"
+												lang === "en"
 													? requestStatusOptionsEn
-													: i18n.language === "am"
+													: lang === "am"
 														? requestStatusOptionsAm
 														: requestStatusOptionsOr,
 										},
 									]}
-									additionalParams={projectParams}
-									setAdditionalParams={setProjectParams}
-									onSearchResult={handleSearch}
-									setIsSearchLoading={setIsSearchLoading}
+									additionalParams={treeParams}
+									setAdditionalParams={(params) =>
+										setSearchState({ budgetRequestParams: params })
+									}
 									setSearchResults={setSearchResults}
-									setShowSearchResult={setShowSearchResult}
+									onSearchResult={handleSearch}
+									onSearchLabels={handleSearchLabels}
+									setShowSearchResult={(show) =>
+										setUIState({ showSearchResult: show })
+									}
+									setIsSearchLoading={setIsSearchLoading}
+									searchParams={searchParams}
+									getSearchParams={(params) =>
+										setSearchState({ searchParams: params })
+									}
+									setExportSearchParams={(params) =>
+										setSearchState({ exportSearchParams: params })
+									}
+									// Pass persisted pagination from Redux
+									pagination={reduxPagination}
+									onPaginationChange={setPaginationState}
+									onClear={handleClear}
+									initialSearchParams={searchParams}
+									initialAdditionalParams={budgetRequestParams}
+									initialPagination={reduxPagination}
+									checkboxSearchKeys={[]}
+									dropdownSearchKeys2={[]}
 								>
 									<TableWrapper
 										columnDefs={columnDefs}
 										showSearchResult={showSearchResult}
+										exportSearchParams={exportSearchParams}
 										selectedRequest={selectedRequest}
 										singleAnalysisModal={singleAnalysisModal}
 										totalAnalysisModal={totalAnalysisModal}
 										toggleSingleAnalysisModal={toggleSingleAnalysisModal}
 										toggleTotalAnalysisModal={toggleTotalAnalysisModal}
+										paginationInfo={paginationInfo}
+										onPageChange={handlePageChange}
+										onPageSizeChange={handlePageSizeChange}
 									/>
-								</AdvancedSearch>
+								</AdvancedSearch2>
 							</SearchTableContainer>
 						</div>
 					</div>
@@ -520,9 +626,11 @@ const ApproverBudgetRequestList = () => {
 		</Suspense>
 	);
 };
+
 ApproverBudgetRequestList.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
+
 export default ApproverBudgetRequestList;
 
 const TableWrapper = ({
@@ -530,11 +638,15 @@ const TableWrapper = ({
 	isLoading,
 	columnDefs,
 	showSearchResult,
+	exportSearchParams,
 	selectedRequest,
 	singleAnalysisModal,
 	totalAnalysisModal,
 	toggleSingleAnalysisModal,
 	toggleTotalAnalysisModal,
+	paginationInfo,
+	onPageChange,
+	onPageSizeChange,
 }) => {
 	const { departmentId } = useAuthUser();
 	const { data: rqfData } = useFetchRequestFollowups();
@@ -543,12 +655,12 @@ const TableWrapper = ({
 	function markForwardedRequests(
 		budgetRequests = [],
 		forwardedRequests = [],
-		departmentId
+		departmentId,
 	) {
 		const forwardedSet = new Set(
 			forwardedRequests
 				.filter((req) => req.rqf_forwarding_dep_id === departmentId)
-				.map((req) => req.rqf_request_id)
+				.map((req) => req.rqf_request_id),
 		);
 
 		return budgetRequests.map((request) => ({
@@ -562,7 +674,7 @@ const TableWrapper = ({
 		transformedData = markForwardedRequests(
 			data.data,
 			rqfData.data,
-			departmentId
+			departmentId,
 		);
 	}
 
@@ -584,7 +696,8 @@ const TableWrapper = ({
 					rowData={showSearchResult ? transformedData : []}
 					columnDefs={columnDefs}
 					isLoading={isLoading}
-					isPagination={true}
+					isPagination={false}
+					isServerSidePagination={true}
 					paginationPageSize={10}
 					isGlobalFilter={true}
 					isAddButton={false}
@@ -602,7 +715,12 @@ const TableWrapper = ({
 							format: (val) => (val ? t("forwarded") : t("not_forwarded")),
 						},
 					]}
-					// todo: refactor this to use a more generic button component
+					exportSearchParams={exportSearchParams}
+					// Server-side pagination props
+					paginationInfo={paginationInfo}
+					onPageChange={onPageChange}
+					onPageSizeChange={onPageSizeChange}
+					// Total analysis button
 					buttonChildren={<FaChartLine />}
 					onButtonClick={toggleTotalAnalysisModal}
 					disabled={!showSearchResult || isLoading}

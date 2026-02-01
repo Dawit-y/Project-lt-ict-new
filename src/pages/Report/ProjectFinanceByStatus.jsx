@@ -54,6 +54,7 @@ const ProjectStatusReport = ({
 				minWidth: 150,
 				group: "projects_budget",
 				format: "currency",
+				exportWidth: 25,
 			},
 			{
 				id: "new_projects_budget_percent",
@@ -68,6 +69,7 @@ const ProjectStatusReport = ({
 				minWidth: 150,
 				group: "projects_budget",
 				format: "currency",
+				exportWidth: 25,
 			},
 			{
 				id: "inprogress_projects_budget_percent",
@@ -82,10 +84,11 @@ const ProjectStatusReport = ({
 				minWidth: 150,
 				group: "projects_budget",
 				format: "currency",
+				exportWidth: 25,
 			},
 			{
 				id: "total_budget_percent",
-				label: t("% of Category"),
+				label: t("% of Grand Total"),
 				minWidth: 80,
 				group: "projects_budget",
 				format: "percentage",
@@ -95,35 +98,53 @@ const ProjectStatusReport = ({
 	);
 
 	// Transform data with percentage calculations
-	const transformData = (data) => {
-		return data.map((item) => {
-			const newCount = Number(item.new_projects_count) || 0;
-			const inprogressCount = Number(item.inprogress_project_count) || 0;
-			const newBudget = Number(item.new_projects_budget) || 0;
-			const inprogressBudget = Number(item.inprogress_projects_budget) || 0;
-			const totalBudget = newBudget + inprogressBudget;
+	const transformData = useMemo(() => {
+		return (data) => {
+			if (!data || data.length === 0) return [];
 
-			// Calculate percentages
-			const newBudgetPercent =
-				totalBudget > 0 ? (newBudget / totalBudget) * 100 : 0;
-			const inprogressBudgetPercent =
-				totalBudget > 0 ? (inprogressBudget / totalBudget) * 100 : 0;
+			// First, calculate grand total of all sectors
+			let grandTotal = 0;
+			data.forEach((item) => {
+				const newBudget = Number(item.new_projects_budget) || 0;
+				const inprogressBudget = Number(item.inprogress_projects_budget) || 0;
+				grandTotal += newBudget + inprogressBudget;
+			});
 
-			return {
-				...item,
-				total_projects_count: newCount + inprogressCount,
-				total_projects_budget: totalBudget,
-				new_projects_budget_percent: newBudgetPercent,
-				inprogress_projects_budget_percent: inprogressBudgetPercent,
-			};
-		});
-	};
+			return data.map((item) => {
+				const newCount = Number(item.new_projects_count) || 0;
+				const inprogressCount = Number(item.inprogress_project_count) || 0;
+				const newBudget = Number(item.new_projects_budget) || 0;
+				const inprogressBudget = Number(item.inprogress_projects_budget) || 0;
+				const totalBudget = newBudget + inprogressBudget;
+
+				// Calculate percentages
+				const newBudgetPercent =
+					totalBudget > 0 ? (newBudget / totalBudget) * 100 : 0;
+				const inprogressBudgetPercent =
+					totalBudget > 0 ? (inprogressBudget / totalBudget) * 100 : 0;
+				// FIXED: Calculate percentage out of grand total
+				const totalBudgetPercent =
+					grandTotal > 0 ? (totalBudget / grandTotal) * 100 : 0;
+
+				return {
+					...item,
+					total_projects_count: newCount + inprogressCount,
+					total_projects_budget: totalBudget,
+					new_projects_budget_percent: newBudgetPercent,
+					inprogress_projects_budget_percent: inprogressBudgetPercent,
+					total_budget_percent: totalBudgetPercent, // Now shows % of grand total
+				};
+			});
+		};
+	}, []);
 
 	// Calculate category totals with percentages
 	const calculateTotals = (groupedData, columnsConfig) => {
 		const totals = {};
 
-		// First pass: calculate category totals
+		// First pass: calculate category totals and grand total
+		let grandTotal = 0;
+
 		Object.entries(groupedData).forEach(([categoryName, categoryData]) => {
 			totals[categoryName] = {
 				new_projects_count: 0,
@@ -148,26 +169,23 @@ const ProjectStatusReport = ({
 				totals[categoryName].total_projects_budget +=
 					Number(sector.total_projects_budget) || 0;
 			});
-		});
 
-		// Calculate category-wide total budget for percentage calculations
-		const categoryWideTotal = Object.values(totals).reduce(
-			(sum, category) => sum + (category.total_projects_budget || 0),
-			0
-		);
+			grandTotal += totals[categoryName].total_projects_budget;
+		});
 
 		// Second pass: add percentages to totals
 		Object.entries(totals).forEach(([categoryName, categoryTotal]) => {
+			// Category's percentage of grand total
 			totals[categoryName].total_budget_percent =
-				categoryWideTotal > 0
-					? (categoryTotal.total_projects_budget / categoryWideTotal) * 100
+				grandTotal > 0
+					? (categoryTotal.total_projects_budget / grandTotal) * 100
 					: 0;
 		});
 
 		return totals;
 	};
 
-	// Prepare export data with calculated values
+	// Prepare export data with calculated values - FIXED
 	const prepareExportData = (
 		filteredData,
 		groupedData,
@@ -176,17 +194,21 @@ const ProjectStatusReport = ({
 	) => {
 		const exportRows = [];
 
-		Object.entries(groupedData).forEach(([categoryName, categoryData]) => {
-			const categoryTotals = calculatedTotals[categoryName] || {};
+		// First, calculate grand total from all filtered data
+		let grandTotal = 0;
+		filteredData.forEach((sector) => {
+			const newBudget = Number(sector.new_projects_budget) || 0;
+			const inprogressBudget = Number(sector.inprogress_projects_budget) || 0;
+			grandTotal += newBudget + inprogressBudget;
+		});
 
+		Object.entries(groupedData).forEach(([categoryName, categoryData]) => {
 			categoryData.items.forEach((sector) => {
 				const totalBudget = Number(sector.total_projects_budget) || 0;
 
-				// Calculate total percentage relative to category total
+				// FIXED: Calculate percentage out of grand total (not category total)
 				const totalPercentage =
-					categoryTotals.total_projects_budget > 0
-						? (totalBudget / categoryTotals.total_projects_budget) * 100
-						: 0;
+					grandTotal > 0 ? (totalBudget / grandTotal) * 100 : 0;
 
 				const exportRow = {
 					level: t("Sector"),
@@ -201,7 +223,7 @@ const ProjectStatusReport = ({
 					inprogress_projects_budget_percent:
 						sector.inprogress_projects_budget_percent,
 					total_projects_budget: totalBudget,
-					total_budget_percent: totalPercentage,
+					total_budget_percent: totalPercentage, // Now shows % of grand total
 				};
 				exportRows.push(exportRow);
 			});
@@ -261,6 +283,56 @@ const ProjectStatusReport = ({
 		</tr>
 	);
 
+	// Custom data row renderer to show total_budget_percent in table
+	const renderDataRow = (row, index, t) => {
+		const formatValue = (value, format = "string") => {
+			if (value === null || value === undefined || value === "") return "-";
+
+			switch (format) {
+				case "currency":
+					return new Intl.NumberFormat("en-ET", {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					}).format(value);
+				case "percentage":
+					return `${Number(value).toFixed(1)}%`;
+				case "number":
+					return Number(value).toLocaleString();
+				default:
+					return value.toString();
+			}
+		};
+
+		return (
+			<tr key={`data-${row.id || index}`}>
+				{columnsConfig.map((col) => {
+					const value = row[col.id];
+
+					// Apply sticky styles
+					const stickyStyle = col.sticky
+						? {
+								position: "sticky",
+								left: col.id === "sector_category_name" ? 0 : 250,
+								zIndex: 1,
+								backgroundColor: "white",
+							}
+						: {};
+
+					return (
+						<td
+							key={col.id}
+							data-column={col.id}
+							className={col.sticky ? "sticky-column" : ""}
+							style={stickyStyle}
+						>
+							{formatValue(value, col.format)}
+						</td>
+					);
+				})}
+			</tr>
+		);
+	};
+
 	// Helper function for formatting (used in custom renderer)
 	const formatValue = (value, format = "string") => {
 		if (value === null || value === undefined || value === "") return "-";
@@ -290,6 +362,7 @@ const ProjectStatusReport = ({
 			calculateTotals={calculateTotals}
 			prepareExportData={prepareExportData}
 			renderGroupRow={renderGroupRow}
+			renderDataRow={renderDataRow} // Added custom data row renderer
 			searchFields={["sector_name", "sector_category_name"]}
 			searchPlaceholder="Search by sector or category..."
 			tableName="Project Finance By Status"

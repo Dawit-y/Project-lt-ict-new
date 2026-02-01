@@ -109,9 +109,8 @@ const ProjectModel = () => {
 	const updateProject = useUpdateProject();
 	const deleteProject = useDeleteProject();
 
-	// Update projectParams when tree state changes
-	useEffect(() => {
-		const newProjectParams = {
+	const treeParams = useMemo(
+		() => ({
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
 			}),
@@ -120,16 +119,9 @@ const ProjectModel = () => {
 				prj_location_woreda_id: prjLocationWoredaId,
 			}),
 			...(include === 1 && { include: include }),
-		};
-
-		setSearchState({ projectParams: newProjectParams });
-	}, [
-		prjLocationRegionId,
-		prjLocationZoneId,
-		prjLocationWoredaId,
-		include,
-		setSearchState,
-	]);
+		}),
+		[prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]
+	);
 
 	// Handlers
 	const handleAddProject = async (data) => {
@@ -313,7 +305,7 @@ const ProjectModel = () => {
 				valueGetter: (params) => params.node.rowIndex + 1,
 				sortable: false,
 				filter: false,
-				width: 60,
+				width: 100,
 				pinned: "left",
 			},
 			{
@@ -454,7 +446,7 @@ const ProjectModel = () => {
 									},
 								]}
 								checkboxSearchKeys={[]}
-								additionalParams={projectParams}
+								additionalParams={treeParams}
 								setAdditionalParams={(params) =>
 									setSearchState({ projectParams: params })
 								}

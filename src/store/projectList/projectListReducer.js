@@ -12,7 +12,7 @@ const initialState = {
 	prjLocationRegionId: null,
 	prjLocationZoneId: null,
 	prjLocationWoredaId: null,
-	include: 0,
+	include: 1,
 	isCollapsed: false,
 	nodeId: null,
 

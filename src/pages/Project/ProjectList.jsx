@@ -4,6 +4,8 @@ import React, {
 	useState,
 	useRef,
 	useCallback,
+	lazy,
+	Suspense,
 } from "react";
 import { Link } from "react-router-dom";
 import Breadcrumbs from "../../components/Common/Breadcrumb";
@@ -26,13 +28,13 @@ import ProjectFormModal from "./ProjectFormModal";
 import { toast } from "react-toastify";
 import { useProjectListState } from "../../hooks/useProjectListsState";
 import { FaAlignLeft } from "react-icons/fa";
-import ProjectRegionalStructureModal from "./ProjectRegionalStructureModal";
-
+const ProjectRegionalStructureModal = lazy(
+	() => import("./ProjectRegionalStructureModal")
+);
 const ProjectList = () => {
 	document.title = "Projects List";
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-
 	const {
 		projectListState,
 		setTreeState,
@@ -42,7 +44,6 @@ const ProjectList = () => {
 		clearTreeSelection: clearTreeSelectionRedux,
 		resetProjectListState,
 	} = useProjectListState();
-
 	// Extract state from Redux
 	const {
 		prjLocationRegionId,
@@ -57,7 +58,6 @@ const ProjectList = () => {
 		pagination: reduxPagination,
 		showSearchResult,
 	} = projectListState;
-
 	// Local state that doesn't need persistence
 	const [searchResults, setSearchResults] = useState(null);
 	const [isSearchLoading, setIsSearchLoading] = useState(false);
@@ -66,11 +66,9 @@ const ProjectList = () => {
 	const [isStructureModalOpen, setIsStructureModalOpen] = useState(false);
 	const [selectedProject, setSelectedProject] = useState(null);
 	const [selectedNode, setSelectedNode] = useState(null);
-
 	const advancedSearchRef = useRef(null);
 	const treeRef = useRef(null);
 	const updateProject = useUpdateProject();
-
 	// Create paginationInfo from Redux state for table component
 	const paginationInfo = useMemo(
 		() => ({
@@ -84,9 +82,8 @@ const ProjectList = () => {
 		[reduxPagination]
 	);
 
-	// Update projectParams when tree state changes
-	useEffect(() => {
-		const newProjectParams = {
+	const treeParams = useMemo(
+		() => ({
 			...(prjLocationRegionId && {
 				prj_location_region_id: prjLocationRegionId,
 			}),
@@ -95,22 +92,13 @@ const ProjectList = () => {
 				prj_location_woreda_id: prjLocationWoredaId,
 			}),
 			...(include === 1 && { include: include }),
-		};
-
-		setSearchState({ projectParams: newProjectParams });
-	}, [
-		prjLocationRegionId,
-		prjLocationZoneId,
-		prjLocationWoredaId,
-		include,
-		setSearchState,
-	]);
-
+		}),
+		[prjLocationRegionId, prjLocationZoneId, prjLocationWoredaId, include]
+	);
 	// Update tree selection handler
 	const handleNodeSelect = useCallback(
 		(node) => {
 			const treeState = { nodeId: node.id };
-
 			if (node.level === "region") {
 				treeState.prjLocationRegionId = node.id;
 				treeState.prjLocationZoneId = null;
@@ -121,13 +109,11 @@ const ProjectList = () => {
 			} else if (node.level === "woreda") {
 				treeState.prjLocationWoredaId = node.id;
 			}
-
 			setTreeState(treeState);
 			setUIState({ showSearchResult: false });
 		},
 		[setTreeState, setUIState]
 	);
-
 	// Update clear tree selection
 	const clearTreeSelection = useCallback(() => {
 		if (treeRef.current) {
@@ -136,14 +122,12 @@ const ProjectList = () => {
 		clearTreeSelectionRedux();
 		setSearchState({ projectParams: {} });
 	}, [clearTreeSelectionRedux, setSearchState]);
-
 	// Update search handler
 	const handleSearch = useCallback(
 		({ data, error }) => {
 			setSearchResults(data);
 			setSearchError(error);
 			setUIState({ showSearchResult: true });
-
 			if (data?.pagination) {
 				// Update Redux pagination with server data
 				setPaginationState({
@@ -156,7 +140,6 @@ const ProjectList = () => {
 		},
 		[setUIState, setPaginationState]
 	);
-
 	// Update pagination handlers using Redux actions
 	const handlePageChange = useCallback(
 		(newPage) => {
@@ -164,7 +147,6 @@ const ProjectList = () => {
 		},
 		[setPaginationState]
 	);
-
 	const handlePageSizeChange = useCallback(
 		(newSize) => {
 			setPaginationState({
@@ -174,23 +156,19 @@ const ProjectList = () => {
 		},
 		[setPaginationState]
 	);
-
 	const handleSearchLabels = (labels) => {
 		setSearchState({ exportSearchParams: labels });
 	};
-
 	const handleClear = () => {
 		clearTreeSelection();
 		resetProjectListState();
 	};
-
 	const toggleEditModal = () => {
 		setIsEditModalOpen(!isEditModalOpen);
 		if (isEditModalOpen) {
 			setSelectedProject(null);
 		}
 	};
-
 	// sector information
 	const { data: sectorInformationData } = getUserSectorList();
 	const {
@@ -202,7 +180,6 @@ const ProjectList = () => {
 		"sci_name_or",
 		"sci_name_am",
 	]);
-
 	// project category options
 	const { data: projectCategoryData } = useFetchProjectCategorys();
 	const filteredCategoryData = useMemo(() => {
@@ -210,7 +187,6 @@ const ProjectList = () => {
 			(category) => category.pct_owner_type_id === 1
 		);
 	}, [projectCategoryData?.data]);
-
 	const {
 		pct_name_en: projectCategoryOptionsEn,
 		pct_name_or: projectCategoryOptionsOr,
@@ -220,7 +196,6 @@ const ProjectList = () => {
 		"pct_name_or",
 		"pct_name_am",
 	]);
-
 	// project status options
 	const { data: projectStatusData } = useFetchProjectStatuss();
 	const {
@@ -232,7 +207,6 @@ const ProjectList = () => {
 		"prs_id",
 		["prs_status_name_en", "prs_status_name_or", "prs_status_name_am"]
 	);
-
 	const handleEditClick = (projectData) => {
 		setSelectedProject(projectData);
 		const mockNode = {
@@ -246,15 +220,12 @@ const ProjectList = () => {
 			},
 		};
 		setSelectedNode(mockNode);
-
 		setIsEditModalOpen(true);
 	};
-
 	const handleOpenStructureModal = (project) => {
 		setSelectedProject(project);
 		setIsStructureModalOpen(true);
 	};
-
 	const handleSubmit = async (values, isEdit, project, selectedNode) => {
 		if (isEdit) {
 			try {
@@ -277,7 +248,9 @@ const ProjectList = () => {
 					prj_location_zone_id: Number(values.prj_location_zone_id),
 					prj_location_woreda_id: Number(values.prj_location_woreda_id),
 					prj_location_kebele_id: values.prj_location_kebele_id,
-					prj_location_description: values.prj_location_description,
+					prj_location_description_or: values.prj_location_description_or,
+					prj_location_description_en: values.prj_location_description_en,
+					prj_location_description_am: values.prj_location_description_am,
 					prj_owner_region_id: Number(values.prj_owner_region_id),
 					prj_owner_zone_id: Number(values.prj_owner_zone_id),
 					prj_owner_woreda_id: Number(values.prj_owner_woreda_id),
@@ -304,15 +277,11 @@ const ProjectList = () => {
 					prj_measurement_unit: values.prj_measurement_unit,
 					prj_measured_figure: values.prj_measured_figure,
 				};
-
 				await updateProject.mutateAsync(updateProjectData);
 				toast.success(t("update_success"), {
 					autoClose: 3000,
 				});
 				toggleEditModal();
-				if (showSearchResult && advancedSearchRef.current) {
-					await advancedSearchRef.current.refreshSearch();
-				}
 			} catch (error) {
 				if (!error.handledByMutationCache) {
 					toast.error(t("update_failure"), { autoClose: 3000 });
@@ -320,7 +289,6 @@ const ProjectList = () => {
 			}
 		}
 	};
-
 	const handleStructureSubmit = async (values) => {
 		try {
 			await updateProject.mutateAsync(values);
@@ -337,7 +305,10 @@ const ProjectList = () => {
 			}
 		}
 	};
-
+	const canEditOrDelete = useMemo(
+		() => searchResults?.previledge?.is_role_editable === 1,
+		[searchResults]
+	);
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -346,7 +317,7 @@ const ProjectList = () => {
 				valueGetter: (params) => params.node.rowIndex + 1,
 				sortable: false,
 				filter: false,
-				width: 60,
+				width: 100,
 				pinned: "left",
 			},
 			{
@@ -365,6 +336,7 @@ const ProjectList = () => {
 				filter: "agTextColumnFilter",
 				flex: 1,
 				minWidth: 150,
+				cellDataType: "text",
 			},
 			{
 				field: "zone_name",
@@ -404,6 +376,7 @@ const ProjectList = () => {
 			{
 				field: "prj_total_estimate_budget",
 				headerName: t("prj_total_estimate_budget"),
+				filter: true,
 				valueFormatter: (params) => {
 					if (params.node.footer) {
 						return params.value ? `$${params.value.toLocaleString()}` : "";
@@ -423,22 +396,26 @@ const ProjectList = () => {
 					}
 					return (
 						<div className="d-flex gap-1">
-							<Button
-								color="None"
-								size="sm"
-								className="text-success"
-								onClick={() => handleEditClick(params.data)}
-							>
-								<i className="mdi mdi-pencil font-size-18" />
-							</Button>
-							<Button
-								color="None"
-								size="sm"
-								className="text-success"
-								onClick={() => handleOpenStructureModal(params.data)}
-							>
-								<FaAlignLeft size={18} />
-							</Button>
+							{canEditOrDelete && (
+								<>
+									<Button
+										color="None"
+										size="sm"
+										className="text-success"
+										onClick={() => handleEditClick(params.data)}
+									>
+										<i className="mdi mdi-pencil font-size-18" />
+									</Button>
+									<Button
+										color="None"
+										size="sm"
+										className="text-success"
+										onClick={() => handleOpenStructureModal(params.data)}
+									>
+										<FaAlignLeft size={18} />
+									</Button>
+								</>
+							)}
 							<Link to={`/projectdetail/${params.data.prj_id}`}>
 								<Button type="button" className="btn-sm mb-1 default" outline>
 									<i className="fa fa-eye"></i>
@@ -450,20 +427,23 @@ const ProjectList = () => {
 			},
 		];
 		return baseColumnDefs;
-	}, [t]);
-
+	}, [t, canEditOrDelete]);
 	return (
 		<React.Fragment>
 			<div className="page-content">
 				<div className="w-100">
 					<Breadcrumbs />
-					<ProjectRegionalStructureModal
-						isOpen={isStructureModalOpen}
-						toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
-						project={selectedProject}
-						onSubmit={handleStructureSubmit}
-						isLoading={updateProject.isPending}
-					/>
+					{isStructureModalOpen && (
+						<Suspense>
+							<ProjectRegionalStructureModal
+								isOpen={isStructureModalOpen}
+								toggle={() => setIsStructureModalOpen(!isStructureModalOpen)}
+								project={selectedProject}
+								onSubmit={handleStructureSubmit}
+								isLoading={updateProject.isPending}
+							/>
+						</Suspense>
+					)}
 					<ProjectFormModal
 						isOpen={isEditModalOpen}
 						toggle={toggleEditModal}
@@ -495,7 +475,7 @@ const ProjectList = () => {
 									: prjLocationZoneId
 										? "zone"
 										: "region",
-								add_name_en: "", // You might want to store these in Redux too
+								add_name_en: "",
 								add_name_am: "",
 								name: "",
 							}}
@@ -537,7 +517,7 @@ const ProjectList = () => {
 									},
 								]}
 								checkboxSearchKeys={[]}
-								additionalParams={projectParams}
+								additionalParams={treeParams}
 								setAdditionalParams={(params) =>
 									setSearchState({ projectParams: params })
 								}
@@ -562,6 +542,31 @@ const ProjectList = () => {
 								initialSearchParams={searchParams}
 								initialAdditionalParams={projectParams}
 								initialPagination={reduxPagination}
+								dropdownSearchKeys2={[
+									{
+										key: "prj_age",
+										options: [
+											{ value: "1", label: "1" },
+											{ value: "2", label: "2" },
+											{ value: "3", label: "3" },
+											{ value: "4", label: "4" },
+										],
+									},
+									{
+										key: "prj_should_be_completed",
+										options: [
+											{ value: "yes", label: "yes" },
+											{ value: "no", label: "no" },
+										],
+									},
+									{
+										key: "prj_to_be_completed",
+										options: [
+											{ value: "yes", label: "yes" },
+											{ value: "no", label: "no" },
+										],
+									},
+								]}
 							>
 								<TableWrapper
 									columnDefs={columnDefs}
@@ -579,9 +584,7 @@ const ProjectList = () => {
 		</React.Fragment>
 	);
 };
-
 export default ProjectList;
-
 const TableWrapper = ({
 	data,
 	isLoading,

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useEffect } from "react";
 import PropTypes from "prop-types";
 import * as Yup from "yup";
 import { useFormik } from "formik";
@@ -28,7 +28,7 @@ import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 import DatePicker from "../../components/Common/DatePicker";
 import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import InputField from "../../components/Common/InputField";
-
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 const ProjectFormModal = ({
 	isOpen,
 	toggle,
@@ -61,7 +61,24 @@ const ProjectFormModal = ({
 			(item) => item.pct_owner_type_id === 1
 		);
 	}, [projectCategoryData, lang]);
-
+	const {
+		data: projectStatusData,
+		isLoading: isStatusLoading,
+		isError: isStatusError,
+	} = useFetchProjectStatuss();
+	const projectStatusMap = useMemo(() => {
+		return (
+			projectStatusData?.data?.reduce((acc, status) => {
+				acc[status.prs_id] =
+					lang === "en"
+						? status.prs_status_name_en
+						: lang === "am"
+							? status.prs_status_name_am
+							: status.prs_status_name_or;
+				return acc;
+			}, {}) || {}
+		);
+	}, [projectStatusData, lang]);
 	// validation
 	const validation = useFormik({
 		enableReinitialize: true,
@@ -93,8 +110,12 @@ const ProjectFormModal = ({
 			prj_owner_region_id: (project && project.prj_owner_region_id) || "",
 			prj_owner_zone_id: (project && project.prj_owner_zone_id) || "",
 			prj_owner_woreda_id: (project && project.prj_owner_woreda_id) || "",
-			prj_location_description:
-				(project && project.prj_location_description) || "",
+			prj_location_description_or:
+				(project && project.prj_location_description_or) || "",
+			prj_location_description_en:
+				(project && project.prj_location_description_en) || "",
+			prj_location_description_am:
+				(project && project.prj_location_description_am) || "",
 			prj_owner_description: (project && project.prj_owner_description) || "",
 			prj_start_date_et: (project && project.prj_start_date_et) || "",
 			prj_start_date_gc: (project && project.prj_start_date_gc) || "",
@@ -140,6 +161,7 @@ const ProjectFormModal = ({
 			),
 			prj_code: Yup.string(),
 			prj_project_category_id: numberValidation(1, 200, true),
+			prj_project_status_id: numberValidation(1, 200, true),
 			prj_total_estimate_budget: formattedAmountValidation(
 				1000,
 				1000000000000,
@@ -154,21 +176,14 @@ const ProjectFormModal = ({
 				t("prj_start_date_plan_gc")
 			),
 			prj_end_date_plan_gc: Yup.string().required(t("prj_end_date_plan_gc")),
-			prj_urban_ben_number: numberValidation(0, 10000000, false),
-			prj_rural_ben_number: numberValidation(0, 10000000, false),
+			prj_urban_ben_number: numberValidation(0, 1000000000, false),
+			prj_rural_ben_number: numberValidation(0, 1000000000, false),
 			prj_measured_figure: formattedAmountValidation(1, 100000000000, true),
 			prj_measurement_unit: Yup.string().required(t("prj_measurement_unit")),
-			prj_location_description: alphanumericValidation(3, 425, false),
+			prj_location_description_or: alphanumericValidation(3, 425, false),
+			prj_location_description_en: alphanumericValidation(3, 425, false),
+			prj_location_description_am: onlyAmharicValidation(3, 425, false),
 			prj_remark: alphanumericValidation(3, 425, false),
-
-			prj_owner_region_id: Yup.string().required(t("val_required")),
-			prj_owner_zone_id: Yup.string().required(t("val_required")),
-			prj_owner_woreda_id: Yup.string().required(t("val_required")),
-			prj_cluster_id: Yup.string().required(t("val_required")),
-			prj_sector_id: Yup.string().required(t("val_required")),
-			prj_program_id: Yup.string().required(t("val_required")),
-			prj_sub_program_id: Yup.string().required(t("val_required")),
-			prj_parent_id: Yup.string().required(t("val_required")),
 		}),
 		validateOnBlur: true,
 		validateOnChange: true,
@@ -207,9 +222,25 @@ const ProjectFormModal = ({
 						<InputField
 							type="textarea"
 							validation={validation}
-							fieldId={"prj_location_description"}
+							fieldId={"prj_location_description_or"}
 							isRequired={false}
-							className="col-md-12 mb-3"
+							className="col-md-4 mb-3"
+							maxLength={400}
+						/>
+						<InputField
+							type="textarea"
+							validation={validation}
+							fieldId={"prj_location_description_am"}
+							isRequired={false}
+							className="col-md-4 mb-3"
+							maxLength={400}
+						/>
+						<InputField
+							type="textarea"
+							validation={validation}
+							fieldId={"prj_location_description_en"}
+							isRequired={false}
+							className="col-md-4 mb-3"
 							maxLength={400}
 						/>
 						<InputField
@@ -249,10 +280,20 @@ const ProjectFormModal = ({
 							fieldId="prj_project_category_id"
 							validation={validation}
 							isRequired
-							className="col-md-4 mb-3"
+							className="col-md-2 mb-3"
 							optionMap={projectCategoryMap}
 							isLoading={prCategoryLoading}
 							isError={prCategoryIsError}
+						/>
+						<AsyncSelectField
+							fieldId="prj_project_status_id"
+							validation={validation}
+							isRequired={true}
+							className="col-md-2 mb-3"
+							optionMap={projectStatusMap}
+							isLoading={isStatusLoading}
+							isError={isStatusError}
+							placeholder={t("select_status")}
 						/>
 						<FormattedAmountField
 							validation={validation}

@@ -50,6 +50,7 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { usePopulateBudgetYears } from "../../queries/budgetyear_query";
 import DatePicker from "../../components/Common/DatePicker";
 import { toEthiopian } from "../../utils/commonMethods.js";
+const ProjectPlanDetailModal = lazy(() => import("./ProjectPlanDetail.jsx"));
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -62,7 +63,8 @@ const LazyLoader = ({ children }) => (
 	<Suspense fallback={<Spinner color="primary" />}>{children}</Suspense>
 );
 
-const ProjectPlanModel = () => {
+const ProjectPlanModel = (props) => {
+	const { totalActualBudget } = props;
 	const location = useLocation();
 	const id = Number(location.pathname.split("/")[2]);
 	const param = { pld_project_id: id, request_type: "single" };
@@ -108,7 +110,13 @@ const ProjectPlanModel = () => {
 			}, {}) || {}
 		);
 	}, [budgetYearData]);
-	//START CRUD
+
+	const [showPlannedModal, setShowPlannedModal] = useState(false);
+
+	const togglePlannedModal = () => {
+		setShowPlannedModal(!showPlannedModal);
+	};
+
 	const handleAddProjectPlan = async (data) => {
 		try {
 			await addProjectPlan.mutateAsync(data);
@@ -398,6 +406,27 @@ const ProjectPlanModel = () => {
 				},
 			},
 			{
+				header: t("view_plan"),
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<Button
+							type="button"
+							color="soft-primary"
+							className="btn-sm"
+							onClick={() => {
+								const data = cellProps.row.original;
+								togglePlannedModal();
+								setTransaction(cellProps.row.original);
+							}}
+						>
+							{t("view_plan")}
+						</Button>
+					);
+				},
+			},
+			{
 				header: t("attach_files"),
 				enableColumnFilter: false,
 				enableSorting: true,
@@ -528,6 +557,14 @@ const ProjectPlanModel = () => {
 						toggle={toggleConvModal}
 						ownerTypeId={PAGE_ID.PROJ_PROJECT_PLAN}
 						ownerId={transaction?.pld_project_id ?? null}
+					/>
+				)}
+				{showPlannedModal && (
+					<ProjectPlanDetailModal
+						isOpen={showPlannedModal}
+						toggle={togglePlannedModal}
+						planId={transaction.pld_id}
+						totalActualBudget={totalActualBudget}
 					/>
 				)}
 			</LazyLoader>

@@ -4,6 +4,7 @@ import authReducer from "./auth/reducer";
 import projectListReducer from "./projectList/projectListReducer";
 import citizenProjectReducer from "./projectList/citizenProjectReducer";
 import citizenProjectListReducer from "./projectList/citizenProjectListReducer";
+import budgetRequestListReducer from "./projectList/budgetRequestReducer";
 
 const rootReducer = combineReducers({
 	Layout,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
 	projectList: projectListReducer,
 	citizenProjectList: citizenProjectListReducer,
 	citizenProject: citizenProjectReducer,
+	budgetRequestList: budgetRequestListReducer,
 });
 
 export default rootReducer;

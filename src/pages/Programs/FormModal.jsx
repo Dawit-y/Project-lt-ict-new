@@ -61,9 +61,14 @@ const FormModal = ({
 	const { t } = useTranslation();
 	const currentLevel = selectedRow?.level;
 	const nextLevel = getNextLevel(currentLevel);
+
 	const addProgramInfo = useAddProgramInfo();
 	const updateProgramInfo = useUpdateProgramInfo();
 	const deleteProgramInfo = useDeleteProgramInfo();
+
+	const isProgramForm =
+		currentLevel === "sector" ||
+		(action === "edit" && currentLevel === "program");
 
 	const handleAddProgramInfo = async (data) => {
 		try {
@@ -129,13 +134,6 @@ const FormModal = ({
 
 	const validationSchema = Yup.object({
 		pri_name_or: Yup.string().required(t("Field is required.")),
-		// .test("unique", t("Already exists"), function (value) {
-		// 	if (action === "add") {
-		// 		return !checkNameExists(data, value);
-		// 	} else {
-		// 		return !checkNameExists(data, value, selectedRow?.id);
-		// 	}
-		// }),
 		pri_name_am: onlyAmharicValidation(3, 200, false),
 		pri_name_en: Yup.string().required(t("Field is required.")),
 		pri_program_code: Yup.string().required(t("Field is required.")),
@@ -145,14 +143,21 @@ const FormModal = ({
 			(currentLevel === "sub_program" && action === "edit")
 				? Yup.date().required(t("Field is required."))
 				: Yup.mixed().notRequired(),
-
 		pri_end_date:
 			currentLevel === "sector" ||
 			currentLevel === "program" ||
 			(currentLevel === "sub_program" && action === "edit")
 				? Yup.date().required(t("Field is required."))
 				: Yup.mixed().notRequired(),
+		pri_outcome_or: isProgramForm
+			? Yup.string().required(t("Field is required."))
+			: Yup.mixed().notRequired(),
+		pri_outcome_am: onlyAmharicValidation(3, 200, false),
+		pri_outcome_en: isProgramForm
+			? Yup.string().required(t("Field is required."))
+			: Yup.mixed().notRequired(),
 	});
+
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
@@ -169,6 +174,12 @@ const FormModal = ({
 			pri_end_date: action === "edit" ? selectedRow?.pri_end_date || "" : "",
 			pri_description:
 				action === "edit" ? selectedRow?.pri_description || "" : "",
+			pri_outcome_or:
+				action === "edit" ? selectedRow?.pri_outcome_or || "" : "",
+			pri_outcome_am:
+				action === "edit" ? selectedRow?.pri_outcome_am || "" : "",
+			pri_outcome_en:
+				action === "edit" ? selectedRow?.pri_outcome_en || "" : "",
 		},
 		validationSchema,
 		onSubmit: (values) => {
@@ -187,6 +198,11 @@ const FormModal = ({
 						currentLevel === "sector"
 							? 1
 							: getNextObjectTypeId(selectedRow?.pri_object_type_id),
+					...(isProgramForm && {
+						pri_outcome_or: values.pri_outcome_or,
+						pri_outcome_am: values.pri_outcome_am,
+						pri_outcome_en: values.pri_outcome_en,
+					}),
 				};
 				handleAddProgramInfo(newProgramInfo);
 			} else if (action === "edit") {
@@ -202,6 +218,11 @@ const FormModal = ({
 					pri_description: values.pri_description,
 					parent_id: selectedRow?.rootId,
 					object_type_id: selectedRow?.pri_object_type_id,
+					...(isProgramForm && {
+						pri_outcome_or: values.pri_outcome_or,
+						pri_outcome_am: values.pri_outcome_am,
+						pri_outcome_en: values.pri_outcome_en,
+					}),
 				};
 				handleUpdateProgramInfo(updateProgramInfo);
 			}
@@ -340,6 +361,93 @@ const FormModal = ({
 										</FormFeedback>
 									) : null}
 								</Col>
+
+								{isProgramForm && (
+									<>
+										<Col className="col-md-6 mb-3">
+											<Label>
+												{t("pri_outcome_or")}
+												<span className="text-danger">*</span>
+											</Label>
+											<Input
+												name="pri_outcome_or"
+												type="text"
+												placeholder={t("pri_outcome_or")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												value={validation.values.pri_outcome_or || ""}
+												invalid={
+													validation.touched.pri_outcome_or &&
+													validation.errors.pri_outcome_or
+														? true
+														: false
+												}
+												maxLength={200}
+											/>
+											{validation.touched.pri_outcome_or &&
+											validation.errors.pri_outcome_or ? (
+												<FormFeedback type="invalid">
+													{validation.errors.pri_outcome_or}
+												</FormFeedback>
+											) : null}
+										</Col>
+										<Col className="col-md-6 mb-3">
+											<Label>
+												{t("pri_outcome_am")}
+												<span className="text-danger">*</span>
+											</Label>
+											<Input
+												name="pri_outcome_am"
+												type="text"
+												placeholder={t("pri_outcome_am")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												value={validation.values.pri_outcome_am || ""}
+												invalid={
+													validation.touched.pri_outcome_am &&
+													validation.errors.pri_outcome_am
+														? true
+														: false
+												}
+												maxLength={200}
+											/>
+											{validation.touched.pri_outcome_am &&
+											validation.errors.pri_outcome_am ? (
+												<FormFeedback type="invalid">
+													{validation.errors.pri_outcome_am}
+												</FormFeedback>
+											) : null}
+										</Col>
+										<Col className="col-md-6 mb-3">
+											<Label>
+												{t("pri_outcome_en")}
+												<span className="text-danger">*</span>
+											</Label>
+											<Input
+												name="pri_outcome_en"
+												type="text"
+												placeholder={t("pri_outcome_en")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												value={validation.values.pri_outcome_en || ""}
+												invalid={
+													validation.touched.pri_outcome_en &&
+													validation.errors.pri_outcome_en
+														? true
+														: false
+												}
+												maxLength={200}
+											/>
+											{validation.touched.pri_outcome_en &&
+											validation.errors.pri_outcome_en ? (
+												<FormFeedback type="invalid">
+													{validation.errors.pri_outcome_en}
+												</FormFeedback>
+											) : null}
+										</Col>
+									</>
+								)}
+
 								{(currentLevel === "sector" ||
 									currentLevel === "program" ||
 									(currentLevel === "sub_program" && action === "edit")) && (

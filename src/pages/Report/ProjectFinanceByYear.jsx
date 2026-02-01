@@ -65,6 +65,7 @@ const BudgetByYearsTable = ({
 			minWidth: 120,
 			group: "budget_by_years",
 			format: "currency",
+			exportWidth: 20,
 		}));
 
 		const totalColumn = {
@@ -73,6 +74,7 @@ const BudgetByYearsTable = ({
 			minWidth: 150,
 			group: "budget_by_years",
 			format: "currency",
+			exportWidth: 30,
 		};
 
 		return [...baseColumns, ...yearColumns, totalColumn];

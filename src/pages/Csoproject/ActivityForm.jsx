@@ -1,17 +1,17 @@
 import React, { useMemo } from "react";
 import {
-  Button,
-  Col,
-  Row,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  Form,
-  Input,
-  FormFeedback,
-  Label,
-  Spinner,
-  Table,
+	Button,
+	Col,
+	Row,
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Form,
+	Input,
+	FormFeedback,
+	Label,
+	Spinner,
+	Table,
 } from "reactstrap";
 import FormattedAmountField from "../../components/Common/FormattedAmountField";
 import InputField from "../../components/Common/InputField";
@@ -19,42 +19,45 @@ import AsyncSelectField from "../../components/Common/AsyncSelectField";
 import { useTranslation } from "react-i18next";
 import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import {
-  createMultiLangKeyValueMap,
-  addMonths,
-  addYears,
+	createMultiLangKeyValueMap,
+	addMonths,
+	addYears,
 } from "../../utils/commonMethods";
 
 const ActivityForm = ({
-  isOpen,
-  toggle,
-  isEdit,
-  activeTabName,
-  validation,
-  isPending,
-  leftBudget,
+	isOpen,
+	toggle,
+	isEdit,
+	activeTabName,
+	validation,
+	isPending,
+	leftBudget,
 }) => {
-  const { t, i18n } = useTranslation();
-  const lang = i18n.language;
-  const {
-    data: projectCategoryData,
-    isLoading: isPctLoading,
-    isError: isPctError,
-  } = useFetchProjectCategorys();
-  const projectCategoryMap = useMemo(() => {
-    return createMultiLangKeyValueMap(
-      projectCategoryData?.data || [],
-      "pct_id",
-      {
-        en: "pct_name_en",
-        am: "pct_name_am",
-        or: "pct_name_or",
-      },
-      lang,
-      (item) => item.pct_owner_type_id === 2,
-    );
-  }, [projectCategoryData, lang]);
+	const { t, i18n } = useTranslation();
+	const lang = i18n.language;
+	const {
+		data: projectCategoryData,
+		isLoading: isPctLoading,
+		isError: isPctError,
+	} = useFetchProjectCategorys();
+	const projectCategoryMap = useMemo(() => {
+		const data = projectCategoryData?.data ?? [];
+		return createMultiLangKeyValueMap(
+			data,
+			"pct_id",
+			{
+				en: "pct_name_en",
+				am: "pct_name_am",
+				or: "pct_name_or",
+			},
+			lang,
+			(item) =>
+				item.pct_owner_type_id === 2 &&
+				(item.pct_id === 48 || item.pct_id === 49),
+		);
+	}, [projectCategoryData?.data, lang]);
 
-  return (
+	return (
 		<Modal centered isOpen={isOpen} toggle={toggle} className="modal-xl">
 			<ModalHeader toggle={toggle} tag="h4">
 				{!!isEdit

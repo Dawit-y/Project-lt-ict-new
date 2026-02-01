@@ -311,10 +311,10 @@ const ProjectPerformanceModel = (props) => {
 							)
 						).reduce((a, b) => a + b, 0);
 
-						if (sum > 100) {
+						if ((sum + convertToNumericValue(this.parent[`prp_physical_baseline`])) > 100) {
 							return this.createError({
 								message: t(
-									`Sum of physical planned values (${sum}%) exceeds 100%`
+									`Sum of physical planned values (${sum+ convertToNumericValue(this.parent[`prp_physical_baseline`])} %) exceeds 100%`
 								),
 							});
 						}
@@ -1103,6 +1103,7 @@ const ProjectPerformanceModel = (props) => {
 									</Col>
 									<Col md={4}>
 										<FormattedAmountField
+											allowDecimal={true}
 											validation={validation}
 											fieldId="prp_physical_baseline"
 											label={t("prp_physical_baseline")}
@@ -1112,11 +1113,11 @@ const ProjectPerformanceModel = (props) => {
 									</Col>
 									<Col md={4}>
 										<FormattedAmountField
+											allowDecimal={true}
 											validation={validation}
 											fieldId="prp_budget_baseline"
 											label={t("prp_budget_baseline")}
 											isRequired={true}
-											allowDecimals={true}
 										/>
 									</Col>
 								</Row>
@@ -1293,6 +1294,7 @@ const ProjectPerformanceModel = (props) => {
 																		{entryMode === "planned" ? (
 																			<>
 																				<FormattedAmountField
+																					allowDecimal={true}
 																					validation={validation}
 																					fieldId={`prp_pyhsical_planned_month_${month}`}
 																					label={t("physical_planned_%")}
@@ -1301,6 +1303,7 @@ const ProjectPerformanceModel = (props) => {
 																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_planned_month_${month}`)}`}
 																				/>
 																				<FormattedAmountField
+																					allowDecimal={true}
 																					validation={validation}
 																					fieldId={`prp_finan_planned_month_${month}`}
 																					label={t("financial_planned")}
@@ -1311,6 +1314,7 @@ const ProjectPerformanceModel = (props) => {
 																		) : (
 																			<>
 																				<FormattedAmountField
+																					allowDecimal={true}
 																					validation={validation}
 																					fieldId={`prp_pyhsical_actual_month_${month}`}
 																					label={t("physical_actual_%")}
@@ -1319,6 +1323,7 @@ const ProjectPerformanceModel = (props) => {
 																					infoText={`${t("Value")}: ${calculatePercentage(`prp_pyhsical_actual_month_${month}`)} , ${t("physical_planned")}: ${projectPerformance[`prp_pyhsical_planned_month_${month}`]}%`}
 																				/>
 																				<FormattedAmountField
+																					allowDecimal={true}
 																					validation={validation}
 																					fieldId={`prp_finan_actual_month_${month}`}
 																					label={t("financial_actual")}

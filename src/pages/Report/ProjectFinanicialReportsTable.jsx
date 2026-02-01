@@ -66,14 +66,12 @@ const FinancialProjectsTable = ({ data = [], exportSearchParams }) => {
 			{
 				id: "start_year",
 				label: t("Start Year"),
-				minWidth: 60,
-				format: "number",
+				minWidth: 60
 			},
 			{
 				id: "end_year",
 				label: t("End Year"),
-				minWidth: 60,
-				format: "number",
+				minWidth: 60
 			},
 			// Physical Performance Group
 			{

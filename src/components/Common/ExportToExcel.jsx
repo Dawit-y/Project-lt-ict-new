@@ -299,62 +299,136 @@ const ExportToExcel = ({
 			currentRow = worksheet.lastRow.number + 1;
 
 			/** ======= DATA ROWS ======= */
-			tableData.forEach((row, idx) => {
-				const rowData = [
-					idx + 1,
-					...leafColumns.map((col) => {
-						const val = row[col.key];
+			const numericColss = leafColumns.filter((c) => c.type === "number");
+let groupIndex = 0;
+tableData.forEach((row, idx) => {
+	const prevRow = tableData[idx - 1];
+	const nextRow = tableData[idx + 1];
 
-						// Handle numeric/percentage types
-						if (col.type === "number") {
-							const num = parseFloat(val?.toString().replace(/,/g, "") || 0);
-							return isNaN(num) ? null : num;
-						}
-						if (col.type === "percentage") {
-							const pct = parseFloat(val?.toString().replace(/%/g, "") || 0);
-							return isNaN(pct) ? null : pct / 100;
-						}
+	const isNewGroup =
+		!prevRow || prevRow[leafColumns[0].key] !== row[leafColumns[0].key];
 
-						return col.format ? col.format(val, row) : (val ?? "");
-					}),
-				];
+	const isEndOfGroup =
+		!nextRow || nextRow[leafColumns[0].key] !== row[leafColumns[0].key];
+		if (isNewGroup) {
+		groupIndex = 1;
+	} else {
+		groupIndex++;
+	}
+	// ================= DATA ROW =================
+	const rowData = [
+		(idx + 1), // column 1 unchanged
+		...leafColumns.map((col, colIdx) => {
+			const val = row[col.key];
 
-				const excelRow = worksheet.addRow(rowData);
-				const rowColor = idx % 2 === 0 ? ROW_COLOR_1 : ROW_COLOR_2;
+			// ✅ hide repeated values ONLY for column 2
+			if (colIdx === 0 && !isNewGroup) {
+				return "";
+			}
 
-				// Apply styling to ALL cells in the data row
-				excelRow.eachCell((cell, colNumber) => {
-					cell.fill = {
-						type: "pattern",
-						pattern: "solid",
-						fgColor: { argb: rowColor },
-					};
-					cell.border = {
-						top: { style: "thin", color: { argb: BORDER_COLOR } },
-						left: { style: "thin", color: { argb: BORDER_COLOR } },
-						bottom: { style: "thin", color: { argb: BORDER_COLOR } },
-						right: { style: "thin", color: { argb: BORDER_COLOR } },
-					};
+			if (col.type === "number") {
+				const num = parseFloat(val?.toString().replace(/,/g, "") || 0);
+				return isNaN(num) ? null : num;
+			}
 
-					if (colNumber === 1) cell.alignment = { horizontal: "center" };
+			if (col.type === "percentage") {
+				const pct = parseFloat(val?.toString().replace(/%/g, "") || 0);
+				return isNaN(pct) ? null : pct / 100;
+			}
 
-					const col = leafColumns[colNumber - 2];
-					if (col?.type === "number") {
-						cell.numFmt = "#,##0.00";
-						cell.alignment = { horizontal: "right" };
-					} else if (col?.type === "percentage") {
-						cell.numFmt = "0.00%";
-						cell.alignment = { horizontal: "right" };
-					}
-				});
-			});
+			return col.format ? col.format(val, row) : (val ?? "");
+		}),
+	];
+
+	const excelRow = worksheet.addRow(rowData);
+	const rowColor = idx % 2 === 0 ? ROW_COLOR_1 : ROW_COLOR_2;
+
+	excelRow.eachCell((cell, colNumber) => {
+		cell.fill = {
+			type: "pattern",
+			pattern: "solid",
+			fgColor: { argb: rowColor },
+		};
+		cell.border = {
+			top: { style: "thin", color: { argb: BORDER_COLOR } },
+			left: { style: "thin", color: { argb: BORDER_COLOR } },
+			bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+			right: { style: "thin", color: { argb: BORDER_COLOR } },
+		};
+
+		if (colNumber === 1) {
+			cell.alignment = { horizontal: "center" };
+		}
+
+		const col = leafColumns[colNumber - 2];
+		if (col?.type === "number") {
+			cell.numFmt = "#,##0.00";
+			cell.alignment = { horizontal: "right" };
+		} else if (col?.type === "percentage") {
+			cell.numFmt = "0.00%";
+			cell.alignment = { horizontal: "right" };
+		}
+	});
+
+	// ================= TOTAL ROW (END OF GROUP) =================
+	if (isEndOfGroup && numericColss.length) {
+	const groupKey = row[leafColumns[0].key];
+
+	const groupRows = tableData.filter(
+		(r) => r[leafColumns[0].key] === groupKey
+	);
+
+	// ✅ only show total if grouped rows > 1
+	if (groupRows.length <= 1) return;
+
+	const totals = [
+		"",         // column 1
+		t("total"), // column 2
+		...leafColumns.slice(1).map((col) => {
+			if (col.type === "number") {
+				return groupRows.reduce((sum, r) => {
+					const num = parseFloat(
+						r[col.key]?.toString().replace(/,/g, "") || 0
+					);
+					return isNaN(num) ? sum : sum + num;
+				}, 0);
+			}
+			return "";
+		}),
+	];
+
+	const totalsRow = worksheet.addRow(totals);
+	totalsRow.font = { bold: true };
+
+	totalsRow.eachCell((cell, colNumber) => {
+		cell.fill = {
+			type: "pattern",
+			pattern: "solid",
+			fgColor: { argb: "FCE4D6" },
+		};
+		cell.border = {
+			top: { style: "thin", color: { argb: BORDER_COLOR } },
+			left: { style: "thin", color: { argb: BORDER_COLOR } },
+			bottom: { style: "thin", color: { argb: BORDER_COLOR } },
+			right: { style: "thin", color: { argb: BORDER_COLOR } },
+		};
+
+		if (colNumber > 1 && leafColumns[colNumber - 2]?.type === "number") {
+			cell.numFmt = "#,##0.00";
+			cell.alignment = { horizontal: "right" };
+		}
+	});
+}
+
+});
 
 			/** ======= TOTALS ======= */
 			const numericCols = leafColumns.filter((c) => c.type === "number");
 			if (numericCols.length) {
 				const totals = [
-					t("total"),
-					...leafColumns.map((col) => {
+					"",              // column 1
+	t("Grand Total"),      // ✅ column 2
+	...leafColumns.slice(1).map((col) => {
 						if (col.type === "number") {
 							return tableData.reduce((sum, r) => {
 								const num = parseFloat(
@@ -387,7 +461,6 @@ const ExportToExcel = ({
 					}
 				});
 			}
-
 			/** ======= FOOTER ======= */
 			worksheet.addRow([]);
 			worksheet.addRow([`${t("prepared_by")}: ________________________`]);
@@ -440,8 +513,8 @@ const ExportToExcel = ({
 				!tableData || !Array.isArray(tableData) || tableData.length === 0
 			}
 		>
-			<FaFileExcel className="me-1" />
-			{t("exportToExcel")}
+			<FaFileExcel className="me-1 mr-2" />
+			Download Excel
 		</Button>
 	);
 };
