@@ -4,49 +4,54 @@ import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 
-const useErrorMessages = () => {
-	const { t } = useTranslation();
-	return {
-		452: t("errors_duplicateEntry"),
-		453: t("errors_missingField"),
-		454: t("errors_invalidReference"),
-		455: t("errors_genericError"),
-		456: t("errors_valueTooLong"),
-		457: t("errors_updateIdNotProvided"),
-		458: t("errors_dataNotFoundWithId"),
-		459: t("errors_notAllowedSave"),
-		460: t("errors_notAllowedUpdate"),
-		461: t("errors_notAllowedViewList"),
-		429: t("Too Many Attempts"),
-		487: t("Incorrect Input"),
-		500: t("Internal Server Error"),
-	};
-};
+const getStatusMessages = () => ({
+	452: i18n.t("errors_duplicateEntry"),
+	453: i18n.t("errors_missingField"),
+	454: i18n.t("errors_invalidReference"),
+	455: i18n.t("errors_genericError"),
+	456: i18n.t("errors_valueTooLong"),
+	457: i18n.t("errors_updateIdNotProvided"),
+	458: i18n.t("errors_dataNotFoundWithId"),
+	459: i18n.t("errors_notAllowedSave"),
+	460: i18n.t("errors_notAllowedUpdate"),
+	461: i18n.t("errors_notAllowedViewList"),
+	429: i18n.t("Too Many Attempts"),
+	487: i18n.t("Incorrect Input"),
+	500: i18n.t("Internal Server Error"),
+});
 
-// Function to extract API error message
-const getErrorMessage = ({ error }) => {
-	const statusMessages = useErrorMessages();
+const getErrorMessage = (error) => {
+	const statusMessages = getStatusMessages();
+
+	// Axios HTTP status
 	if (error?.response?.status) {
-		return `${statusMessages[error?.response?.status]}`;
-	} else if (error?.response?.data) {
-		const { status_code, errorMsg, column } = error.response.data;
-		if (statusMessages[status_code]) {
-			return `${statusMessages[status_code]} ${column ? `on ${column}` : ""}`;
-		}
-		return `${errorMsg} ${column ? `on ${column}` : ""}`;
+		return (
+			statusMessages[error.response.status] || i18n.t("errors_genericError")
+		);
 	}
 
-	return error.message || "An unexpected error occurred.";
+	// Custom backend error payload
+	if (error?.response?.data) {
+		const { status_code, errorMsg, column } = error.response.data;
+
+		if (statusMessages[status_code]) {
+			return `${statusMessages[status_code]}${column ? ` on ${column}` : ""}`;
+		}
+
+		return `${errorMsg || i18n.t("errors_genericError")}${
+			column ? ` on ${column}` : ""
+		}`;
+	}
+
+	return error?.message || i18n.t("errors_genericError");
 };
 
-// Create a Web Storage Persistor
 const localStoragePersistor = createSyncStoragePersister({
 	storage: window.localStorage,
 });
 
-// Create the QueryClient
 const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
@@ -56,20 +61,21 @@ const queryClient = new QueryClient({
 		},
 	},
 	queryCache: new QueryCache({
+		// Optional global query error handling
 		// onError: (error) => {
-		//   const message = getErrorMessage(error);
-		//   toast.error(message);
+		// 	toast.error(getErrorMessage(error));
 		// },
 	}),
 	mutationCache: new MutationCache({
 		onError: (error, variables, context, mutation) => {
 			const skipGlobalError =
-				error.handledByMutationCache ||
-				error.response?.status === 401 ||
-				mutation.options.meta?.skipGlobalErrorHandler;
+				error?.handledByMutationCache ||
+				error?.response?.status === 401 ||
+				mutation?.options?.meta?.skipGlobalErrorHandler;
 
 			if (!skipGlobalError) {
 				error.handledByMutationCache = true;
+
 				const message = getErrorMessage(error);
 				toast.error(message, { autoClose: 3000 });
 			}
