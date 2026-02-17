@@ -318,9 +318,8 @@ const TableContainer = ({
 							<>
 								<Button
 									id="refresh_btn"
-									color="primary"
 									onClick={refetch}
-									outline
+									variant={"outline-primary"}
 									className="rounded-circle p-0 d-flex align-items-center justify-content-center"
 									style={{ width: "30px", height: "30px", fontSize: "14px" }}
 								>
@@ -403,7 +402,7 @@ const TableContainer = ({
 														>
 															{flexRender(
 																header.column.columnDef.header || t(header.id),
-																header.getContext()
+																header.getContext(),
 															)}
 															{/* Add sorting arrows */}
 															{header.column.getCanSort() && (
@@ -472,7 +471,7 @@ const TableContainer = ({
 												<td key={cell.id}>
 													{flexRender(
 														cell.column.columnDef.cell,
-														cell.getContext()
+														cell.getContext(),
 													)}
 												</td>
 											))}
