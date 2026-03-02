@@ -246,14 +246,19 @@ const ReportTable = ({
 		hiddenColumns,
 		grandTotalRow,
 	]);
-
+	const capitalizeWords = (text) =>
+  text
+    .replace(/^W_/, "")
+    .replace(/_/g, " ")
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
 	// Filter export columns based on visibility
 	const visibleExportColumns = useMemo(() => {
 		const baseColumns = columnsConfig
 			.filter((col) => !hiddenColumns.includes(col.id) && !col.group)
 			.map((col) => ({
 				key: col.id,
-				label: col.label,
+				label: capitalizeWords(col.label),
 				width:
 					col.exportWidth ||
 					(col.id === "sector_name" || col.id === "sector_category_name"
@@ -274,13 +279,13 @@ const ReportTable = ({
 				if (!columnGroups[col.group]) {
 					columnGroups[col.group] = {
 						key: col.group,
-						label: t(col.group) || col.group,
+						label: capitalizeWords(t(col.group)) || capitalizeWords(col.group),
 						columns: [],
 					};
 				}
 				columnGroups[col.group].columns.push({
 					key: col.id,
-					label: col.label,
+					label: capitalizeWords(col.label),
 					width: col.exportWidth || 15,
 					type:
 						col.format === "number" || col.format === "currency"

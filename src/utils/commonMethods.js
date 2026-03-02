@@ -246,3 +246,16 @@ export function transformTableName(name) {
 		.replace(/_+/g, "_")
 		.toLowerCase();
 }
+export function matrixToObjects(data) {
+  console.log("fff", data);
+  if (!data?.columns || !data?.rows) {
+    return [];
+  }
+  const { columns, rows } = data;
+  return rows.map(row =>
+    Object.fromEntries(
+      columns.map((col, i) => [col, row[i]])
+    )
+  );
+}
+

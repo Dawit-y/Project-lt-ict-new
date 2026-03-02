@@ -1088,7 +1088,7 @@ const BudgetRequestModel = (props) => {
 												<FormattedAmountField
 													validation={validation}
 													fieldId={"bdr_physical_baseline"}
-													label={`${t("bdr_physical_baseline")} ${t("upto")} ${yearLabels.currentYear} ${t("in_percent")}`}
+													label={`${t("bdr_physical_baseline")} ${t("upto")} ${yearLabels.previousYear} ${t("in_percent")}`}
 													isRequired={true}
 													className="col-md-12 mb-3"
 													allowDecimal={true}
@@ -1096,7 +1096,7 @@ const BudgetRequestModel = (props) => {
 												<FormattedAmountField
 													validation={validation}
 													fieldId={"bdr_financial_baseline"}
-													label={`${t("bdr_financial_baseline")} ${t("upto")} ${yearLabels.currentYear}`}
+													label={`${t("bdr_financial_baseline")} ${t("upto")} ${yearLabels.previousYear}`}
 													isRequired={true}
 													className="col-md-12 mb-3"
 													allowDecimal={true}
