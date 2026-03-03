@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import ReportTable from "./ReportTable";
 import { useTranslation } from "react-i18next";
-
+import { matrixToObjects } from "../../utils/commonMethods";
 const FinancialProjectsTable = ({ data = [], exportSearchParams }) => {
-	const { t } = useTranslation();
-
+const { t } = useTranslation();
+const formattedData= matrixToObjects(data[0]);
 	const columnsConfig = useMemo(
 		() => [
 			{
@@ -26,8 +26,7 @@ const FinancialProjectsTable = ({ data = [], exportSearchParams }) => {
 			{
 				id: "prj_measured_figure",
 				label: t("Measured Figure"),
-				minWidth: 80,
-				format: "number",
+				minWidth: 80
 			},
 			{
 				id: "prj_status",
@@ -199,7 +198,7 @@ const FinancialProjectsTable = ({ data = [], exportSearchParams }) => {
 
 	return (
 		<ReportTable
-			data={data}
+			data={formattedData}
 			columnsConfig={columnsConfig}
 			groupBy="sector"
 			headerStructure="grouped"
