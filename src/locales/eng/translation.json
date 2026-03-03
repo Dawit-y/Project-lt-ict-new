@@ -2133,5 +2133,11 @@
 	"programs": "Programs",
 	"pri_outcome_or": "Outcome in Oromo",
 	"pri_outcome_am": "Outcome in Amharic",
-	"pri_outcome_en": "Outcome in English"
+	"pri_outcome_en": "Outcome in English",
+	"rpt_name": "Report Name",
+	"rpt_project_id": "Project ID",
+	"rpt_type_id": "Report Type",
+	"rpt_report_date": "Report Date",
+	"rpt_description": "Description",
+	"select_report_type": "Select Report Type"
 }

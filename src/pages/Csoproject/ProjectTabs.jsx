@@ -38,6 +38,7 @@ const AgGridContainer = lazy(
 const BudgetRequestRegistration = lazy(
 	() => import("../Csobudgetrequest/BudgetRequestRegistration"),
 );
+const CSOReport = lazy(() => import("../CsoReport"));
 import {
 	useCsoProjectExportColumns,
 	useCsoActivityExportColumns,
@@ -436,7 +437,7 @@ const ProjectTabs = ({
 									<Button
 										color="primary"
 										onClick={() => toggleTab(activeTab + 1)}
-										disabled={isNextButtonDisabled() || activeTab === 3}
+										disabled={isNextButtonDisabled() || activeTab === 4}
 									>
 										Next
 									</Button>
@@ -480,6 +481,19 @@ const ProjectTabs = ({
 										<InfoItem
 											number={3}
 											title={t("Proposed Requests")}
+											subtitle={programName && `For Project ${programName}`}
+										/>
+									</NavLink>
+								</NavItem>
+								<NavItem className={classnames({ current: activeTab === 4 })}>
+									<NavLink
+										className={classnames({ active: activeTab === 4 })}
+										onClick={() => setActiveTab(4)}
+										disabled={!passedSteps.includes(4)}
+									>
+										<InfoItem
+											number={3}
+											title={t("CSO Reports")}
 											subtitle={programName && `For Project ${programName}`}
 										/>
 									</NavLink>
@@ -542,6 +556,14 @@ const ProjectTabs = ({
 											projectStatus={selectedProject?.prj_project_status_id}
 											projectId={selectedProject?.prj_id}
 											isActive={activeTab === 3}
+										/>
+									</Suspense>
+								</TabPane>
+								<TabPane tabId={4}>
+									<Suspense fallback={<Spinners />}>
+										<CSOReport
+											projectId={selectedProject?.prj_id}
+											isActive={activeTab === 4}
 										/>
 									</Suspense>
 								</TabPane>
