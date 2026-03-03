@@ -318,8 +318,9 @@ const TableContainer = ({
 							<>
 								<Button
 									id="refresh_btn"
+									color="primary"
 									onClick={refetch}
-									variant={"outline-primary"}
+									outline
 									className="rounded-circle p-0 d-flex align-items-center justify-content-center"
 									style={{ width: "30px", height: "30px", fontSize: "14px" }}
 								>
