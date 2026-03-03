@@ -3,23 +3,27 @@ import { Navigate } from "react-router-dom";
 
 const Dashboard = lazy(() => import("../pages/Dashboard/index"));
 const Login = lazy(() => import("../pages/Authentication/Login"));
-const ResetPassword = lazy(() => import("../pages/Authentication/ResetPassword.jsx"));
-const ResetPasswordForm = lazy(() => import("../pages/Authentication/ResetPasswordForm.jsx"));
+const ResetPassword = lazy(
+	() => import("../pages/Authentication/ResetPassword.jsx"),
+);
+const ResetPasswordForm = lazy(
+	() => import("../pages/Authentication/ResetPasswordForm.jsx"),
+);
 
 const UsersProfile = lazy(() => import("../pages/Profile"));
 const ProjectPaymentList = lazy(
-  () => import("../pages/Projectpayment/ProjectPaymentList"),
+	() => import("../pages/Projectpayment/ProjectPaymentList"),
 );
 const Logout = lazy(() => import("../pages/Authentication/Logout"));
 
 const AddressStructure = lazy(
-  () => import("../pages/AddressTreeStructure/index.jsx"),
+	() => import("../pages/AddressTreeStructure/index.jsx"),
 );
 const DocumentType = lazy(() => import("../pages/Documenttype/index"));
 const Project = lazy(() => import("../pages/Project/index"));
 const ProjectCategory = lazy(() => import("../pages/Projectcategory/index"));
 const ProjectContractor = lazy(
-  () => import("../pages/Projectcontractor/index"),
+	() => import("../pages/Projectcontractor/index"),
 );
 const ProjectDocument = lazy(() => import("../pages/Projectdocument/index"));
 const ProjectPayment = lazy(() => import("../pages/Projectpayment/index"));
@@ -35,45 +39,51 @@ const CSOInformation = lazy(() => import("../pages/Csoinfo/index"));
 const CSOProject = lazy(() => import("../pages/Csoproject/index.jsx"));
 const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
 const CSOProjectDetail = lazy(
-  () => import("../pages/Csoproject/ProjectDetail/index.jsx"),
+	() => import("../pages/Csoproject/ProjectDetail/index.jsx"),
 );
-const CSOBudgetRequestListModel = lazy(
-  () => import("../pages/Csobudgetrequest/BudgetRequestList.jsx"),
+const ApproverProposedRequestList = lazy(
+	() =>
+		import(
+			"../pages/Csobudgetrequest/ApproverSide/ApproverProposedRequestList.jsx"
+		),
+);
+const ApproverProposedRequestDetail = lazy(
+	() => import("../pages/Csobudgetrequest/ApproverSide/Detail/index.jsx"),
 );
 const CSOApproverBudgetRequestList = lazy(
-  () => import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx"),
+	() => import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx"),
 );
 const CsoProposalRequestList = lazy(
-  () => import("../pages/Csobudgetrequest/ProposalRequestList.jsx"),
+	() => import("../pages/Csobudgetrequest/ProposalRequestList.jsx"),
 );
 
 const SectorInformation = lazy(
-  () => import("../pages/Sectorinformation/index"),
+	() => import("../pages/Sectorinformation/index"),
 );
 const ProjectStakeholder = lazy(
-  () => import("../pages/Projectstakeholder/index"),
+	() => import("../pages/Projectstakeholder/index"),
 );
 const StakeholderType = lazy(() => import("../pages/Stakeholdertype/index"));
 const Department = lazy(() => import("../pages/Department/index"));
 const BudgetRequestListModel = lazy(
-  () => import("../pages/Budgetrequest/BudgetRequestList"),
+	() => import("../pages/Budgetrequest/BudgetRequestList"),
 );
 const ApproverBudgetRequestList = lazy(
-  () =>
-    import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx"),
+	() =>
+		import("../pages/Budgetrequest/ApproverSide/ApproverBudgetRequestList.jsx"),
 );
 const ApproverBudgetRequestDetail = lazy(
-  () => import("../pages/Budgetrequest/ApproverSide/Detail/index.jsx"),
+	() => import("../pages/Budgetrequest/ApproverSide/Detail/index.jsx"),
 );
 const RecommendedApprovalList = lazy(
-  () =>
-    import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx"),
+	() =>
+		import("../pages/Budgetrequest/ApproverSide/RecommendedApprovalList.jsx"),
 );
 const BudgetRequest = lazy(() => import("../pages/Budgetrequest/index"));
 const BudgetSource = lazy(() => import("../pages/Budgetsource/index"));
 const BudgetYear = lazy(() => import("../pages/Budgetyear/index"));
 const ContractTerminationReason = lazy(
-  () => import("../pages/Contractterminationreason/index"),
+	() => import("../pages/Contractterminationreason/index"),
 );
 const ContractorType = lazy(() => import("../pages/Contractortype/index"));
 const AccessLog = lazy(() => import("../pages/Accesslog/index"));
@@ -84,62 +94,62 @@ const StatisticalReport = lazy(() => import("../pages/StatisticalReport"));
 const Report = lazy(() => import("../pages/Report/index"));
 const ExpenditureCode = lazy(() => import("../pages/Expenditurecode/index"));
 const ProjectBudgetExpenditure = lazy(
-  () => import("../pages/Projectbudgetexpenditure/index"),
+	() => import("../pages/Projectbudgetexpenditure/index"),
 );
 const ProjectEmployee = lazy(() => import("../pages/Projectemployee/index"));
 const ProjectHandover = lazy(() => import("../pages/Projecthandover/index"));
 const ProjectPerformance = lazy(
-  () => import("../pages/Projectperformance/index"),
+	() => import("../pages/Projectperformance/index"),
 );
 const ProjectList = lazy(() => import("../pages/Project/ProjectList"));
 
 const ProjectPerformanceList = lazy(
-  () => import("../pages/Projectperformance/ProjectPerformanceList"),
+	() => import("../pages/Projectperformance/ProjectPerformanceList"),
 );
 const ProjectHandoverList = lazy(
-  () => import("../pages/Projecthandover/ProjectHandoverList"),
+	() => import("../pages/Projecthandover/ProjectHandoverList"),
 );
 const ProjectBudgetExpenditureList = lazy(
-  () =>
-    import("../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList"),
+	() =>
+		import("../pages/Projectbudgetexpenditure/ProjectBudgetExpenditureList"),
 );
 const ProjectBudgetSourceList = lazy(
-  () => import("../pages/Projectbudgetsource/ProjectBudgetSourceList"),
+	() => import("../pages/Projectbudgetsource/ProjectBudgetSourceList"),
 );
 const ProjectVariationList = lazy(
-  () => import("../pages/Projectvariation/ProjectVariationList"),
+	() => import("../pages/Projectvariation/ProjectVariationList"),
 );
 const ProjectSupplimentaryList = lazy(
-  () => import("../pages/Projectsupplimentary/ProjectSupplimentaryList"),
+	() => import("../pages/Projectsupplimentary/ProjectSupplimentaryList"),
 );
 const ProjectDocumentList = lazy(
-  () => import("../pages/Projectdocument/ProjectDocumentList"),
+	() => import("../pages/Projectdocument/ProjectDocumentList"),
 );
 const ProjectEmployeeList = lazy(
-  () => import("../pages/Projectemployee/ProjectEmployeeList"),
+	() => import("../pages/Projectemployee/ProjectEmployeeList"),
 );
 const ProjectStakeholderList = lazy(
-  () => import("../pages/Projectstakeholder/ProjectStakeholderList"),
+	() => import("../pages/Projectstakeholder/ProjectStakeholderList"),
 );
 const ProjectContractorList = lazy(
-  () => import("../pages/Projectcontractor/ProjectContractorList"),
+	() => import("../pages/Projectcontractor/ProjectContractorList"),
 );
 const ProjectBudgetPlanList = lazy(
-  () => import("../pages/Projectbudgetplan/ProjectBudgetPlanList"),
+	() => import("../pages/Projectbudgetplan/ProjectBudgetPlanList"),
 );
 const ProjectBudgetPlan = lazy(
-  () => import("../pages/Projectbudgetplan/index"),
+	() => import("../pages/Projectbudgetplan/index"),
 );
 const ProjectPlanList = lazy(
-  () => import("../pages/Projectplan/ProjectPlanList"),
+	() => import("../pages/Projectplan/ProjectPlanList"),
 );
 const BudgetMonth = lazy(() => import("../pages/Budgetmonth/index"));
 const ProjectPlan = lazy(() => import("../pages/Projectplan/index"));
 const ProjectSupplimentary = lazy(
-  () => import("../pages/Projectsupplimentary/index"),
+	() => import("../pages/Projectsupplimentary/index"),
 );
 const SupersetDashboard = lazy(
-  () => import("../pages/Dashboard/SupersetDashboard"),
+	() => import("../pages/Dashboard/SupersetDashboard"),
 );
 const ProjectVariation = lazy(() => import("../pages/Projectvariation/index"));
 const EmailInformation = lazy(() => import("../pages/Emailinformation/index"));
@@ -147,70 +157,70 @@ const EmailTemplate = lazy(() => import("../pages/Emailtemplate/index"));
 const SmsInformation = lazy(() => import("../pages/Smsinformation/index"));
 const SmsTemplate = lazy(() => import("../pages/Smstemplate/index"));
 const BudgetRequestAmount = lazy(
-  () => import("../pages/Budgetrequestamount/index"),
+	() => import("../pages/Budgetrequestamount/index"),
 );
 const BudgetRequestTask = lazy(
-  () => import("../pages/Budgetrequesttask/index"),
+	() => import("../pages/Budgetrequesttask/index"),
 );
 const BudgetExSource = lazy(() => import("../pages/Budgetexsource/index"));
 const BudgetExipDetail = lazy(() => import("../pages/Budgetexipdetail/index"));
 const PaymentCategory = lazy(() => import("../pages/Paymentcategory/index"));
 
 const ConversationInformation = lazy(
-  () => import("../pages/Conversationinformation/index"),
+	() => import("../pages/Conversationinformation/index"),
 );
 const RequestInformation = lazy(
-  () => import("../pages/Requestinformation/index"),
+	() => import("../pages/Requestinformation/index"),
 );
 const RequestStatus = lazy(() => import("../pages/Requeststatus/index"));
 const ProposalRequest = lazy(() => import("../pages/Proposalrequest/index"));
 const RequestCategory = lazy(() => import("../pages/Requestcategory/index"));
 
 const ConversationInformationList = lazy(
-  () => import("../pages/Conversationinformation/ConversationInformationList"),
+	() => import("../pages/Conversationinformation/ConversationInformationList"),
 );
 const RequestInformationList = lazy(
-  () => import("../pages/Requestinformation/RequestInformationList"),
+	() => import("../pages/Requestinformation/RequestInformationList"),
 );
 const ProposalRequestList = lazy(
-  () => import("../pages/Proposalrequest/ProposalRequestList"),
+	() => import("../pages/Proposalrequest/ProposalRequestList"),
 );
 const SupersetListReport = lazy(
-  () => import("../pages/Report/SupersetListReport"),
+	() => import("../pages/Report/SupersetListReport"),
 );
 const CitizenshipProject = lazy(
-  () => import("../pages/Citizenshipproject/index.jsx"),
+	() => import("../pages/Citizenshipproject/index.jsx"),
 );
 const CitizenshipProjectList = lazy(
-  () => import("../pages/Citizenshipproject/ProjectList.jsx"),
+	() => import("../pages/Citizenshipproject/ProjectList.jsx"),
 );
 const CitizenshipProjectDetail = lazy(
-  () => import("../pages/Citizenshipproject/ProjectDetail/index.jsx"),
+	() => import("../pages/Citizenshipproject/ProjectDetail/index.jsx"),
 );
 const ProcurementinformationList = lazy(
-  () => import("../pages/Procurementinformation/ProcurementInformationList"),
+	() => import("../pages/Procurementinformation/ProcurementInformationList"),
 );
 const ProcurementInformation = lazy(
-  () => import("../pages/Procurementinformation/index"),
+	() => import("../pages/Procurementinformation/index"),
 );
 const ProcurementMethod = lazy(
-  () => import("../pages/Procurementmethod/index"),
+	() => import("../pages/Procurementmethod/index"),
 );
 const ProcurementParticipant = lazy(
-  () => import("../pages/Procurementparticipant/index"),
+	() => import("../pages/Procurementparticipant/index"),
 );
 const ProcurementStage = lazy(() => import("../pages/Procurementstage/index"));
 const MonitoringEvaluationType = lazy(
-  () => import("../pages/Monitoringevaluationtype/index"),
+	() => import("../pages/Monitoringevaluationtype/index"),
 );
 const ProjectMonitoringEvaluationList = lazy(
 	() =>
 		import(
 			"../pages/Projectmonitoringevaluation/ProjectMonitoringEvaluationList"
-		)
+		),
 );
 const ProjectEvaluationList = lazy(
-	() => import("../pages/Projectevaluation/ProjectEvaluationList")
+	() => import("../pages/Projectevaluation/ProjectEvaluationList"),
 );
 const Programs = lazy(() => import("../pages/Programs"));
 const ProjectComponent = lazy(() => import("../pages/Projectcomponent/index"));
@@ -238,7 +248,11 @@ const authProtectedRoutes = [
 	{ path: "/project_cso", component: <CSOProject /> },
 	{ path: "/project_cso_list", component: <CSOProjectList /> },
 	{ path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
-	{ path: "/cso_proposal_request", component: <CSOBudgetRequestListModel /> },
+	{ path: "/cso_proposal_request", component: <ApproverProposedRequestList /> },
+	{
+		path: "/cso_proposal_request/:id",
+		component: <ApproverProposedRequestDetail />,
+	},
 	{
 		path: "/cso_proposal_request_approval",
 		component: <CSOApproverBudgetRequestList />,
@@ -368,10 +382,10 @@ const authProtectedRoutes = [
 ];
 
 const publicRoutes = [
-  { path: "/logout", component: <Logout /> },
-  { path: "/login", component: <Login /> },
-  { path: "/forgot_password", component: <ResetPassword /> },
-  { path: "/reset_password", component: <ResetPasswordForm /> },
+	{ path: "/logout", component: <Logout /> },
+	{ path: "/login", component: <Login /> },
+	{ path: "/forgot_password", component: <ResetPassword /> },
+	{ path: "/reset_password", component: <ResetPasswordForm /> },
 ];
 
 export { authProtectedRoutes, publicRoutes };

@@ -33,10 +33,10 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const AgGridContainer = lazy(
-	() => import("../../components/Common/AgGridContainer")
+	() => import("../../components/Common/AgGridContainer"),
 );
 const BudgetRequestRegistration = lazy(
-	() => import("../Csobudgetrequest/BudgetRequestRegistration")
+	() => import("../Csobudgetrequest/BudgetRequestRegistration"),
 );
 import {
 	useCsoProjectExportColumns,
@@ -70,7 +70,7 @@ const ProjectTabs = ({
 	const isValidParam =
 		Object.keys(param).length > 0 &&
 		Object.values(param).every(
-			(value) => value !== null && value !== undefined
+			(value) => value !== null && value !== undefined,
 		);
 	const { data, isLoading, isFetching, isError, error, refetch } =
 		useFindProjects(param, isValidParam, userId);
@@ -94,7 +94,7 @@ const ProjectTabs = ({
 				}
 			}
 		},
-		[activeTab]
+		[activeTab],
 	);
 
 	const isNextButtonDisabled = useCallback(() => {
@@ -115,7 +115,7 @@ const ProjectTabs = ({
 				am: "pct_name_am",
 				or: "pct_name_or",
 			},
-			lang
+			lang,
 		);
 	}, [projectCategoryData, lang]);
 
@@ -556,6 +556,13 @@ const ProjectTabs = ({
 
 export default ProjectTabs;
 
+const truncateText = (text, maxLength) => {
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
 export const InfoItem = ({ number, title, subtitle }) => {
 	return (
 		<div className="d-flex align-items-center justify-content-start">
@@ -565,7 +572,7 @@ export const InfoItem = ({ number, title, subtitle }) => {
 					{title}
 				</h6>
 				<p className="mb-0 small" style={{ lineHeight: "1.2" }}>
-					{subtitle}
+					{truncateText(subtitle, 50)}
 				</p>
 			</div>
 		</div>

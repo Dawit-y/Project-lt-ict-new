@@ -74,6 +74,16 @@ const AuthMiddleware = ({ children }) => {
 		allowedPaths.push("/budget_request_approval/:id");
 	}
 
+	const isProposedRequestPath = (path) => {
+		const proposedRequestRegex =
+			/^\/cso_proposal_request\/\d+(\/\w+)?(#\w+)?$/i;
+		return proposedRequestRegex.test(path);
+	};
+
+	if (isProposedRequestPath(currentPath)) {
+		allowedPaths.push("/cso_proposal_request/:id");
+	}
+
 	const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
 
 	useEffect(() => {
@@ -138,7 +148,8 @@ const AuthMiddleware = ({ children }) => {
 	if (
 		!authPaths.includes(currentPath) &&
 		!isAnyProjectPath(currentPath) &&
-		!isBudgetRequestApprovalPath(currentPath)
+		!isBudgetRequestApprovalPath(currentPath) &&
+		!isProposedRequestPath(currentPath)
 	) {
 		return <Navigate to="/not_found" />;
 	}
@@ -146,7 +157,8 @@ const AuthMiddleware = ({ children }) => {
 	if (
 		!allowedPaths.includes(currentPath) &&
 		!isAnyProjectPath(currentPath) &&
-		!isBudgetRequestApprovalPath(currentPath)
+		!isBudgetRequestApprovalPath(currentPath) &&
+		!isProposedRequestPath(currentPath)
 	) {
 		return <Navigate to="/unauthorized" />;
 	}
