@@ -403,7 +403,7 @@ const TableContainer = ({
 														>
 															{flexRender(
 																header.column.columnDef.header || t(header.id),
-																header.getContext()
+																header.getContext(),
 															)}
 															{/* Add sorting arrows */}
 															{header.column.getCanSort() && (
@@ -472,7 +472,7 @@ const TableContainer = ({
 												<td key={cell.id}>
 													{flexRender(
 														cell.column.columnDef.cell,
-														cell.getContext()
+														cell.getContext(),
 													)}
 												</td>
 											))}

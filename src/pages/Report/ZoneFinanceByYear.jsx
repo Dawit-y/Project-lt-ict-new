@@ -241,7 +241,7 @@ const ZoneBudgetByYearsTable = ({
 			});
 
 			// Add total row
-			if (calculatedTotals.grand_total) {
+			/*if (calculatedTotals.grand_total) {
 				const totalRow = {
 					zone_name: translation("Total"),
 				};
@@ -260,7 +260,7 @@ const ZoneBudgetByYearsTable = ({
 				totalRow["total_percent"] = 100;
 
 				exportRows.push(totalRow);
-			}
+			}*/
 
 			return exportRows;
 		};

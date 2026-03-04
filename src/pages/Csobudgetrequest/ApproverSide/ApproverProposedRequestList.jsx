@@ -1,30 +1,23 @@
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import Breadcrumbs from "../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../../components/Common/Breadcrumb";
 import { useTranslation } from "react-i18next";
-import {
-	Button,
-	Col,
-	Row,
-	UncontrolledTooltip,
-	Input,
-	Badge,
-} from "reactstrap";
-import { FaPaperclip, FaPenSquare, FaEye, FaCog } from "react-icons/fa";
-import AgGridContainer from "../../components/Common/AgGridContainer";
-import { useSearchBudgetRequests } from "../../queries/cso_budget_request_query";
-import { useFetchBudgetYears } from "../../queries/budgetyear_query";
-import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
-import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
-import AdvancedSearch from "../../components/Common/AdvancedSearch";
-import SearchTableContainer from "../../components/Common/SearchTableContainer";
-import TreeForLists from "../../components/Common/TreeForLists2";
-import AttachFileModal from "../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
-import { PAGE_ID } from "../../constants/constantFile";
-import BudgetRequestModal from "./BudgetRequestModal";
-import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
-import { budgetRequestExportColumns } from "../../utils/exportColumnsForLists";
+import { Button, UncontrolledTooltip, Badge } from "reactstrap";
+import { FaPaperclip, FaPenSquare, FaGavel } from "react-icons/fa";
+import AgGridContainer from "../../../components/Common/AgGridContainer";
+import { useSearchBudgetRequests } from "../../../queries/cso_budget_request_query";
+import { useFetchBudgetYears } from "../../../queries/budgetyear_query";
+import { useFetchRequestCategorys } from "../../../queries/requestcategory_query";
+import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
+import AdvancedSearch from "../../../components/Common/AdvancedSearch";
+import SearchTableContainer from "../../../components/Common/SearchTableContainer";
+import TreeForLists from "../../../components/Common/TreeForLists2";
+import AttachFileModal from "../../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../../pages/Conversationinformation/ConvInfoModal";
+import { PAGE_ID } from "../../../constants/constantFile";
+import { createMultiLangKeyValueMap } from "../../../utils/commonMethods";
+import { budgetRequestExportColumns } from "../../../utils/exportColumnsForLists";
+import { Link } from "react-router-dom";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -33,10 +26,9 @@ const truncateText = (text, maxLength) => {
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const BudgetRequestListModel = () => {
+const ApproverProposedRequestList = () => {
 	document.title = "Proposed Request List";
 	const { t, i18n } = useTranslation();
-	const [modal1, setModal1] = useState(false);
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
 
@@ -141,7 +133,6 @@ const BudgetRequestListModel = () => {
 	};
 
 	// Toggle modals
-	const toggleViewModal = () => setModal1(!modal1);
 	const toggleFileModal = () => setFileModal(!fileModal);
 	const toggleConvModal = () => setConvModal(!convModal);
 
@@ -273,22 +264,18 @@ const BudgetRequestListModel = () => {
 
 					return (
 						<div className="d-flex gap-1">
-							{/* View Details Button */}
 							<Button
-								id={`view-${data.bdr_id}`}
+								tag={Link}
+								to={`/cso_proposal_request/${data.bdr_id}`}
+								id={`takeAction-${data.bdr_id}`}
 								color="light"
 								size="sm"
-								onClick={() => {
-									toggleViewModal();
-									setTransaction(data);
-								}}
 							>
-								<FaEye />
+								<FaGavel />
 							</Button>
-							<UncontrolledTooltip target={`view-${data.bdr_id}`}>
-								{t("view_detail")}
+							<UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
+								{t("take_action")}
 							</UncontrolledTooltip>
-
 							{/* Attach Files Button */}
 							<Button
 								id={`attach-${data.bdr_id}`}
@@ -330,12 +317,6 @@ const BudgetRequestListModel = () => {
 
 	return (
 		<React.Fragment>
-			{/* Modals */}
-			<BudgetRequestModal
-				isOpen={modal1}
-				toggle={toggleViewModal}
-				transaction={transaction}
-			/>
 			<AttachFileModal
 				isOpen={fileModal}
 				toggle={toggleFileModal}
@@ -444,8 +425,8 @@ const BudgetRequestListModel = () => {
 	);
 };
 
-BudgetRequestListModel.propTypes = {
+ApproverProposedRequestList.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
 
-export default BudgetRequestListModel;
+export default ApproverProposedRequestList;

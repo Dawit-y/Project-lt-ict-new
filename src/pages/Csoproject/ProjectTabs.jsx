@@ -33,11 +33,12 @@ import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import Spinners from "../../components/Common/Spinner";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const AgGridContainer = lazy(
-	() => import("../../components/Common/AgGridContainer")
+	() => import("../../components/Common/AgGridContainer"),
 );
 const BudgetRequestRegistration = lazy(
-	() => import("../Csobudgetrequest/BudgetRequestRegistration")
+	() => import("../Csobudgetrequest/BudgetRequestRegistration"),
 );
+const CSOReport = lazy(() => import("../CsoReport"));
 import {
 	useCsoProjectExportColumns,
 	useCsoActivityExportColumns,
@@ -70,7 +71,7 @@ const ProjectTabs = ({
 	const isValidParam =
 		Object.keys(param).length > 0 &&
 		Object.values(param).every(
-			(value) => value !== null && value !== undefined
+			(value) => value !== null && value !== undefined,
 		);
 	const { data, isLoading, isFetching, isError, error, refetch } =
 		useFindProjects(param, isValidParam, userId);
@@ -94,7 +95,7 @@ const ProjectTabs = ({
 				}
 			}
 		},
-		[activeTab]
+		[activeTab],
 	);
 
 	const isNextButtonDisabled = useCallback(() => {
@@ -115,7 +116,7 @@ const ProjectTabs = ({
 				am: "pct_name_am",
 				or: "pct_name_or",
 			},
-			lang
+			lang,
 		);
 	}, [projectCategoryData, lang]);
 
@@ -436,7 +437,7 @@ const ProjectTabs = ({
 									<Button
 										color="primary"
 										onClick={() => toggleTab(activeTab + 1)}
-										disabled={isNextButtonDisabled() || activeTab === 3}
+										disabled={isNextButtonDisabled() || activeTab === 4}
 									>
 										Next
 									</Button>
@@ -480,6 +481,19 @@ const ProjectTabs = ({
 										<InfoItem
 											number={3}
 											title={t("Proposed Requests")}
+											subtitle={programName && `For Project ${programName}`}
+										/>
+									</NavLink>
+								</NavItem>
+								<NavItem className={classnames({ current: activeTab === 4 })}>
+									<NavLink
+										className={classnames({ active: activeTab === 4 })}
+										onClick={() => setActiveTab(4)}
+										disabled={!passedSteps.includes(4)}
+									>
+										<InfoItem
+											number={3}
+											title={t("CSO Reports")}
 											subtitle={programName && `For Project ${programName}`}
 										/>
 									</NavLink>
@@ -545,6 +559,14 @@ const ProjectTabs = ({
 										/>
 									</Suspense>
 								</TabPane>
+								<TabPane tabId={4}>
+									<Suspense fallback={<Spinners />}>
+										<CSOReport
+											projectId={selectedProject?.prj_id}
+											isActive={activeTab === 4}
+										/>
+									</Suspense>
+								</TabPane>
 							</TabContent>
 						</div>
 					</div>
@@ -556,6 +578,13 @@ const ProjectTabs = ({
 
 export default ProjectTabs;
 
+const truncateText = (text, maxLength) => {
+	if (typeof text !== "string") {
+		return text;
+	}
+	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
+};
+
 export const InfoItem = ({ number, title, subtitle }) => {
 	return (
 		<div className="d-flex align-items-center justify-content-start">
@@ -565,7 +594,7 @@ export const InfoItem = ({ number, title, subtitle }) => {
 					{title}
 				</h6>
 				<p className="mb-0 small" style={{ lineHeight: "1.2" }}>
-					{subtitle}
+					{truncateText(subtitle, 50)}
 				</p>
 			</div>
 		</div>

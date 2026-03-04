@@ -31,11 +31,12 @@ import { useFetchProjectCategorys } from "../../queries/projectcategory_query";
 import FetchErrorHandler from "../../components/Common/FetchErrorHandler";
 import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
 const AgGridContainer = lazy(
-	() => import("../../components/Common/AgGridContainer")
+	() => import("../../components/Common/AgGridContainer"),
 );
 const BudgetRequestRegistration = lazy(
-	() => import("../Csobudgetrequest/BudgetRequestRegistration")
+	() => import("../Csobudgetrequest/BudgetRequestRegistration"),
 );
+const CSOReport = lazy(() => import("../CsoReport"));
 import { useFetchCsoInfos } from "../../queries/csoinfo_query";
 import { InfoItem } from "./ProjectTabs";
 import Spinners from "../../components/Common/Spinner";
@@ -62,7 +63,7 @@ const ProjectTabs = ({
 
 	const csoExportColumns = useCsoExportColumns();
 	const csoProjectExportColumns = useCsoProjectExportColumns();
-	const csoActivityExportColumns = useCsoActivityExportColumns()
+	const csoActivityExportColumns = useCsoActivityExportColumns();
 
 	const programName = selectedProject?.prj_name;
 	useEffect(() => {
@@ -86,7 +87,7 @@ const ProjectTabs = ({
 	const isValidProjectParam =
 		Object.keys(projectParam).length > 0 &&
 		Object.values(projectParam).every(
-			(value) => value !== null && value !== undefined
+			(value) => value !== null && value !== undefined,
 		);
 	const {
 		data: projects,
@@ -101,12 +102,12 @@ const ProjectTabs = ({
 	const isValidParam =
 		Object.keys(param).length > 0 &&
 		Object.values(param).every(
-			(value) => value !== null && value !== undefined
+			(value) => value !== null && value !== undefined,
 		);
 	const { data, isLoading, isError, error, refetch } = useFindProjects(
 		param,
 		isValidParam,
-		userId
+		userId,
 	);
 
 	useEffect(() => {
@@ -123,19 +124,19 @@ const ProjectTabs = ({
 		(tab) => {
 			if (activeTab !== tab) {
 				setPassedSteps((prevSteps) => [...prevSteps, tab]);
-				if (tab >= 1 && tab <= 4) {
+				if (tab >= 1 && tab <= 5) {
 					setActiveTab(tab);
 					handleTabChange(tab, selectedProject?.prj_id, selectedCsoId);
 				}
 			}
 		},
-		[activeTab, selectedProject?.prj_id, selectedCsoId, handleTabChange]
+		[activeTab, selectedProject?.prj_id, selectedCsoId, handleTabChange],
 	);
 
 	const isNextDisabled =
 		(activeTab === 1 && !selectedCsoId) ||
 		(activeTab === 2 && !selectedProject?.prj_id) ||
-		activeTab >= 4;
+		activeTab >= 5;
 
 	const {
 		data: projectCategoryData,
@@ -151,7 +152,7 @@ const ProjectTabs = ({
 				am: "pct_name_am",
 				or: "pct_name_or",
 			},
-			lang
+			lang,
 		);
 	}, [projectCategoryData, lang]);
 
@@ -551,7 +552,7 @@ const ProjectTabs = ({
 									<Button
 										color="primary"
 										onClick={() => toggleTab(activeTab + 1)}
-										disabled={isNextDisabled || activeTab === 4}
+										disabled={isNextDisabled || activeTab === 5}
 									>
 										Next
 									</Button>
@@ -608,6 +609,19 @@ const ProjectTabs = ({
 										<InfoItem
 											number={4}
 											title={"Proposed Requests"}
+											subtitle={programName && `For Project ${programName}`}
+										/>
+									</NavLink>
+								</NavItem>
+								<NavItem className={classnames({ current: activeTab === 5 })}>
+									<NavLink
+										className={classnames({ active: activeTab === 5 })}
+										onClick={() => toggleTab(5)}
+										disabled={!passedSteps.includes(5) || !programName}
+									>
+										<InfoItem
+											number={5}
+											title={"CSO Reports"}
 											subtitle={programName && `For Project ${programName}`}
 										/>
 									</NavLink>
@@ -707,7 +721,15 @@ const ProjectTabs = ({
 										<BudgetRequestRegistration
 											projectStatus={selectedProject?.prj_project_status_id}
 											projectId={selectedProject?.prj_id}
-											isActive={activeTab === 3}
+											isActive={activeTab === 4}
+										/>
+									</Suspense>
+								</TabPane>
+								<TabPane tabId={5}>
+									<Suspense fallback={<Spinners />}>
+										<CSOReport
+											projectId={selectedProject?.prj_id}
+											isActive={activeTab === 5}
 										/>
 									</Suspense>
 								</TabPane>

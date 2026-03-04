@@ -59,14 +59,14 @@ const AuthMiddleware = ({ children }) => {
 		const isValidParam =
 			Object.keys(param).length > 0 &&
 			Object.values(param).every(
-				(value) => value !== null && value !== undefined
+				(value) => value !== null && value !== undefined,
 			);
 
 		return { param, isValidParam };
 	}, [ownerId]);
 	const { data, isLoading: csoInfoLoading } = useSearchCsoInfos(
 		param,
-		isValidParam
+		isValidParam,
 	);
 
 	if (data?.data?.length === 0 && userType !== 4) {
@@ -85,6 +85,26 @@ const AuthMiddleware = ({ children }) => {
 
 	if (isCSOProjectPath(currentPath)) {
 		allowedPaths.push("/projectdetail_cso/:id");
+	}
+
+	const isBudgetRequestApprovalPath = (path) => {
+		const budgetRequestApprovalRegex =
+			/^\/budget_request_approval\/\d+(\/\w+)?(#\w+)?$/i;
+		return budgetRequestApprovalRegex.test(path);
+	};
+
+	if (isBudgetRequestApprovalPath(currentPath)) {
+		allowedPaths.push("/budget_request_approval/:id");
+	}
+
+	const isProposedRequestPath = (path) => {
+		const proposedRequestRegex =
+			/^\/cso_proposal_request\/\d+(\/\w+)?(#\w+)?$/i;
+		return proposedRequestRegex.test(path);
+	};
+
+	if (isProposedRequestPath(currentPath)) {
+		allowedPaths.push("/cso_proposal_request/:id");
 	}
 
 	const isAuthenticated = storedUser && Object.keys(storedUser).length > 0;
@@ -128,9 +148,12 @@ const AuthMiddleware = ({ children }) => {
 		return <Navigate to="/not_found" />;
 	}
 
-	const isAllowedPath =
-		allowedPaths.includes(currentPath) || isCSOProjectPath(currentPath);
-	if (!isAllowedPath) {
+	if (
+		!allowedPaths.includes(currentPath) &&
+		!isCSOProjectPath(currentPath) &&
+		!isBudgetRequestApprovalPath(currentPath) &&
+		!isProposedRequestPath(currentPath)
+	) {
 		return <Navigate to="/unauthorized" />;
 	}
 
