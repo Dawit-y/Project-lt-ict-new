@@ -2139,5 +2139,9 @@
 	"rpt_type_id": "Report Type",
 	"rpt_report_date": "Report Date",
 	"rpt_description": "Description",
-	"select_report_type": "Select Report Type"
+	"select_report_type": "Select Report Type",
+	"cso_report_list": "CSO Report List",
+	"monitoring_report": "Monitoring Report",
+	"evaluation_report": "Evaluation Report",
+	"progress_report": "Progress Report"
 }

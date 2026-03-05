@@ -28,7 +28,7 @@ export const useUserExportColumns = () => {
 				am: "sci_name_am",
 				or: "sci_name_or",
 			},
-			i18n.language
+			i18n.language,
 		);
 	}, [sectorInformationData, i18n.language]);
 
@@ -77,7 +77,7 @@ export const useUserExportColumns = () => {
 				format: (val) => userTypeMap[val] ?? "-",
 			},
 		],
-		[t, sectorInformationMap]
+		[t, sectorInformationMap],
 	);
 
 	return exportColumns;
@@ -194,7 +194,7 @@ export const projectExportColumns = [
 	{
 		key: "prj_end_date_plan_gc",
 		label: "prj_end_date_plan_gc",
-		format: (val) => toEthiopian(val) || "-"
+		format: (val) => toEthiopian(val) || "-",
 	},
 	{
 		key: "prj_total_estimate_budget",
@@ -224,7 +224,7 @@ export const useCsoProjectExportColumns = () => {
 				am: "pct_name_am",
 				or: "pct_name_or",
 			},
-			lang
+			lang,
 		);
 	}, [projectCategoryData, lang]);
 
@@ -267,7 +267,7 @@ export const useCsoProjectExportColumns = () => {
 				width: 30,
 			},
 		],
-		[t, projectCategoryMap]
+		[t, projectCategoryMap],
 	);
 
 	return exportColumns;
@@ -292,7 +292,7 @@ export const useCsoActivityExportColumns = () => {
 				am: "pct_name_am",
 				or: "pct_name_or",
 			},
-			lang
+			lang,
 		);
 	}, [projectCategoryData, lang]);
 
@@ -328,7 +328,7 @@ export const useCsoActivityExportColumns = () => {
 				width: 30,
 			},
 		],
-		[t, projectCategoryMap]
+		[t, projectCategoryMap],
 	);
 
 	return exportColumns;
@@ -474,7 +474,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[11, 12, 1],
-										"prp_pyhsical_planned_month_"
+										"prp_pyhsical_planned_month_",
 									),
 							},
 							{
@@ -484,7 +484,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[11, 12, 1],
-										"prp_finan_planned_month_"
+										"prp_finan_planned_month_",
 									),
 							},
 						],
@@ -500,7 +500,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[11, 12, 1],
-										"prp_pyhsical_actual_month_"
+										"prp_pyhsical_actual_month_",
 									),
 							},
 							{
@@ -530,7 +530,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[2, 3, 4],
-										"prp_pyhsical_planned_month_"
+										"prp_pyhsical_planned_month_",
 									),
 							},
 							{
@@ -552,7 +552,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[2, 3, 4],
-										"prp_pyhsical_actual_month_"
+										"prp_pyhsical_actual_month_",
 									),
 							},
 							{
@@ -582,7 +582,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[5, 6, 7],
-										"prp_pyhsical_planned_month_"
+										"prp_pyhsical_planned_month_",
 									),
 							},
 							{
@@ -604,7 +604,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[5, 6, 7],
-										"prp_pyhsical_actual_month_"
+										"prp_pyhsical_actual_month_",
 									),
 							},
 							{
@@ -634,7 +634,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[8, 9, 10],
-										"prp_pyhsical_planned_month_"
+										"prp_pyhsical_planned_month_",
 									),
 							},
 							{
@@ -656,7 +656,7 @@ export const usePerformanceExportColumns = () => {
 									sumMonthlyValues(
 										row,
 										[8, 9, 10],
-										"prp_pyhsical_actual_month_"
+										"prp_pyhsical_actual_month_",
 									),
 							},
 							{
@@ -709,7 +709,7 @@ export const usePerformanceExportColumns = () => {
 				],
 			},
 		],
-		[t, projectStatusMap]
+		[t, projectStatusMap],
 	);
 
 	return exportColumns;
@@ -825,13 +825,13 @@ export const useCsoExportColumns = () => {
 			{ value: 1, label: t("Local") },
 			{ value: 2, label: t("International") },
 		],
-		[t]
+		[t],
 	);
 
 	const csoTypesMap = useMemo(
 		() =>
 			Object.fromEntries(csoTypes.map(({ value, label }) => [value, label])),
-		[csoTypes]
+		[csoTypes],
 	);
 
 	const exportColumns = useMemo(
@@ -880,7 +880,7 @@ export const useCsoExportColumns = () => {
 				format: (val) => (val === 1 ? t("Approved") : t("Requested")),
 			},
 		],
-		[t, csoTypesMap]
+		[t, csoTypesMap],
 	);
 
 	return exportColumns;
@@ -916,5 +916,51 @@ export const programExportColumns = [
 		key: "pri_program_code",
 		label: "pri_program_code",
 		format: (val) => val || "-",
+	},
+];
+
+export const csoReportExportColumns = [
+	{
+		key: "prj_name",
+		label: "prj_name",
+		width: 60,
+	},
+	{
+		key: "prj_code",
+		label: "prj_code",
+		width: 40,
+	},
+	{
+		key: "rpt_name",
+		label: "rpt_name",
+		width: 50,
+	},
+	{
+		key: "rpt_type_id",
+		label: "rpt_type_id",
+		width: 40,
+		format: (val) => {
+			const reportTypes = {
+				1: "Monitoring Report",
+				2: "Evaluation Report",
+				3: "Progress Report",
+			};
+			return reportTypes[val] || "-";
+		},
+	},
+	{
+		key: "rpt_report_date",
+		label: "rpt_report_date",
+		width: 40,
+	},
+	{
+		key: "rpt_description",
+		label: "rpt_description",
+		width: 80,
+	},
+	{
+		key: "status_name",
+		label: "prs_status",
+		width: 40,
 	},
 ];
