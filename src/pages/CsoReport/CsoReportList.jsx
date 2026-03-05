@@ -1,23 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import Breadcrumbs from "../../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { Button, UncontrolledTooltip, Badge } from "reactstrap";
-import { FaPaperclip, FaPenSquare, FaGavel } from "react-icons/fa";
-import AgGridContainer from "../../../components/Common/AgGridContainer";
-import { useSearchBudgetRequests } from "../../../queries/cso_budget_request_query";
-import { useFetchRequestCategorys } from "../../../queries/requestcategory_query";
-import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
-import AdvancedSearch from "../../../components/Common/AdvancedSearch";
-import SearchTableContainer from "../../../components/Common/SearchTableContainer";
-import TreeForLists from "../../../components/Common/TreeForLists2";
-import AttachFileModal from "../../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../../pages/Conversationinformation/ConvInfoModal";
-import { PAGE_ID } from "../../../constants/constantFile";
-import { createMultiLangKeyValueMap } from "../../../utils/commonMethods";
-import { budgetRequestExportColumns } from "../../../utils/exportColumnsForLists";
-import { Link } from "react-router-dom";
-import { useAuthUser } from "../../../hooks/useAuthUser";
+import { FaPaperclip, FaPenSquare } from "react-icons/fa";
+import AgGridContainer from "../../components/Common/AgGridContainer";
+import { useSearchCsoReports } from "../../queries/cso_report_query";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../../pages/Conversationinformation/ConvInfoModal";
+import { PAGE_ID } from "../../constants/constantFile";
+import { csoReportExportColumns } from "../../utils/exportColumnsForLists";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -26,8 +21,15 @@ const truncateText = (text, maxLength) => {
 	return text.length <= maxLength ? text : `${text.substring(0, maxLength)}...`;
 };
 
-const ApproverProposedRequestList = () => {
-	document.title = "Proposed Request List";
+// Report type constants with badge colors
+const REPORT_TYPES = {
+	1: { name: "Monitoring Report", badgeColor: "primary" },
+	2: { name: "Evaluation Report", badgeColor: "success" },
+	3: { name: "Progress Report", badgeColor: "info" },
+};
+
+const CsoReportList = () => {
+	document.title = "CSO Report List";
 	const { t, i18n } = useTranslation();
 	const [fileModal, setFileModal] = useState(false);
 	const [convModal, setConvModal] = useState(false);
@@ -37,9 +39,6 @@ const ApproverProposedRequestList = () => {
 	const [searcherror, setSearchError] = useState(null);
 	const [showSearchResult, setShowSearchResult] = useState(false);
 	const [isCollapsed, setIsCollapsed] = useState(false);
-
-	const { data: requestCategoryData } = useFetchRequestCategorys();
-	const { data: projectStatusData } = useFetchProjectStatuss();
 
 	const [projectParams, setProjectParams] = useState({});
 	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
@@ -51,52 +50,13 @@ const ApproverProposedRequestList = () => {
 	const [transaction, setTransaction] = useState({});
 	const [exportSearchParams, setExportSearchParams] = useState({});
 
-	const { user: storedUser } = useAuthUser();
-	const userType = storedUser?.usr_user_type;
-
-	const requestCategoryOptions = useMemo(() => {
-		return (
-			requestCategoryData?.data?.map((category) => ({
-				label: category.rqc_name_en,
-				value: category.rqc_id,
-			})) || []
-		);
-	}, [requestCategoryData]);
-
-	const projectStatusOptions = useMemo(() => {
-		return (
-			projectStatusData?.data?.map((status) => ({
-				label: status.prs_status_name_en,
-				value: status.prs_id,
-			})) || []
-		);
-	}, [projectStatusData]);
-
-	const requestCategoryMap = useMemo(() => {
-		return createMultiLangKeyValueMap(
-			requestCategoryData?.data || [],
-			"rqc_id",
-			{
-				en: "rqc_name_en",
-				am: "rqc_name_am",
-				or: "rqc_name_or",
-			},
-			i18n.language,
-		);
-	}, [requestCategoryData, i18n.language]);
-
-	const projectStatusMap = useMemo(() => {
-		return createMultiLangKeyValueMap(
-			projectStatusData?.data || [],
-			"prs_id",
-			{
-				en: "prs_status_name_en",
-				am: "prs_status_name_am",
-				or: "prs_status_name_or",
-			},
-			i18n.language,
-		);
-	}, [projectStatusData, i18n.language]);
+	// Create report type options for dropdown
+	const reportTypeOptions = useMemo(() => {
+		return Object.entries(REPORT_TYPES).map(([id, type]) => ({
+			label: t(type.name.replace(" ", "_").toLowerCase()),
+			value: parseInt(id),
+		}));
+	}, [t]);
 
 	// Handle search results from AdvancedSearch
 	const handleSearchResults = ({ data, error }) => {
@@ -144,7 +104,7 @@ const ApproverProposedRequestList = () => {
 		}
 	};
 
-	// Define AG Grid columns with proper mapping and icons
+	// Define AG Grid columns
 	const columnDefs = useMemo(() => {
 		const baseColumnDefs = [
 			{
@@ -169,71 +129,59 @@ const ApproverProposedRequestList = () => {
 				},
 			},
 			{
-				headerName: t("bdr_request_status"),
-				field: "bdr_request_status",
+				headerName: t("rpt_name"),
+				field: "rpt_name",
 				sortable: true,
 				filter: true,
-				width: 150,
+				minWidth: 180,
 				cellRenderer: (params) => {
-					const badgeClass = params.data.color_code || "secondary";
+					return truncateText(params.data.rpt_name, 50) || "-";
+				},
+			},
+			{
+				headerName: t("rpt_type_id"),
+				field: "rpt_type_id",
+				sortable: true,
+				filter: true,
+				width: 160,
+				cellRenderer: (params) => {
+					const typeId = params.value;
+					const reportType = REPORT_TYPES[typeId] || {
+						name: "-",
+						badgeColor: "secondary",
+					};
 					return (
-						<Badge className={`font-size-12 badge-soft-${badgeClass}`}>
-							{params.data.status_name || "-"}
+						<Badge
+							className={`font-size-12 badge-soft-${reportType.badgeColor}`}
+						>
+							{t(reportType.name.replace(" ", "_").toLowerCase())}
 						</Badge>
 					);
 				},
 			},
 			{
-				headerName: t("bdr_request_category_id"),
-				field: "bdr_request_category_id",
+				headerName: t("rpt_report_date"),
+				field: "rpt_report_date",
 				sortable: true,
-				filter: true,
-				width: 180,
-				cellRenderer: (params) => {
-					if (!params.value || !requestCategoryMap) return "-";
-					return requestCategoryMap[params.value] || "-";
-				},
-			},
-			{
-				headerName: t("bdr_requested_date_gc"),
-				field: "bdr_requested_date_gc",
-				sortable: true,
-				width: 150,
+				width: 130,
 				filter: "agDateColumnFilter",
 				cellRenderer: (params) => {
-					return params.data.bdr_requested_date_gc || "-";
+					return params.data.rpt_report_date || "-";
 				},
 			},
 			{
 				headerName: t("actions"),
 				field: "actions",
-				width: 250,
+				width: 150,
 				pinned: "right",
 				cellRenderer: (params) => {
 					const data = params.data;
 
 					return (
 						<div className="d-flex gap-1">
-							{userType === 2 && (
-								<>
-									<Button
-										tag={Link}
-										to={`/cso_proposal_request/${data.bdr_id}`}
-										id={`takeAction-${data.bdr_id}`}
-										color="light"
-										size="sm"
-									>
-										<FaGavel />
-									</Button>
-									<UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
-										{t("take_action")}
-									</UncontrolledTooltip>
-								</>
-							)}
-
 							{/* Attach Files Button */}
 							<Button
-								id={`attach-${data.bdr_id}`}
+								id={`attach-${data.rpt_id}`}
 								color="light"
 								size="sm"
 								onClick={() => {
@@ -243,13 +191,13 @@ const ApproverProposedRequestList = () => {
 							>
 								<FaPaperclip />
 							</Button>
-							<UncontrolledTooltip target={`attach-${data.bdr_id}`}>
+							<UncontrolledTooltip target={`attach-${data.rpt_id}`}>
 								{t("attach_files")}
 							</UncontrolledTooltip>
 
 							{/* Notes/Conversation Button */}
 							<Button
-								id={`notes-${data.bdr_id}`}
+								id={`notes-${data.rpt_id}`}
 								color="light"
 								size="sm"
 								onClick={() => {
@@ -259,7 +207,7 @@ const ApproverProposedRequestList = () => {
 							>
 								<FaPenSquare />
 							</Button>
-							<UncontrolledTooltip target={`notes-${data.bdr_id}`}>
+							<UncontrolledTooltip target={`notes-${data.rpt_id}`}>
 								{t("Notes")}
 							</UncontrolledTooltip>
 						</div>
@@ -268,22 +216,32 @@ const ApproverProposedRequestList = () => {
 			},
 		];
 		return baseColumnDefs;
-	}, [requestCategoryMap, projectStatusMap, t]);
+	}, [t]);
 
 	return (
-		<React.Fragment>
+    <React.Fragment>
 			<AttachFileModal
 				isOpen={fileModal}
 				toggle={toggleFileModal}
-				projectId={transaction?.bdr_project_id}
-				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-				ownerId={transaction?.bdr_id}
+				projectId={transaction?.rpt_project_id}
+				ownerTypeId={PAGE_ID.CSO_REPORT}
+				ownerId={transaction?.rpt_id}
+				accept={{
+					"application/pdf": [],
+					"application/msword": [],
+					"application/vnd.openxmlformats-officedocument.wordprocessingml.file":
+						[],
+					"application/vnd.ms-excel": [],
+					"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+						[],
+				}}
+				title={t("Report Files")}
 			/>
 			<ConvInfoModal
 				isOpen={convModal}
 				toggle={toggleConvModal}
-				ownerTypeId={PAGE_ID.PROJ_BUDGET_REQUEST}
-				ownerId={transaction?.bdr_id}
+				ownerTypeId={PAGE_ID.CSO_REPORT}
+				ownerId={transaction?.rpt_id}
 			/>
 
 			<div className="page-content">
@@ -302,17 +260,13 @@ const ApproverProposedRequestList = () => {
 						{/* Main Search and Table Container */}
 						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
-								searchHook={useSearchBudgetRequests}
-								dateSearchKeys={["bdr_requested_date_gc"]}
-								textSearchKeys={["prj_name", "prj_code"]}
+								searchHook={useSearchCsoReports}
+								dateSearchKeys={["rpt_report_date"]}
+								textSearchKeys={["rpt_name"]}
 								dropdownSearchKeys={[
 									{
-										key: "bdr_request_category_id",
-										options: requestCategoryOptions,
-									},
-									{
-										key: "bdr_request_status",
-										options: projectStatusOptions,
+										key: "rpt_type_id",
+										options: reportTypeOptions,
 									},
 								]}
 								additionalParams={projectParams}
@@ -326,9 +280,7 @@ const ApproverProposedRequestList = () => {
 							>
 								{/* AG Grid Container */}
 								<AgGridContainer
-									rowData={
-										showSearchResult ? searchResults?.data : []
-									}
+									rowData={showSearchResult ? searchResults?.data : []}
 									columnDefs={columnDefs}
 									isLoading={isSearchLoading}
 									isPagination={true}
@@ -340,22 +292,18 @@ const ApproverProposedRequestList = () => {
 									isExcelExport={true}
 									isPdfExport={true}
 									isPrint={true}
-									tableName={t("Budget Request")}
+									tableName={t("CSO Reports")}
 									exportSearchParams={exportSearchParams}
 									exportColumns={[
-										...budgetRequestExportColumns,
+										...csoReportExportColumns,
 										{
-											key: "bdr_request_category_id",
-											label: t("bdr_request_category_id"),
+											key: "rpt_type_id",
+											label: t("rpt_type_id"),
 											format: (val) => {
-												return requestCategoryMap[val] || "-";
-											},
-										},
-										{
-											key: "bdr_request_status",
-											label: t("bdr_request_status"),
-											format: (val, row) => {
-												return row.status_name || "-";
+												const reportType = REPORT_TYPES[val];
+												return reportType
+													? t(reportType.name.replace(" ", "_").toLowerCase())
+													: "-";
 											},
 										},
 									]}
@@ -369,8 +317,8 @@ const ApproverProposedRequestList = () => {
 	);
 };
 
-ApproverProposedRequestList.propTypes = {
+CsoReportList.propTypes = {
 	preGlobalFilteredRows: PropTypes.any,
 };
 
-export default ApproverProposedRequestList;
+export default CsoReportList;
