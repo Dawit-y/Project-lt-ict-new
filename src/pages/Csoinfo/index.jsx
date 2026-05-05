@@ -59,7 +59,7 @@ import { PAGE_ID } from "../../constants/constantFile";
 import AgGridContainer from "../../components/Common/AgGridContainer";
 import { useCsoExportColumns } from "../../utils/exportColumnsForLists";
 const AttachFileModal = lazy(
-	() => import("../../components/Common/AttachFileModal")
+	() => import("../../components/Common/AttachFileModal"),
 );
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -72,7 +72,7 @@ const csoTypes = [
 	{ value: 2, label: "Foreign" },
 ];
 const csoTypesMap = Object.fromEntries(
-	csoTypes.map(({ value, label }) => [value, label])
+	csoTypes.map(({ value, label }) => [value, label]),
 );
 const CsoInfoModel = () => {
 	document.title = " CSO Lists";
@@ -94,118 +94,119 @@ const CsoInfoModel = () => {
 	const deleteCsoInfo = useDeleteCsoInfo();
 	//START CRUD
 	const handleAddCsoInfo = useCallback(
-	async (data) => {
-		try {
-			await addCsoInfo.mutateAsync(data);
-			toast.success(t("add_success"), { autoClose: 3000 });
-		} catch (error) {
-			if (!error?.handledByMutationCache) {
-				toast.error(t("add_failure"), { autoClose: 3000 });
+		async (data) => {
+			try {
+				await addCsoInfo.mutateAsync(data);
+				toast.success(t("add_success"), { autoClose: 3000 });
+			} catch (error) {
+				if (!error?.handledByMutationCache) {
+					toast.error(t("add_failure"), { autoClose: 3000 });
+				}
 			}
-		}
-	},
-	[addCsoInfo, t]
-);
+		},
+		[addCsoInfo, t],
+	);
 
-const handleUpdateCsoInfo = useCallback(
-	async (data) => {
-		try {
-			await updateCsoInfo.mutateAsync(data);
-			toast.success(t("update_success"), { autoClose: 3000 });
-		} catch (error) {
-			if (!error?.handledByMutationCache) {
-				toast.error(t("update_failure"), { autoClose: 3000 });
+	const handleUpdateCsoInfo = useCallback(
+		async (data) => {
+			try {
+				await updateCsoInfo.mutateAsync(data);
+				toast.success(t("update_success"), { autoClose: 3000 });
+			} catch (error) {
+				if (!error?.handledByMutationCache) {
+					toast.error(t("update_failure"), { autoClose: 3000 });
+				}
 			}
+		},
+		[updateCsoInfo, t],
+	);
+
+	const handleDeleteCsoInfo = useCallback(async () => {
+		if (!csoInfo?.cso_id) return;
+
+		try {
+			await deleteCsoInfo.mutateAsync(csoInfo.cso_id);
+			toast.success(t("delete_success"), { autoClose: 3000 });
+		} catch {
+			toast.error(t("delete_failure"), { autoClose: 3000 });
+		} finally {
+			setDeleteModal(false);
 		}
-	},
-	[updateCsoInfo, t]
-);
-
-const handleDeleteCsoInfo = useCallback(async () => {
-	if (!csoInfo?.cso_id) return;
-
-	try {
-		await deleteCsoInfo.mutateAsync(csoInfo.cso_id);
-		toast.success(t("delete_success"), { autoClose: 3000 });
-	} catch {
-		toast.error(t("delete_failure"), { autoClose: 3000 });
-	} finally {
-		setDeleteModal(false);
-	}
-}, [csoInfo, deleteCsoInfo, t]);
-const initialValues = useMemo(
-	() => ({
-		cso_name: csoInfo?.cso_name || "",
-		cso_code: csoInfo?.cso_code || "",
-		cso_address: csoInfo?.cso_address || "",
-		cso_phone: csoInfo?.cso_phone || "",
-		cso_email: csoInfo?.cso_email || "",
-		cso_website: csoInfo?.cso_website || "",
-		cso_description: csoInfo?.cso_description || "",
-		cso_contact_person: csoInfo?.cso_contact_person || "",
-		cso_type: csoInfo?.cso_type || "",
-		is_deletable: csoInfo?.is_deletable ?? 1,
-		is_editable: csoInfo?.is_editable ?? 1,
-		cso_status: Boolean(csoInfo?.cso_status),
-	}),
-	[csoInfo]
-);
-const validation = useFormik({
-	enableReinitialize: true,
-	initialValues,
-	validationSchema: Yup.object({
-		cso_name: alphanumericValidation(3, 150, true),
-		cso_code: alphanumericValidation(2, 20, true).test(
-			"unique-cso_code",
-			t("Already exists"),
-			(value) =>
-				!data?.data?.some(
-					(item) => item.cso_code === value && item.cso_id !== csoInfo?.cso_id
-				)
-		),
-		cso_address: alphanumericValidation(3, 150, true),
-		cso_contact_person: alphanumericValidation(3, 150, true),
-		cso_phone: phoneValidation(true),
-		cso_email: Yup.string()
-			.required(t("cso_email"))
-			.email(t("Invalid email format"))
-			.test(
-				"unique-cso_email",
+	}, [csoInfo, deleteCsoInfo, t]);
+	const initialValues = useMemo(
+		() => ({
+			cso_name: csoInfo?.cso_name || "",
+			cso_code: csoInfo?.cso_code || "",
+			cso_address: csoInfo?.cso_address || "",
+			cso_phone: csoInfo?.cso_phone || "",
+			cso_email: csoInfo?.cso_email || "",
+			cso_website: csoInfo?.cso_website || "",
+			cso_description: csoInfo?.cso_description || "",
+			cso_contact_person: csoInfo?.cso_contact_person || "",
+			cso_type: csoInfo?.cso_type || "",
+			is_deletable: csoInfo?.is_deletable ?? 1,
+			is_editable: csoInfo?.is_editable ?? 1,
+			cso_status: Boolean(csoInfo?.cso_status),
+		}),
+		[csoInfo],
+	);
+	const validation = useFormik({
+		enableReinitialize: true,
+		initialValues,
+		validationSchema: Yup.object({
+			cso_name: alphanumericValidation(3, 150, true),
+			cso_code: alphanumericValidation(2, 20, true).test(
+				"unique-cso_code",
 				t("Already exists"),
 				(value) =>
 					!data?.data?.some(
 						(item) =>
-							item.cso_email === value && item.cso_id !== csoInfo?.cso_id
-					)
+							item.cso_code === value && item.cso_id !== csoInfo?.cso_id,
+					),
 			),
-		cso_website: websiteUrlValidation(false),
-		cso_description: alphanumericValidation(3, 450, false),
-		cso_type: numberValidation(1, 2, true),
-	}),
-	validateOnBlur: true,
-	validateOnChange: false,
-	onSubmit: async (values) => {
-		const payload = {
-			...values,
-			cso_status: values.cso_status ? 1 : 0,
-		};
+			cso_address: alphanumericValidation(3, 150, true),
+			cso_contact_person: alphanumericValidation(3, 150, true),
+			cso_phone: phoneValidation(true),
+			cso_email: Yup.string()
+				.required(t("cso_email"))
+				.email(t("Invalid email format"))
+				.test(
+					"unique-cso_email",
+					t("Already exists"),
+					(value) =>
+						!data?.data?.some(
+							(item) =>
+								item.cso_email === value && item.cso_id !== csoInfo?.cso_id,
+						),
+				),
+			cso_website: websiteUrlValidation(false),
+			cso_description: alphanumericValidation(3, 450, false),
+			cso_type: numberValidation(1, 2, true),
+		}),
+		validateOnBlur: true,
+		validateOnChange: false,
+		onSubmit: async (values) => {
+			const payload = {
+				...values,
+				cso_status: values.cso_status ? 1 : 0,
+			};
 
-		if (isEdit) {
-			await handleUpdateCsoInfo({
-				...payload,
-				cso_id: csoInfo?.cso_id,
-			});
-		} else {
-			await handleAddCsoInfo({
-				...payload,
-				cso_phone: `+251${values.cso_phone}`,
-			});
-		}
+			if (isEdit) {
+				await handleUpdateCsoInfo({
+					...payload,
+					cso_id: csoInfo?.cso_id,
+				});
+			} else {
+				await handleAddCsoInfo({
+					...payload,
+					cso_phone: `+251${values.cso_phone}`,
+				});
+			}
 
-		toggle();
-		validation.resetForm();
-	},
-});
+			toggle();
+			validation.resetForm();
+		},
+	});
 
 	const [transaction, setTransaction] = useState({});
 	const toggleViewModal = () => setModal1(!modal1);
@@ -237,8 +238,8 @@ const validation = useFormik({
 			cso_code: csoInfo.cso_code,
 			cso_address: csoInfo.cso_address,
 			cso_phone: csoInfo.cso_phone
-  ? Number(csoInfo.cso_phone.toString().replace(/^(\+?251)/, ""))
-  : null,
+				? Number(csoInfo.cso_phone.toString().replace(/^(\+?251)/, ""))
+				: null,
 			cso_email: csoInfo.cso_email,
 			cso_website: csoInfo.cso_website,
 			cso_description: csoInfo.cso_description,
@@ -246,7 +247,7 @@ const validation = useFormik({
 			cso_type: csoInfo.cso_type,
 			is_deletable: csoInfo.is_deletable,
 			is_editable: csoInfo.is_editable,
-			cso_status: csoInfo.cso_status === 1
+			cso_status: csoInfo.cso_status === 1,
 		});
 		setIsEdit(true);
 		toggle();
@@ -267,25 +268,8 @@ const validation = useFormik({
 		setSearchError(error);
 		setShowSearchResult(true);
 	};
+
 	const columnDefs = useMemo(() => {
-		const ActionButtons = ({ data }) => {
-			return (
-				<div className="d-flex gap-3">
-					{data.is_editable == 1 && (
-						<Link
-							to="#"
-							className="text-success"
-							onClick={() => handleCsoInfoClick(data)}
-						>
-							<i className="mdi mdi-pencil font-size-18" id="edittooltip" />
-							<UncontrolledTooltip placement="top" target="edittooltip">
-								{t("Edit")}
-							</UncontrolledTooltip>
-						</Link>
-					)}
-				</div>
-			);
-		};
 		const StatusBadge = ({ status }) => {
 			return (
 				<Badge color={status === 1 ? "success" : "primary"}>
@@ -293,6 +277,7 @@ const validation = useFormik({
 				</Badge>
 			);
 		};
+
 		const baseColumnDefs = [
 			{
 				headerName: t("S.N"),
@@ -302,6 +287,7 @@ const validation = useFormik({
 				filter: false,
 				width: 60,
 				pinned: "left",
+				suppressNavigable: true,
 			},
 			{
 				headerName: t("cso_name"),
@@ -317,10 +303,9 @@ const validation = useFormik({
 				headerName: t("cso_type"),
 				field: "cso_type",
 				filter: "agTextColumnFilter",
-				filterValueGetter: (params) =>
-    			csoTypesMap[params.data?.cso_type] ?? "",
+				filterValueGetter: (params) => csoTypesMap[params.data?.cso_type] ?? "",
 				sortable: true,
-				minWidth: 100,
+				minWidth: 150,
 				flex: 2,
 				cellRenderer: ({ data }) => csoTypesMap[data.cso_type],
 			},
@@ -339,6 +324,7 @@ const validation = useFormik({
 				field: "cso_code",
 				filter: true,
 				sortable: true,
+				minWidth: 100,
 				flex: 1,
 				cellRenderer: ({ data }) => truncateText(data.cso_code, 30) || "-",
 			},
@@ -347,6 +333,7 @@ const validation = useFormik({
 				field: "cso_address",
 				filter: false,
 				sortable: true,
+				minWidth: 100,
 				cellRenderer: ({ data }) => truncateText(data.cso_address, 30) || "-",
 			},
 			{
@@ -354,6 +341,7 @@ const validation = useFormik({
 				field: "cso_phone",
 				filter: true,
 				sortable: true,
+				minWidth: 200,
 				flex: 2,
 				cellRenderer: ({ data }) => truncateText(data.cso_phone, 30) || "-",
 			},
@@ -362,6 +350,7 @@ const validation = useFormik({
 				field: "cso_email",
 				filter: true,
 				sortable: true,
+				minWidth: 100,
 				cellRenderer: ({ data }) => truncateText(data.cso_email, 30) || "-",
 			},
 			{
@@ -369,13 +358,13 @@ const validation = useFormik({
 				field: "cso_status",
 				filter: false,
 				sortable: true,
-				width: 120,
+				minWidth: 120,
 				cellRenderer: ({ data }) => <StatusBadge status={data.cso_status} />,
 			},
 			{
 				headerName: t("actions"),
 				field: "actions",
-				width: 200,
+				minWidth: 200,
 				pinned: "right",
 				cellRenderer: (params) => {
 					const rowData = params.data;
@@ -395,6 +384,7 @@ const validation = useFormik({
 							<UncontrolledTooltip target={`cso-view-detail-${rowData.cso_id}`}>
 								{t("view_detail")}
 							</UncontrolledTooltip>
+
 							<Button
 								id={`attachFiles-${rowData.cso_id}`}
 								color="light"
@@ -409,6 +399,7 @@ const validation = useFormik({
 							<UncontrolledTooltip target={`attachFiles-${rowData.cso_id}`}>
 								{t("attach_files")}
 							</UncontrolledTooltip>
+
 							<Button
 								id={`notes-${rowData.cso_id}`}
 								color="light"
@@ -423,7 +414,8 @@ const validation = useFormik({
 							<UncontrolledTooltip target={`notes-${rowData.cso_id}`}>
 								{t("Notes")}
 							</UncontrolledTooltip>
-							{data.previledge?.is_role_editable == 1 &&
+
+							{data?.previledge?.is_role_editable == 1 &&
 								rowData?.is_editable == 1 && (
 									<>
 										<Button
@@ -440,50 +432,29 @@ const validation = useFormik({
 										</UncontrolledTooltip>
 									</>
 								)}
-							{/* {data.previledge?.is_role_deletable == 1 &&
-								rowData?.is_deletable == 1 && (
-									<>
-										<Button
-											id={`delete-${rowData.cso_id}`}
-											color="danger"
-											size="sm"
-											onClick={() => onClickDelete(rowData)}
-											outline
-										>
-											<FaTrash />
-										</Button>
-										<UncontrolledTooltip target={`delete-${rowData.cso_id}`}>
-											{t("delete")}
-										</UncontrolledTooltip>
-									</>
-								)} */}
 						</div>
 					);
 				},
 			},
 		];
+
 		return baseColumnDefs;
-	}, [
-		handleCsoInfoClick,
-		toggleViewModal,
-		toggleFileModal,
-		toggleConvModal,
-		t,
-		data,
-	]);
+	}, [t, data?.previledge, setTransaction])
+
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;
 	}
+
 	return (
 		<React.Fragment>
 			<CsoInfoModal
 				isOpen={modal1}
 				toggle={toggleViewModal}
 				transaction={{
-		...transaction,
-		cso_type: csoTypesMap[transaction.cso_type],
-		cso_status: transaction.cso_type == 1 ? 'Active': 'Inactive'
-	}}
+					...transaction,
+					cso_type: csoTypesMap[transaction.cso_type],
+					cso_status: transaction.cso_type == 1 ? "Active" : "Inactive",
+				}}
 			/>
 			<DeleteModal
 				show={deleteModal}
@@ -492,20 +463,20 @@ const validation = useFormik({
 				isLoading={deleteCsoInfo.isPending}
 			/>
 			{fileModal && (
-					<AttachFileModal
-						isOpen={fileModal}
-						toggle={toggleFileModal}						
-						ownerTypeId={PAGE_ID.CSO}
-						ownerId={transaction?.cso_id}
-					/>
-				)}
+				<AttachFileModal
+					isOpen={fileModal}
+					toggle={toggleFileModal}
+					ownerTypeId={PAGE_ID.CSO}
+					ownerId={transaction?.cso_id}
+				/>
+			)}
 			{convModal && (
-			<Conversation
-				isOpen={convModal}
-				toggle={toggleConvModal}
-				ownerId={transaction?.cso_id}
-				ownerTypeId={PAGE_ID.CSO}
-			/>
+				<Conversation
+					isOpen={convModal}
+					toggle={toggleConvModal}
+					ownerId={transaction?.cso_id}
+					ownerTypeId={PAGE_ID.CSO}
+				/>
 			)}
 			<div className="page-content">
 				<div className="container-fluid">
@@ -518,6 +489,7 @@ const validation = useFormik({
 								<Card>
 									<CardBody>
 										<AgGridContainer
+											key="cso-grid-container"
 											rowData={data?.data || []}
 											columnDefs={columnDefs}
 											isPagination={true}
@@ -584,32 +556,32 @@ const validation = useFormik({
 										) : null}
 									</Col>
 									<InputField
-									type="text"
-									validation={validation}
-									fieldId={"cso_name"}
-									isRequired={true}
-									className="col-md-6 mb-3"
-									maxLength={200}
-									label={t("cso_name")}
-								/>
-								<InputField
-									type="text"
-									validation={validation}
-									fieldId={"cso_contact_person"}
-									isRequired={true}
-									className="col-md-6 mb-3"
-									maxLength={200}
-									label={t("cso_contact_person")}
-								/>
-								<InputField
-									type="text"
-									validation={validation}
-									fieldId={"cso_code"}
-									isRequired={true}
-									className="col-md-6 mb-3"
-									maxLength={200}
-									label={t("cso_code")}
-								/>								
+										type="text"
+										validation={validation}
+										fieldId={"cso_name"}
+										isRequired={true}
+										className="col-md-6 mb-3"
+										maxLength={200}
+										label={t("cso_name")}
+									/>
+									<InputField
+										type="text"
+										validation={validation}
+										fieldId={"cso_contact_person"}
+										isRequired={true}
+										className="col-md-6 mb-3"
+										maxLength={200}
+										label={t("cso_contact_person")}
+									/>
+									<InputField
+										type="text"
+										validation={validation}
+										fieldId={"cso_code"}
+										isRequired={true}
+										className="col-md-6 mb-3"
+										maxLength={200}
+										label={t("cso_code")}
+									/>
 									<Col className="col-md-6 mb-3">
 										<Label>
 											Phone Number <span className="text-danger">*</span>
@@ -692,51 +664,51 @@ const validation = useFormik({
 										) : null}
 									</Col>
 									<InputField
-									type="textarea"
-									validation={validation}
-									fieldId={"cso_address"}
-									isRequired={true}
-									className="col-md-6 mb-3"
-									maxLength={400}
-									rows={4}
-								/>
+										type="textarea"
+										validation={validation}
+										fieldId={"cso_address"}
+										isRequired={true}
+										className="col-md-6 mb-3"
+										maxLength={400}
+										rows={4}
+									/>
 									<InputField
-									type="textarea"
-									validation={validation}
-									fieldId={"cso_description"}
-									isRequired={false}
-									className="col-md-6 mb-3"
-									maxLength={400}
-									rows={4}
-								/>
-								<Col className="col-md-6 mb-3">
-                    <div className="form-check mb-4">
-                      <Label className="me-1" for="cso_status">
-                        {t("is_approved")}
-                      </Label>
-                      <Input
-                        id="cso_status"
-                        name="cso_status"
-                        type="checkbox"
-                        placeholder={t("is_approved")}
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        checked={validation.values.cso_status}
-                        invalid={
-                          validation.touched.cso_status &&
-                          validation.errors.cso_status
-                            ? true
-                            : false
-                        }
-                      />
-                      {validation.touched.cso_status &&
-                      validation.errors.cso_status ? (
-                        <FormFeedback type="invalid">
-                          {validation.errors.cso_status}
-                        </FormFeedback>
-                      ) : null}
-                    </div>
-                  </Col>
+										type="textarea"
+										validation={validation}
+										fieldId={"cso_description"}
+										isRequired={false}
+										className="col-md-6 mb-3"
+										maxLength={400}
+										rows={4}
+									/>
+									<Col className="col-md-6 mb-3">
+										<div className="form-check mb-4">
+											<Label className="me-1" for="cso_status">
+												{t("is_approved")}
+											</Label>
+											<Input
+												id="cso_status"
+												name="cso_status"
+												type="checkbox"
+												placeholder={t("is_approved")}
+												onChange={validation.handleChange}
+												onBlur={validation.handleBlur}
+												checked={validation.values.cso_status}
+												invalid={
+													validation.touched.cso_status &&
+													validation.errors.cso_status
+														? true
+														: false
+												}
+											/>
+											{validation.touched.cso_status &&
+											validation.errors.cso_status ? (
+												<FormFeedback type="invalid">
+													{validation.errors.cso_status}
+												</FormFeedback>
+											) : null}
+										</div>
+									</Col>
 								</Row>
 								<Row>
 									<Col>
