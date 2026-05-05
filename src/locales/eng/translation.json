@@ -2145,5 +2145,6 @@
 	"evaluation_report": "Evaluation Report",
 	"progress_report": "Progress Report",
 	"is_approved": "Is Approved",
-	"cso_projects_report": "CSO Projects Report"
+	"cso_projects_report": "CSO Projects Report",
+	"assign_cso_requests": "Assign CSO Requests"
 }

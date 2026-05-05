@@ -17,34 +17,34 @@ import {
 } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { useAuthUser } from "../../hooks/useAuthUser";
+import { useAuthUser } from "../../../../hooks/useAuthUser";
 import { toast } from "react-toastify";
-import CascadingDropdowns from "../../components/Common/CascadingDropdowns";
+import CascadingDropdowns from "../../../../components/Common/CascadingDropdowns";
 import {
 	useUpdateProject,
 	useFetchProject,
-} from "../../queries/cso_project_query";
-import { useFetchSectorInformations } from "../../queries/sectorinformation_query";
-import { createMultiSelectOptions } from "../../utils/commonMethods";
+} from "../../../../queries/cso_project_query";
+import { useFetchSectorInformations } from "../../../../queries/sectorinformation_query";
+import { createMultiSelectOptions } from "../../../../utils/commonMethods";
 import Select from "react-select";
 
-const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
+const AssignCsoRequests = ({ requestData, isActive }) => {
 	const { t, i18n } = useTranslation();
 	const lang = i18n.language;
-	const projectId = request?.bdr_project_id;
+	const projectId = requestData?.bdr_project_id;
 	const { user: storedUser, isLoading: authLoading, userId } = useAuthUser();
 
 	const { data: project, isLoading: isProjectLoading } = useFetchProject(
 		projectId,
 		userId,
-		isActive
+		isActive,
 	);
 	const { data: sectorData } = useFetchSectorInformations();
-	const isDisabled = [3, 4].includes(parseInt(request?.bdr_request_status));
+	const isDisabled = [3, 4].includes(parseInt(requestData?.bdr_request_status));
 	const sectorOptions = createMultiSelectOptions(
 		sectorData?.data || [],
 		"sci_id",
-		["sci_name_en", "sci_name_or", "sci_name_am"]
+		["sci_name_en", "sci_name_or", "sci_name_am"],
 	);
 	const { mutateAsync, isPending } = useUpdateProject();
 
@@ -90,79 +90,7 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
 
 	return (
 		<Row>
-			<Col xl={7}>
-				<Card>
-					<CardBody>
-						<CardTitle>Overview</CardTitle>
-						<Row>
-							<Col>
-								<Badge
-									color={request.color_code}
-									pill
-									className="py-1 px-2 mb-2"
-								>
-									{request?.status_name}
-								</Badge>
-							</Col>
-						</Row>
-						<Table size="sm">
-							<tbody>
-								{[
-									[t("Year"), budgetYearMap[request.bdr_budget_year_id]],
-									[t("bdr_requested_date_gc"), request.bdr_requested_date_gc],
-									[t("bdr_description"), request.bdr_description],
-								].map(([label, value]) => (
-									<tr key={label}>
-										<th>{label}</th>
-										<td>{value}</td>
-									</tr>
-								))}
-							</tbody>
-						</Table>
-						<br />
-						<Table size="sm">
-							<tbody>
-								{[
-									[t("prj_name"), project?.data?.prj_name],
-									[t("prj_code"), project?.data?.prj_code],
-									[
-										t("prj_project_category_id"),
-										project?.data?.prj_project_category_id,
-									],
-									[
-										t("prj_total_estimate_budget"),
-										project?.data?.prj_total_estimate_budget,
-									],
-									[
-										t("prj_total_actual_budget"),
-										project?.data?.prj_total_actual_budget,
-									],
-									[
-										t("prj_start_date_plan_gc"),
-										project?.data?.prj_start_date_plan_gc,
-									],
-									[t("prj_outcome"), project?.data?.prj_outcome],
-									[t("prj_remark"), project?.data?.prj_remark],
-									[
-										t("prj_urban_ben_number"),
-										project?.data?.prj_urban_ben_number,
-									],
-									[
-										t("prj_rural_ben_number"),
-										project?.data?.prj_rural_ben_number,
-									],
-								].map(([label, value]) => (
-									<tr key={label}>
-										<th>{label}</th>
-										<td>{value}</td>
-									</tr>
-								))}
-							</tbody>
-						</Table>
-					</CardBody>
-				</Card>
-			</Col>
-			<Col xl={5}>
+			<Col xl={8} className="mb-4">
 				<Card>
 					<CardBody>
 						<CardTitle className="mb-4">Assign</CardTitle>
@@ -189,12 +117,12 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
 										name="prj_assigned_sectors"
 										options={sectorOptions[`sci_name_${lang}`] || []}
 										value={sectorOptions[`sci_name_${lang}`]?.filter((opt) =>
-											formik.values.prj_assigned_sectors.includes(opt.value)
+											formik.values.prj_assigned_sectors.includes(opt.value),
 										)}
 										onChange={(selected) =>
 											formik.setFieldValue(
 												"prj_assigned_sectors",
-												selected ? selected.map((s) => s.value) : []
+												selected ? selected.map((s) => s.value) : [],
 											)
 										}
 										className="select2-selection"
@@ -231,9 +159,8 @@ const AssignCsoRequests = ({ request, isActive, budgetYearMap }) => {
 };
 
 AssignCsoRequests.propTypes = {
-	request: PropTypes.object.isRequired,
+	requestData: PropTypes.object.isRequired,
 	isActive: PropTypes.bool,
-	budgetYearMap: PropTypes.object.isRequired,
 };
 
 export default AssignCsoRequests;

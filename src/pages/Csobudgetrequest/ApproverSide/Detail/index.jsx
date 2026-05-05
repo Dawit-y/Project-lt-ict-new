@@ -27,6 +27,7 @@ import ProjectOverview from "../../../Project/ProjectDetail/ProjectSummary";
 import BudgetBreakdown from "./BudgetBreakdown";
 import AttachedFiles from "./AttachedFiles";
 import TextNotes from "./AttachedNotes";
+import AssignCsoRequests from "./AssignCsoRequests";
 
 import { useFetchBudgetRequest } from "../../../../queries/cso_budget_request_query";
 import { useFetchProject } from "../../../../queries/cso_project_query";
@@ -201,20 +202,23 @@ export default function BudgetApprovalPage() {
 							{/* Main Content Tabs */}
 							<div>
 								<Nav tabs className="nav-tabs-custom">
-									{["budget", "overview", "files", "notes"].map((tab) => (
-										<NavItem key={tab}>
-											<NavLink
-												className={classnames({ active: activeTab === tab })}
-												onClick={() => setActiveTab(tab)}
-												style={{ cursor: "pointer" }}
-											>
-												{tab === "budget" && t("request_details")}
-												{tab === "overview" && t("project_overview")}
-												{tab === "files" && t("attached_files")}
-												{tab === "notes" && t("attached_notes")}
-											</NavLink>
-										</NavItem>
-									))}
+									{["budget", "overview", "assign", "files", "notes"].map(
+										(tab) => (
+											<NavItem key={tab}>
+												<NavLink
+													className={classnames({ active: activeTab === tab })}
+													onClick={() => setActiveTab(tab)}
+													style={{ cursor: "pointer" }}
+												>
+													{tab === "budget" && t("request_details")}
+													{tab === "overview" && t("project_overview")}
+													{tab === "assign" && t("assign_cso_requests")}
+													{tab === "files" && t("attached_files")}
+													{tab === "notes" && t("attached_notes")}
+												</NavLink>
+											</NavItem>
+										),
+									)}
 								</Nav>
 								<TabContent activeTab={activeTab} className="mt-3">
 									<TabPane tabId="budget">
@@ -237,6 +241,12 @@ export default function BudgetApprovalPage() {
 										<TextNotes
 											requestData={data?.data ?? {}}
 											isActive={activeTab === "notes"}
+										/>
+									</TabPane>
+									<TabPane tabId={"assign"}>
+										<AssignCsoRequests
+											requestData={data?.data ?? {}}
+											isActive={activeTab === "assign"}
 										/>
 									</TabPane>
 								</TabContent>

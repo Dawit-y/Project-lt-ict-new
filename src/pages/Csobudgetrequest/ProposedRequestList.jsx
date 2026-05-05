@@ -1,23 +1,25 @@
+// list of proposed requests of a cso user
+
 import React, { useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
-import Breadcrumbs from "../../../components/Common/Breadcrumb";
+import Breadcrumbs from "../../components/Common/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { Button, UncontrolledTooltip, Badge } from "reactstrap";
 import { FaPaperclip, FaPenSquare, FaGavel } from "react-icons/fa";
-import AgGridContainer from "../../../components/Common/AgGridContainer";
-import { useSearchBudgetRequests } from "../../../queries/cso_budget_request_query";
-import { useFetchRequestCategorys } from "../../../queries/requestcategory_query";
-import { useFetchProjectStatuss } from "../../../queries/projectstatus_query";
-import AdvancedSearch from "../../../components/Common/AdvancedSearch";
-import SearchTableContainer from "../../../components/Common/SearchTableContainer";
-import TreeForLists from "../../../components/Common/TreeForLists2";
-import AttachFileModal from "../../../components/Common/AttachFileModal";
-import ConvInfoModal from "../../../pages/Conversationinformation/ConvInfoModal";
-import { PAGE_ID } from "../../../constants/constantFile";
-import { createMultiLangKeyValueMap } from "../../../utils/commonMethods";
-import { budgetRequestExportColumns } from "../../../utils/exportColumnsForLists";
+import AgGridContainer from "../../components/Common/AgGridContainer";
+import { useSearchBudgetRequests } from "../../queries/cso_budget_request_query";
+import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
+import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
+import AdvancedSearch from "../../components/Common/AdvancedSearch";
+import SearchTableContainer from "../../components/Common/SearchTableContainer";
+import TreeForLists from "../../components/Common/TreeForLists2";
+import AttachFileModal from "../../components/Common/AttachFileModal";
+import ConvInfoModal from "../Conversationinformation/ConvInfoModal";
+import { PAGE_ID } from "../../constants/constantFile";
+import { createMultiLangKeyValueMap } from "../../utils/commonMethods";
+import { budgetRequestExportColumns } from "../../utils/exportColumnsForLists";
 import { Link } from "react-router-dom";
-import { useAuthUser } from "../../../hooks/useAuthUser";
+import { useAuthUser } from "../../hooks/useAuthUser";
 
 const truncateText = (text, maxLength) => {
 	if (typeof text !== "string") {
@@ -214,23 +216,6 @@ const ApproverProposedRequestList = () => {
 
 					return (
 						<div className="d-flex gap-1">
-							{userType === 2 && (
-								<>
-									<Button
-										tag={Link}
-										to={`/cso_proposal_request/${data.bdr_id}`}
-										id={`takeAction-${data.bdr_id}`}
-										color="light"
-										size="sm"
-									>
-										<FaGavel />
-									</Button>
-									<UncontrolledTooltip target={`takeAction-${data.bdr_id}`}>
-										{t("take_action")}
-									</UncontrolledTooltip>
-								</>
-							)}
-
 							{/* Attach Files Button */}
 							<Button
 								id={`attach-${data.bdr_id}`}
@@ -326,9 +311,7 @@ const ApproverProposedRequestList = () => {
 							>
 								{/* AG Grid Container */}
 								<AgGridContainer
-									rowData={
-										showSearchResult ? searchResults?.data : []
-									}
+									rowData={showSearchResult ? searchResults?.data : []}
 									columnDefs={columnDefs}
 									isLoading={isSearchLoading}
 									isPagination={true}

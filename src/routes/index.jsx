@@ -41,17 +41,17 @@ const CSOProjectList = lazy(() => import("../pages/Csoproject/ProjectList"));
 const CSOProjectDetail = lazy(
 	() => import("../pages/Csoproject/ProjectDetail/index.jsx"),
 );
-const ApproverProposedRequestList = lazy(
-	() =>
-		import(
-			"../pages/Csobudgetrequest/ApproverSide/ApproverProposedRequestList.jsx"
-		),
+const ProposedRequestList = lazy(
+	() => import("../pages/Csobudgetrequest/ProposedRequestList.jsx"),
 );
 const ApproverProposedRequestDetail = lazy(
 	() => import("../pages/Csobudgetrequest/ApproverSide/Detail/index.jsx"),
 );
 const CSOApproverBudgetRequestList = lazy(
-	() => import("../pages/Csobudgetrequest/ApproverBudgetRequestList.jsx"),
+	() =>
+		import(
+			"../pages/Csobudgetrequest/ApproverSide/ApproverBudgetRequestList.jsx"
+		),
 );
 const CsoProposalRequestList = lazy(
 	() => import("../pages/Csobudgetrequest/ProposalRequestList.jsx"),
@@ -250,7 +250,7 @@ const authProtectedRoutes = [
 	{ path: "/project_cso", component: <CSOProject /> },
 	{ path: "/project_cso_list", component: <CSOProjectList /> },
 	{ path: "/projectdetail_cso/:id", component: <CSOProjectDetail /> },
-	{ path: "/cso_proposal_request", component: <ApproverProposedRequestList /> },
+	{ path: "/cso_proposal_request", component: <ProposedRequestList /> },
 	{
 		path: "/cso_proposal_request/:id",
 		component: <ApproverProposedRequestDetail />,
