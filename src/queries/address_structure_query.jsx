@@ -33,29 +33,52 @@ const buildAndExtract = (data) => {
 	const zones = [];
 	const woredas = [];
 
+	const determineLevel = (node, rootId) => {
+		// If node has no children, it could be a woreda or a zone without children
+		if (!node.children || node.children.length === 0) {
+			if (rootId === "1" || rootId === null) {
+				return "zone";
+			} else {
+				return "woreda";
+			}
+		}
+
+		const hasGrandChildren = node.children.some(
+			(child) => child.children && child.children.length > 0,
+		);
+
+		if (hasGrandChildren) {
+			return "region";
+		} else {
+			return "zone";
+		}
+	};
+
 	const traverse = (node, parentId = null) => {
+		const nodeId = node.id?.toString() || uuidv4();
+		const level = determineLevel(node, parentId || node.rootId);
+
 		const withUUID = {
 			...node,
-			id: node.id?.toString() || uuidv4(),
+			id: nodeId,
 			parentId,
-			children: node.children?.map((child) => traverse(child, node.id)) || [],
+			level,
+			children: node.children?.map((child) => traverse(child, nodeId)) || [],
 		};
 
-		// determine level
-		if (withUUID.children.length === 0 && withUUID.rootId !== "1") {
-			withUUID.level = "woreda";
-			woredas.push(withUUID);
-		} else {
-			const hasGrandChildren = withUUID.children.some(
-				(child) => child.children.length > 0
-			);
-			if (hasGrandChildren) {
-				withUUID.level = "region";
+		// Add to appropriate collection based on determined level
+		switch (level) {
+			case "region":
 				regions.push(withUUID);
-			} else {
-				withUUID.level = "zone";
+				break;
+			case "zone":
 				zones.push(withUUID);
-			}
+				break;
+			case "woreda":
+				woredas.push(withUUID);
+				break;
+			default:
+				console.warn("Unknown level for node:", withUUID);
 		}
 
 		return withUUID;
@@ -86,7 +109,7 @@ export const useFetchAddressStructures = (userId) => {
 			zones: query.data?.zones || [],
 			woredas: query.data?.woredas || [],
 		}),
-		[query]
+		[query],
 	);
 };
 
