@@ -439,7 +439,7 @@ const CsoInfoModel = () => {
 		];
 
 		return baseColumnDefs;
-	}, [t, data?.previledge, setTransaction])
+	}, [t, data?.previledge, setTransaction]);
 
 	if (isError) {
 		return <FetchErrorHandler error={error} refetch={refetch} />;

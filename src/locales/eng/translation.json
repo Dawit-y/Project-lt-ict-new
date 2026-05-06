@@ -2146,5 +2146,9 @@
 	"progress_report": "Progress Report",
 	"is_approved": "Is Approved",
 	"cso_projects_report": "CSO Projects Report",
-	"assign_cso_requests": "Assign CSO Requests"
+	"assign_cso_requests": "Assign CSO Requests",
+	"report_details": "Report Details",
+	"report_type": "Report Type",
+	"report_date": "Report Date",
+	"report_name": "Report Name"
 }
