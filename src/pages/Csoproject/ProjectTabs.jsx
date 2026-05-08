@@ -492,7 +492,7 @@ const ProjectTabs = ({
 										disabled={!passedSteps.includes(4)}
 									>
 										<InfoItem
-											number={3}
+											number={4}
 											title={t("CSO Reports")}
 											subtitle={programName && `For Project ${programName}`}
 										/>
