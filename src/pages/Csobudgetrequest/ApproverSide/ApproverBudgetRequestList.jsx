@@ -41,7 +41,7 @@ const FetchErrorHandler = lazy(
 	() => import("../../../components/Common/FetchErrorHandler"),
 );
 const TreeForLists = lazy(
-	() => import("../../../components/Common/TreeForLists2"),
+	() => import("../../../components/Common/TreeForLists3"),
 );
 const AttachFileModal = lazy(
 	() => import("../../../components/Common/AttachFileModal"),
@@ -86,12 +86,12 @@ const ApproverBudgetRequestList = () => {
 	const { data, isLoading, error, isError, refetch } = useState(null);
 	const { data: budgetYearData } = useFetchBudgetYears();
 
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	const [projectParams, setProjectParams] = useState({ prj_location_region_id: 1, include: 1 });
+	const [prjLocationRegionId, setPrjLocationRegionId] = useState(1);
 	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const [include, setInclude] = useState(0);
+	const [include, setInclude] = useState(1);
 
 	const isMutable = ![3, 4].includes(parseInt(transaction?.bdr_request_status));
 
@@ -407,6 +407,15 @@ const ApproverBudgetRequestList = () => {
 							setInclude={setInclude}
 							isCollapsed={isCollapsed}
 							setIsCollapsed={setIsCollapsed}
+							initialSelection={{
+								id: 1,
+								nodeId: 1,
+								level: "region",
+								add_name_en: "",
+								add_name_am: "",
+								name: "",
+							}}
+							initialInclude={1}
 						/>
 						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch

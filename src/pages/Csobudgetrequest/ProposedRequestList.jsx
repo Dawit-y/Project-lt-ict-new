@@ -12,7 +12,7 @@ import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 import { useFetchProjectStatuss } from "../../queries/projectstatus_query";
 import AdvancedSearch from "../../components/Common/AdvancedSearch";
 import SearchTableContainer from "../../components/Common/SearchTableContainer";
-import TreeForLists from "../../components/Common/TreeForLists2";
+import TreeForLists from "../../components/Common/TreeForLists3";
 import AttachFileModal from "../../components/Common/AttachFileModal";
 import ConvInfoModal from "../Conversationinformation/ConvInfoModal";
 import { PAGE_ID } from "../../constants/constantFile";
@@ -43,12 +43,12 @@ const ApproverProposedRequestList = () => {
 	const { data: requestCategoryData } = useFetchRequestCategorys();
 	const { data: projectStatusData } = useFetchProjectStatuss();
 
-	const [projectParams, setProjectParams] = useState({});
-	const [prjLocationRegionId, setPrjLocationRegionId] = useState(null);
+	const [projectParams, setProjectParams] = useState({ prj_location_region_id: 1, include: 1 });
+	const [prjLocationRegionId, setPrjLocationRegionId] = useState(1);
 	const [prjLocationZoneId, setPrjLocationZoneId] = useState(null);
 	const [prjLocationWoredaId, setPrjLocationWoredaId] = useState(null);
 	const [isAddressLoading, setIsAddressLoading] = useState(false);
-	const [include, setInclude] = useState(0);
+	const [include, setInclude] = useState(1);
 
 	const [transaction, setTransaction] = useState({});
 	const [exportSearchParams, setExportSearchParams] = useState({});
@@ -282,6 +282,15 @@ const ApproverProposedRequestList = () => {
 							setInclude={setInclude}
 							isCollapsed={isCollapsed}
 							setIsCollapsed={setIsCollapsed}
+							initialSelection={{
+								id: 1,
+								nodeId: 1,
+								level: "region",
+								add_name_en: "",
+								add_name_am: "",
+								name: "",
+							}}
+							initialInclude={1}
 						/>
 
 						{/* Main Search and Table Container */}
