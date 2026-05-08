@@ -2138,6 +2138,8 @@
 	"rpt_project_id": "Project ID",
 	"rpt_type_id": "Report Type",
 	"rpt_report_date": "Report Date",
+	"rpt_start_date": "Start Date",
+	"rpt_end_date": "End Date",
 	"rpt_description": "Description",
 	"select_report_type": "Select Report Type",
 	"cso_report_list": "CSO Report List",

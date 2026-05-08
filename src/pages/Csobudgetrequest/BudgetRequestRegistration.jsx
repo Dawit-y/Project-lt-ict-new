@@ -33,6 +33,7 @@ import { useFetchRequestCategorys } from "../../queries/requestcategory_query";
 
 import { alphanumericValidation } from "../../utils/Validation/validation";
 import { PAGE_ID } from "../../constants/constantFile";
+import { toEthiopian } from "../../utils/commonMethods";
 
 // Lazy-loaded components
 const TableContainer = lazy(
@@ -115,7 +116,6 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
 	const validation = useFormik({
 		enableReinitialize: true,
 		initialValues: {
-
 			bdr_requested_amount:
 				(budgetRequest && budgetRequest.bdr_requested_amount) || "",
 			bdr_project_id: projectId,
@@ -294,8 +294,7 @@ const BudgetRequestModel = ({ projectId, isActive, projectStatus }) => {
 				cell: (cellProps) => {
 					return (
 						<span>
-							{truncateText(cellProps.row.original.bdr_requested_date_gc, 30) ||
-								"-"}
+							{toEthiopian(cellProps.row.original.bdr_requested_date_gc) || "-"}
 						</span>
 					);
 				},

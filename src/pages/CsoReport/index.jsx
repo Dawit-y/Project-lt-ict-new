@@ -29,6 +29,7 @@ import {
 
 import { alphanumericValidation } from "../../utils/Validation/validation";
 import { PAGE_ID } from "../../constants/constantFile";
+import { toEthiopian } from "../../utils/commonMethods";
 
 // Lazy-loaded components
 const TableContainer = lazy(
@@ -113,6 +114,8 @@ const CsoReportModel = ({ projectId, isActive }) => {
 			rpt_name: (csoReport && csoReport.rpt_name) || "",
 			rpt_type_id: (csoReport && csoReport.rpt_type_id) || "",
 			rpt_report_date: (csoReport && csoReport.rpt_report_date) || "",
+			rpt_start_date: (csoReport && csoReport.rpt_start_date) || "",
+			rpt_end_date: (csoReport && csoReport.rpt_end_date) || "",
 			rpt_description: (csoReport && csoReport.rpt_description) || "",
 			is_deletable: (csoReport && csoReport.is_deletable) || 1,
 			is_editable: (csoReport && csoReport.is_editable) || 1,
@@ -122,8 +125,10 @@ const CsoReportModel = ({ projectId, isActive }) => {
 			rpt_name: Yup.string()
 				.required(t("rpt_name_required"))
 				.max(50, t("max_50_chars")),
-			rpt_type_id: Yup.string().required(t("rpt_type_id_required")),
-			rpt_report_date: Yup.string().required(t("rpt_report_date_required")),
+			rpt_type_id: Yup.string().required(t("field_required")),
+			rpt_report_date: Yup.string().required(t("field_required")),
+			rpt_start_date: Yup.string().required(t("field_required")),
+			rpt_end_date: Yup.string().required(t("field_required")),
 			rpt_description: alphanumericValidation(3, 425, false),
 		}),
 		validateOnBlur: true,
@@ -136,6 +141,8 @@ const CsoReportModel = ({ projectId, isActive }) => {
 					rpt_project_id: projectId,
 					rpt_type_id: parseInt(values.rpt_type_id),
 					rpt_report_date: values.rpt_report_date,
+					rpt_start_date: values.rpt_start_date,
+					rpt_end_date: values.rpt_end_date,
 					rpt_description: values.rpt_description,
 					is_deletable: values.is_deletable,
 					is_editable: values.is_editable,
@@ -147,6 +154,8 @@ const CsoReportModel = ({ projectId, isActive }) => {
 					rpt_project_id: projectId,
 					rpt_type_id: parseInt(values.rpt_type_id),
 					rpt_report_date: values.rpt_report_date,
+					rpt_start_date: values.rpt_start_date,
+					rpt_end_date: values.rpt_end_date,
 					rpt_description: values.rpt_description,
 				};
 				handleAddCsoReport(newCsoReport);
@@ -174,6 +183,8 @@ const CsoReportModel = ({ projectId, isActive }) => {
 			rpt_name: report.rpt_name,
 			rpt_type_id: report.rpt_type_id,
 			rpt_report_date: report.rpt_report_date,
+			rpt_start_date: report.rpt_start_date,
+			rpt_end_date: report.rpt_end_date,
 			rpt_description: report.rpt_description,
 			is_deletable: report.is_deletable,
 			is_editable: report.is_editable,
@@ -259,7 +270,38 @@ const CsoReportModel = ({ projectId, isActive }) => {
 				enableColumnFilter: false,
 				enableSorting: true,
 				cell: (cellProps) => {
-					return <span>{cellProps.row.original.rpt_report_date || "-"}</span>;
+					return (
+						<span>
+							{toEthiopian(cellProps.row.original.rpt_report_date) || "-"}
+						</span>
+					);
+				},
+			},
+
+			{
+				header: t("rpt_start_date"),
+				accessorKey: "rpt_start_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{toEthiopian(cellProps.row.original.rpt_start_date) || "-"}
+						</span>
+					);
+				},
+			},
+			{
+				header: t("rpt_end_date"),
+				accessorKey: "rpt_end_date",
+				enableColumnFilter: false,
+				enableSorting: true,
+				cell: (cellProps) => {
+					return (
+						<span>
+							{toEthiopian(cellProps.row.original.rpt_end_date) || "-"}
+						</span>
+					);
 				},
 			},
 			{
@@ -531,6 +573,21 @@ const CsoReportModel = ({ projectId, isActive }) => {
 									isRequired="true"
 									validation={validation}
 									componentId="rpt_report_date"
+								/>
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<DatePicker
+									isRequired="true"
+									validation={validation}
+									componentId="rpt_start_date"
+								/>
+							</Col>
+							<Col className="col-md-6 mb-3">
+								<DatePicker
+									isRequired="true"
+									validation={validation}
+									componentId="rpt_end_date"
+									minDate={validation.values.rpt_start_date}
 								/>
 							</Col>
 

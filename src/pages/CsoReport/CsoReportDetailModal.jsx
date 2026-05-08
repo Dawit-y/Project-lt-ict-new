@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Modal, ModalHeader, ModalBody, Row, Col, Table } from "reactstrap";
 import { useTranslation } from "react-i18next";
+import { toEthiopian } from "../../utils/commonMethods";
 
 const CsoReportDetailModal = ({ isOpen, toggle, report, reportTypes }) => {
 	const { t } = useTranslation();
@@ -28,7 +29,15 @@ const CsoReportDetailModal = ({ isOpen, toggle, report, reportTypes }) => {
 						</tr>
 						<tr>
 							<th className="bg-light">{t("report_date")}</th>
-							<td>{report.rpt_report_date || "-"}</td>
+							<td>{toEthiopian(report.rpt_report_date) || "-"}</td>
+						</tr>
+						<tr>
+							<th className="bg-light">{t("rpt_start_date")}</th>
+							<td>{toEthiopian(report.rpt_start_date) || "-"}</td>
+						</tr>
+						<tr>
+							<th className="bg-light">{t("rpt_end_date")}</th>
+							<td>{toEthiopian(report.rpt_end_date) || "-"}</td>
 						</tr>
 						<tr>
 							<th className="bg-light">{t("description")}</th>
