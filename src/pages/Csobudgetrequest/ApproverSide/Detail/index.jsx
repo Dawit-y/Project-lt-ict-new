@@ -23,7 +23,7 @@ import {
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
 
-import ProjectOverview from "../../../Project/ProjectDetail/ProjectSummary";
+import ProjectOverview from "./ProjectOverview";
 import BudgetBreakdown from "./BudgetBreakdown";
 import AttachedFiles from "./AttachedFiles";
 import TextNotes from "./AttachedNotes";
