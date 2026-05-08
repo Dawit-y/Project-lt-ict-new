@@ -480,7 +480,7 @@ const ProjectTabs = ({
 									>
 										<InfoItem
 											number={3}
-											title={t("Proposed Requests")}
+											title={t("Requests")}
 											subtitle={programName && `For Project ${programName}`}
 										/>
 									</NavLink>
