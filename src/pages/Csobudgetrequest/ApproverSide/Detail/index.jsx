@@ -128,24 +128,6 @@ export default function BudgetApprovalPage() {
 							<Card className={`border-start border-${color} shadow-md`}>
 								<CardBody className="d-flex justify-content-between align-items-center">
 									<div className="d-flex align-items-center gap-3">
-										<div className="d-flex align-items-center gap-2">
-											<span>ETB</span>
-											<span className="fw-semibold">
-												{data?.data?.bdr_requested_amount != null &&
-												!isNaN(parseFloat(data.data.bdr_requested_amount))
-													? parseFloat(
-															data.data.bdr_requested_amount,
-														).toLocaleString()
-													: "-"}
-											</span>
-										</div>
-										<div className="vr" />
-										<div className="d-flex align-items-center gap-2">
-											<FaCalendarAlt className="text-primary" />
-											<span>
-												{t("budget_year")} {data?.data?.budget_year}
-											</span>
-										</div>
 										<div className="vr" />
 										<div className="d-flex align-items-center gap-2">
 											<FaClock className="text-warning" />
