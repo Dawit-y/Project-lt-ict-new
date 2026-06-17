@@ -117,6 +117,18 @@ const CsoReportList = () => {
 				pinned: "left",
 			},
 			{
+				headerName: t("cso_name"),
+				field: "cso_name",
+				sortable: true,
+				filter: true,
+				flex: 1,
+				minWidth: 200,
+				pinned: "left",
+				cellRenderer: (params) => {
+					return truncateText(params.data.cso_name, 100) || "-";
+				},
+			},
+			{
 				headerName: t("prj_name"),
 				field: "prj_name",
 				sortable: true,

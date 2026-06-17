@@ -265,17 +265,8 @@ const ProjectList = () => {
 						<SearchTableContainer isCollapsed={isCollapsed}>
 							<AdvancedSearch
 								searchHook={useSearchProjects}
-								textSearchKeys={["prj_name", "prj_code"]}
+								textSearchKeys={["prj_name", "cso_name"]}
 								dropdownSearchKeys={[
-									{
-										key: "prj_project_category_id",
-										options:
-											lang === "en"
-												? projectCategoryOptionsEn
-												: lang === "am"
-													? projectCategoryOptionsAm
-													: projectCategoryOptionsOr,
-									},
 								]}
 								checkboxSearchKeys={[]}
 								additionalParams={projectParams}
@@ -299,7 +290,7 @@ const ProjectList = () => {
 										columnDefs={columnDefs}
 										isLoading={isSearchLoading}
 										isPagination={true}
-										paginationPageSize={30}
+										paginationPageSize={15}
 										isGlobalFilter={true}
 										isAddButton={false}
 										addButtonText="Add"
